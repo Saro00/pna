@@ -1,0 +1,10 @@
+Dataset: ZINC,
+Model: EIG
+
+params={'seed': 41, 'epochs': 1000, 'batch_size': 128, 'init_lr': 0.001, 'lr_reduce_factor': 0.5, 'lr_schedule_patience': 5, 'min_lr': 1e-05, 'weight_decay': 3e-06, 'print_epoch_interval': 5, 'max_time': 48}
+
+net_params={'L': 4, 'hidden_dim': 75, 'out_dim': 70, 'residual': True, 'edge_feat': False, 'readout': 'sum', 'in_feat_dropout': 0.0, 'dropout': 0.0, 'graph_norm': True, 'batch_norm': True, 'aggregators': 'mean max min std', 'scalers': 'identity amplification attenuation', 'towers': 5, 'divide_input_first': False, 'divide_input_last': True, 'gru': False, 'edge_dim': 0, 'pretrans_layers': 1, 'posttrans_layers': 1, 'device': device(type='cpu'), 'gpu_id': 0, 'batch_size': 128, 'num_atom_type': 28, 'num_bond_type': 4, 'avg_d': {'lin': tensor(2.1521), 'exp': tensor(0.7571), 'log': tensor(1.1206)}, 'total_param': 361740}
+
+
+Total Parameters: 361740
+
