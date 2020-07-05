@@ -1,19 +1,14 @@
 import torch.nn as nn
 import dgl
 
-from realworld_benchmark.nets.gru import GRU
-from models.dgl.pna_layer import PNALayer
+from nets.gru import GRU
+from models.dgl.eig_layer import EIGLayer
 from realworld_benchmark.nets.mlp_readout_layer import MLPReadout
 
-"""
-    PNA: Principal Neighbourhood Aggregation 
-    Gabriele Corso, Luca Cavalleri, Dominique Beaini, Pietro Lio, Petar Velickovic
-    https://arxiv.org/abs/2004.05718
-    Architecture follows that in https://github.com/graphdeeplearning/benchmarking-gnns
-"""
 
 
-class PNANet(nn.Module):
+
+class EIGNet(nn.Module):
     def __init__(self, net_params):
         super().__init__()
         num_atom_type = net_params['num_atom_type']
@@ -26,13 +21,9 @@ class PNANet(nn.Module):
         self.readout = net_params['readout']
         self.graph_norm = net_params['graph_norm']
         self.batch_norm = net_params['batch_norm']
-        self.residual = net_params['residual']
         self.aggregators = net_params['aggregators']
         self.scalers = net_params['scalers']
         self.avg_d = net_params['avg_d']
-        self.towers = net_params['towers']
-        self.divide_input_first = net_params['divide_input_first']
-        self.divide_input_last = net_params['divide_input_last']
         self.edge_feat = net_params['edge_feat']
         edge_dim = net_params['edge_dim']
         pretrans_layers = net_params['pretrans_layers']
@@ -47,17 +38,17 @@ class PNANet(nn.Module):
         if self.edge_feat:
             self.embedding_e = nn.Embedding(num_bond_type, edge_dim)
 
-        self.layers = nn.ModuleList([PNALayer(in_dim=hidden_dim, out_dim=hidden_dim, dropout=dropout,
+        self.layers = nn.ModuleList([EIGLayer(in_features=hidden_dim, out_features=hidden_dim, dropout=dropout,
                                               graph_norm=self.graph_norm, batch_norm=self.batch_norm,
-                                              residual=self.residual, aggregators=self.aggregators, scalers=self.scalers,
-                                              avg_d=self.avg_d, towers=self.towers, edge_features=self.edge_feat,
-                                              edge_dim=edge_dim, divide_input=self.divide_input_first,
+                                              aggregators=self.aggregators, scalers=self.scalers,
+                                              avg_d=self.avg_d, edge_features=self.edge_feat,
+                                              edge_dim=edge_dim,
                                               pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers) for _
                                      in range(n_layers - 1)])
-        self.layers.append(PNALayer(in_dim=hidden_dim, out_dim=out_dim, dropout=dropout,
+        self.layers.append(EIGLayer(in_features=hidden_dim, out_features=out_dim, dropout=dropout,
                                     graph_norm=self.graph_norm, batch_norm=self.batch_norm,
-                                    residual=self.residual, aggregators=self.aggregators, scalers=self.scalers,
-                                    avg_d=self.avg_d, towers=self.towers, divide_input=self.divide_input_last,
+                                    aggregators=self.aggregators, scalers=self.scalers,
+                                    avg_d=self.avg_d,
                                     edge_features=self.edge_feat, edge_dim=edge_dim,
                                     pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers))
 

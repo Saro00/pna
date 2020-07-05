@@ -3,7 +3,7 @@ import torch.nn as nn
 import dgl
 
 from realworld_benchmark.nets.gru import GRU
-from models.dgl.pna_layer import PNALayer
+from models.dgl.eig_layer import PNALayer
 from realworld_benchmark.nets.mlp_readout_layer import MLPReadout
 
 """
