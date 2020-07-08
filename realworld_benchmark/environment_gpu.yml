@@ -2,7 +2,7 @@
 # Copyright (c) 2020 Vijay Prakash Dwivedi, Chaitanya K. Joshi, Thomas Laurent, Yoshua Bengio, Xavier Bresson
 
 
-name: benchmark_gnn_gpu
+name: benchmark_gnn
 channels:
 - pytorch 
 - dglteam
