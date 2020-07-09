@@ -26,9 +26,9 @@ class DotDict(dict):
 """
     IMPORTING CUSTOM MODULES/METHODS
 """
-from realworld_benchmark.nets.molecules_graph_regression.pna_net import PNANet
-from realworld_benchmark.data.molecules import MoleculeDataset  # import dataset
-from realworld_benchmark.train.train_molecules_graph_regression import train_epoch, evaluate_network
+from nets.molecules_graph_regression.eig_net import EIGNet
+from data.molecules import MoleculeDataset  # import dataset
+from train.train_molecules_graph_regression import train_epoch, evaluate_network
 
 """
     GPU Setup
@@ -54,14 +54,14 @@ def gpu_setup(use_gpu, gpu_id):
 
 
 def view_model_param(net_params):
-    model = PNANet(net_params)
+    model = EIGNet(net_params)
     total_param = 0
     print("MODEL DETAILS:\n")
     # print(model)
     for param in model.parameters():
         # print(param.data.size())
         total_param += np.prod(list(param.data.size()))
-    print('PNA Total parameters:', total_param)
+    print('EIG Total parameters:', total_param)
     return total_param
 
 
@@ -75,7 +75,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     per_epoch_time = []
 
     DATASET_NAME = dataset.name
-    MODEL_NAME = 'PNA'
+    MODEL_NAME = 'EIG'
 
     trainset, valset, testset = dataset.train, dataset.val, dataset.test
 
@@ -101,7 +101,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     print("Validation Graphs: ", len(valset))
     print("Test Graphs: ", len(testset))
 
-    model = PNANet(net_params)
+    model = EIGNet(net_params)
     model = model.to(device)
 
     optimizer = optim.Adam(model.parameters(), lr=params['init_lr'], weight_decay=params['weight_decay'])
@@ -241,9 +241,6 @@ def main():
     # pna params
     parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
     parser.add_argument('--scalers', type=str, help='Scalers to use.')
-    parser.add_argument('--towers', type=int, help='Towers to use.')
-    parser.add_argument('--divide_input_first', type=bool, help='Whether to divide the input in first layers.')
-    parser.add_argument('--divide_input_last', type=bool, help='Whether to divide the input in last layer.')
     parser.add_argument('--gru', type=bool, help='Whether to use gru.')
     parser.add_argument('--edge_dim', type=int, help='Size of edge embeddings.')
     parser.add_argument('--pretrans_layers', type=int, help='pretrans_layers.')
@@ -345,12 +342,6 @@ def main():
         net_params['aggregators'] = args.aggregators
     if args.scalers is not None:
         net_params['scalers'] = args.scalers
-    if args.towers is not None:
-        net_params['towers'] = args.towers
-    if args.divide_input_first is not None:
-        net_params['divide_input_first'] = args.divide_input_first
-    if args.divide_input_last is not None:
-        net_params['divide_input_last'] = args.divide_input_last
     if args.gru is not None:
         net_params['gru'] = args.gru
     if args.edge_dim is not None:
@@ -364,7 +355,7 @@ def main():
     net_params['num_atom_type'] = dataset.num_atom_type
     net_params['num_bond_type'] = dataset.num_bond_type
 
-    MODEL_NAME = 'PNA'
+    MODEL_NAME = 'EIG'
     D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
                    dataset.train.graph_lists])
     net_params['avg_d'] = dict(lin=torch.mean(D),
