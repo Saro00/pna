@@ -1,9 +1,9 @@
 import torch.nn as nn
 import dgl
 import sys
-from realworld_benchmark.nets.gru import GRU
+from nets.gru import GRU
 from models.dgl.eig_layer import EIGLayer
-from realworld_benchmark.nets.mlp_readout_layer import MLPReadout
+from nets.mlp_readout_layer import MLPReadout
 
 
 
