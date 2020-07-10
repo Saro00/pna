@@ -262,6 +262,7 @@ def main():
     else:
         DATASET_NAME = config['dataset']
     print('ok')
+    print(DATASET_NAME)
     dataset = MoleculeDataset(DATASET_NAME)
     if args.out_dir is not None:
         out_dir = args.out_dir
