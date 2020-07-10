@@ -3,7 +3,7 @@ import dgl
 import sys
 from nets.gru import GRU
 import sys
-print(sys.path)
+sys.path.insert(0, "/home/saro00/Documents/pna")
 from models.dgl.eig_layer import EIGLayer
 from nets.mlp_readout_layer import MLPReadout
 
