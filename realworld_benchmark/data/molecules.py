@@ -157,7 +157,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
             self.train = f[0]
             print(f[0])
             f[0].get_eig()
-            print(f[0].graph_lists[0]['adj'])
+            print(f[0].graph_lists[0].ndata['adj'])
             self.val = f[1]
             self.test = f[2]
             self.num_atom_type = f[3]
