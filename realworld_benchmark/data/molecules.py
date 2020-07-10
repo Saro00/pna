@@ -58,6 +58,9 @@ class MoleculeDGL(torch.utils.data.Dataset):
             g = dgl.DGLGraph()
             g.add_nodes(molecule['num_atom'])
             g.ndata['feat'] = node_features
+            print('this')
+            print(type(g.ndata['feat']))
+            print(g.ndata['feat'])
 
             for src, dst in edge_list:
                 g.add_edges(src.item(), dst.item())
@@ -113,9 +116,6 @@ def self_loop(g):
     new_g = dgl.DGLGraph()
     new_g.add_nodes(g.number_of_nodes())
     new_g.ndata['feat'] = g.ndata['feat']
-    print('this')
-    print(type(new_g.ndata['feat']))
-    print(new_g.ndata['feat'])
 
     src, dst = g.all_edges(order="eid")
     src = dgl.backend.zerocopy_to_numpy(src)
