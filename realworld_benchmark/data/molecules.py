@@ -74,6 +74,12 @@ class MoleculeDGL(torch.utils.data.Dataset):
             self.graph_lists.append(g)
             self.graph_labels.append(molecule['logP_SA_cycle_normalized'])
 
+    def get_eig(self):
+        for g in self.graph_lists:
+            A = g.adjacency_matrix()
+            g.ndata['adj'] = A
+
+
     def __len__(self):
         """Return the number of graphs in the dataset."""
         return self.n_samples
@@ -149,8 +155,8 @@ class MoleculeDataset(torch.utils.data.Dataset):
         with open(data_dir + name + '.pkl', "rb") as f:
             f = pickle.load(f)
             self.train = f[0]
-            print(len(f[0]))
-            print(f[0][0])
+            f[0].get_eig()
+            print(f[0][0]['adj'])
             self.val = f[1]
             self.test = f[2]
             self.num_atom_type = f[3]
