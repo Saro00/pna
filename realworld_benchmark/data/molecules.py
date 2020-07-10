@@ -182,4 +182,3 @@ class MoleculeDataset(torch.utils.data.Dataset):
         self.test.graph_lists = [self_loop(g) for g in self.test.graph_lists]
 
 
-a = MoleculeDataset('ZINC')
