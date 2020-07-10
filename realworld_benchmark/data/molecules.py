@@ -16,8 +16,11 @@ class MoleculeDGL(torch.utils.data.Dataset):
         self.data_dir = data_dir
         self.split = split
         self.num_graphs = num_graphs
+        print("I'm here")
 
         with open(data_dir + "/%s.pickle" % self.split, "rb") as f:
+        #with open('data/ZINC.pkl', "rb") as f:
+
             self.data = pickle.load(f)
 
         # loading the sampled indices from file ./zinc_molecules/<split>.index
@@ -59,6 +62,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
             g = dgl.DGLGraph()
             g.add_nodes(molecule['num_atom'])
             g.ndata['feat'] = node_features
+            print(g.ndata['feat'].shape)
             print('this')
             print(type(g.ndata['feat']))
             print(g.ndata['feat'])
@@ -174,3 +178,6 @@ class MoleculeDataset(torch.utils.data.Dataset):
         self.train.graph_lists = [self_loop(g) for g in self.train.graph_lists]
         self.val.graph_lists = [self_loop(g) for g in self.val.graph_lists]
         self.test.graph_lists = [self_loop(g) for g in self.test.graph_lists]
+
+
+a = MoleculeDatasetDGL('ZINC')
