@@ -61,11 +61,9 @@ class EIGLayer(nn.Module):
     def posttrans_nodes(self, nodes):
         return self.posttrans(nodes.data['h'])
 
-    def forward(self, g, h, e, snorm_n, eig=None):
-        print(g)
+    def forward(self, g, h, e, snorm_n):
         g.ndata['h'] = h
 
-        g.ndata['eig'] = eig
         if self.edge_features:  # add the edges information only if edge_features = True
             g.edata['ef'] = e
 
