@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .aggregators import AGGREGATORS
-from models.layers import MLP, FCLayer
+from .layers import MLP, FCLayer
 from .scalers import SCALERS
 
 """
