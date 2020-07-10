@@ -148,6 +148,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
         self.name = name
         data_dir = 'data/'
         with open(data_dir + name + '.pkl', "rb") as f:
+            print("second")
             f = pickle.load(f)
             self.train = f[0]
             self.val = f[1]
