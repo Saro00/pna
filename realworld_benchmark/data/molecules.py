@@ -113,6 +113,7 @@ def self_loop(g):
     new_g = dgl.DGLGraph()
     new_g.add_nodes(g.number_of_nodes())
     new_g.ndata['feat'] = g.ndata['feat']
+    print('this')
     print(type(new_g.ndata['feat']))
     print(new_g.ndata['feat'])
 
