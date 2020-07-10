@@ -155,6 +155,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
         with open(data_dir + name + '.pkl', "rb") as f:
             f = pickle.load(f)
             self.train = f[0]
+            print(f[0])
             f[0].get_eig()
             print(f[0].graph_lists[0]['adj'])
             self.val = f[1]
