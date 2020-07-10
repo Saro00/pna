@@ -3,8 +3,8 @@ import dgl
 import sys
 from nets.gru import GRU
 import sys
-sys.path.insert(0, "/home/saro00/Documents/pna/models/dgl/eig_layer")
-import EIGLayer
+sys.path.insert(0, "/home/saro00/Documents/pna/models/dgl")
+from eig_layer import EIGLayer
 from nets.mlp_readout_layer import MLPReadout
 
 
