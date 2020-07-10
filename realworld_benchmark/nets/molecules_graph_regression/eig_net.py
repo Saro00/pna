@@ -2,9 +2,7 @@ import torch.nn as nn
 import dgl
 import sys
 from nets.gru import GRU
-import sys
-sys.path.insert(0, "pna/models/dgl")
-from eig_layer import EIGLayer
+from .eig_layer import EIGLayer
 from nets.mlp_readout_layer import MLPReadout
 
 
