@@ -10,6 +10,7 @@ import numpy as np
 import csv
 import dgl
 
+EPS = 1e-5
 
 def get_laplacian_matrix(adj, normalize_L):
     r"""
