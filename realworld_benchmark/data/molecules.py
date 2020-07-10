@@ -336,4 +336,4 @@ def get_k_lowest_eig(adj, k):
     # Stack and Reshape to match the input batch shape
     k_lowest_eigvec = torch.stack(k_lowest_eigvec, dim=0).view(*(shape[:-2] + [-1, k]))
 
-    return k_lowest_eigvec.device('cuda' if torch.cuda.is_available() else 'cpu')
+    return k_lowest_eigvec.to('cuda' if torch.cuda.is_available() else 'cpu')
