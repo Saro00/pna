@@ -271,7 +271,7 @@ def get_k_lowest_eig(adj, k):
 
     # Compute and sort the eigenvectors
 
-    eigval_all, eigvec_all = torch.symeig(L.cpu(), eigenvectors=True)
+    eigval_all, eigvec_all = torch.symeig(L, eigenvectors=True)
     eigval_all = eigval_all.to(device)
     eigvec_all = eigvec_all.to(device)
     sort_idx = torch.argsort(eigval_all.abs(), dim=-1, descending=False)
