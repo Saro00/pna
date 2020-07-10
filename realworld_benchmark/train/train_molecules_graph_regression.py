@@ -19,11 +19,7 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
     nb_data = 0
     gpu_mem = 0
     for iter, (batch_graphs, batch_targets, batch_snorm_n, batch_snorm_e) in enumerate(data_loader):
-        print(batch_graphs)
-        print(type(batch_graphs))
-        print(batch_graphs.ndata['feat'].to(device))
-        print(batch_graphs.ndata['feat'].to(device).shape)
-        print(type(batch_graphs.ndata['feat'].to(device)))
+
         batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
         batch_e = batch_graphs.edata['feat'].to(device)
         batch_snorm_e = batch_snorm_e.to(device)

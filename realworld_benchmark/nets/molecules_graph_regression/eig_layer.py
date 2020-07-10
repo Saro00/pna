@@ -62,6 +62,7 @@ class EIGLayer(nn.Module):
         return self.posttrans(nodes.data['h'])
 
     def forward(self, g, h, e, snorm_n, eig=None):
+        print(g)
         g.ndata['h'] = h
 
         g.ndata['eig'] = eig
