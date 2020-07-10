@@ -40,6 +40,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
         self.graph_lists = []
         self.graph_labels = []
         self.n_samples = len(self.data)
+        print('pass here')
         self._prepare()
 
     def _prepare(self):
