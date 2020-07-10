@@ -149,7 +149,8 @@ class MoleculeDataset(torch.utils.data.Dataset):
         with open(data_dir + name + '.pkl', "rb") as f:
             f = pickle.load(f)
             self.train = f[0]
-            print(f[0])
+            print(f[0]['feat'])
+            print(f[0]['feat'].shape)
             self.val = f[1]
             self.test = f[2]
             self.num_atom_type = f[3]
