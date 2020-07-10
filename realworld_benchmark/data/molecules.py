@@ -76,7 +76,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
 
     def get_eig(self):
         for g in self.graph_lists:
-            A = g.adjacency_matrix()
+            A = g.adjacency_matrix().to_dense()
             g.ndata['adj'] = A
 
 
