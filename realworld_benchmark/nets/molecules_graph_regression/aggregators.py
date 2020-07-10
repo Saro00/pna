@@ -53,6 +53,9 @@ def aggregate_sum(h, eig_s, eig_d):
 
 def aggregate_eig(h, eig_s, eig_d, eig_idx):
     #check right unsqueeze...
+    print(h.is_cuda)
+    print(eig_s.is_cuda)
+    print(eig_d.is_cuda)
     h_mod = torch.mul(h, torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]).unsqueeze(-1))
     return torch.sum(h_mod, dim=1)
 
