@@ -156,7 +156,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
             f = pickle.load(f)
             self.train = f[0]
             f[0].get_eig()
-            print(f[0][0]['adj'])
+            print(f[0].graph_lists[0]['adj'])
             self.val = f[1]
             self.test = f[2]
             self.num_atom_type = f[3]
