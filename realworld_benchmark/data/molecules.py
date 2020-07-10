@@ -144,6 +144,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
         """
         start = time.time()
         print("[I] Loading dataset %s..." % (name))
+        print("I'm here")
         self.name = name
         data_dir = 'data/'
         with open(data_dir + name + '.pkl', "rb") as f:
