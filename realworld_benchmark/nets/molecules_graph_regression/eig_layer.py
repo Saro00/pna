@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .aggregators import AGGREGATORS
+from .aggregators import AGGREGATORS, aggregate_NN
 from .layers import MLP, FCLayer
 from .scalers import SCALERS
 
