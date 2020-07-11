@@ -241,6 +241,7 @@ def main():
     # pna params
     parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
     parser.add_argument('--scalers', type=str, help='Scalers to use.')
+    parser.add_argument('--NN_eig', action='store_true', default=False, help='NN eig aggr.')
     parser.add_argument('--gru', type=bool, help='Whether to use gru.')
     parser.add_argument('--edge_dim', type=int, help='Size of edge embeddings.')
     parser.add_argument('--pretrans_layers', type=int, help='pretrans_layers.')
@@ -344,6 +345,8 @@ def main():
         net_params['aggregators'] = args.aggregators
     if args.scalers is not None:
         net_params['scalers'] = args.scalers
+    if args.NN_eig is not None:
+        net_params['NN_eig'] = args.NN_eig
     if args.gru is not None:
         net_params['gru'] = args.gru
     if args.edge_dim is not None:

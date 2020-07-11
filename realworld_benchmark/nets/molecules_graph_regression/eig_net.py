@@ -23,6 +23,7 @@ class EIGNet(nn.Module):
         self.batch_norm = net_params['batch_norm']
         self.aggregators = net_params['aggregators']
         self.scalers = net_params['scalers']
+        self.NN_eig = net_params['NN_eig']
         self.avg_d = net_params['avg_d']
         self.edge_feat = net_params['edge_feat']
         edge_dim = net_params['edge_dim']
@@ -40,14 +41,14 @@ class EIGNet(nn.Module):
 
         self.layers = nn.ModuleList([EIGLayer(in_features=hidden_dim, out_features=hidden_dim, dropout=dropout,
                                               graph_norm=self.graph_norm, batch_norm=self.batch_norm,
-                                              aggregators=self.aggregators, scalers=self.scalers,
+                                              aggregators=self.aggregators, scalers=self.scalers, NN_eig=self.NN_eig,
                                               avg_d=self.avg_d, edge_features=self.edge_feat,
                                               edge_dim=edge_dim,
                                               pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers) for _
                                      in range(n_layers - 1)])
         self.layers.append(EIGLayer(in_features=hidden_dim, out_features=out_dim, dropout=dropout,
                                     graph_norm=self.graph_norm, batch_norm=self.batch_norm,
-                                    aggregators=self.aggregators, scalers=self.scalers,
+                                    aggregators=self.aggregators, scalers=self.scalers, NN_eig=self.NN_eig,
                                     avg_d=self.avg_d,
                                     edge_features=self.edge_feat, edge_dim=edge_dim,
                                     pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers))
