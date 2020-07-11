@@ -60,6 +60,7 @@ class EIGLayer(nn.Module):
 
     def reduce_func(self, nodes):
         h = nodes.mailbox['e']
+        print(h.shape)
         eig_s = nodes.mailbox['eig_s']
         print(nodes.mailbox['eig_s'])
         eig_d = nodes.mailbox['eig_d']
