@@ -54,7 +54,7 @@ def aggregate_sum(h, eig_s, eig_d):
 def aggregate_eig(h, eig_s, eig_d, eig_idx):
     #check right unsqueeze...
 
-    h_mod = torch.mul(h, (torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])/torch.sum(torch.abs(eig_s - eig_d), dim=1)).unsqueeze(-1))
+    h_mod = torch.mul(h, (torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])/torch.sum(torch.abs(eig_s - eig_d), dim=1, keepdim=True)).unsqueeze(-1))
     return torch.sum(h_mod, dim=1)
 
 
