@@ -67,7 +67,7 @@ class EIGLayer(nn.Module):
             print(eig_s.shape)
             print(eig_d.shape)
             print(h.shape)
-
+            print(self.eigfilt(torch.cat([eig_s[:,:,1].unsqueeze(-1), eig_d[:][:,:,1].unsqueeze(-1)], dim=-1)).squeeze(-1).shape)
             e1 = aggregate_NN(h, self.eigfilt(torch.cat([eig_s[:,:,1].unsqueeze(-1), eig_d[:][:,:,1].unsqueeze(-1)], dim=-1)).squeeze(-1))
             e2 = aggregate_NN(h, self.eigfilt(torch.cat([eig_s[:,:,2].unsqueeze(-1), eig_d[:][:,:,2].unsqueeze(-1)], dim=-1)).squeeze(-1))
 
