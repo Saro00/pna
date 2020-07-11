@@ -66,8 +66,8 @@ class EIGLayer(nn.Module):
         if self.NN_eig:
             w1 = self.eigfilt(torch.cat([eig_s[:, :, 1].unsqueeze(-1), eig_d[:][:, :, 1].unsqueeze(-1)], dim=-1))
             w2 = self.eigfilt(torch.cat([eig_s[:, :, 2].unsqueeze(-1), eig_d[:][:, :, 2].unsqueeze(-1)], dim=-1))
-            w1 = nn.LeakyReLU(0.1)(w1)
-            w2 = nn.LeakyReLU(0.1)(w2)
+            w1 = nn.LeakyReLU(0.2)(w1)
+            w2 = nn.LeakyReLU(0.2)(w2)
             e1 = aggregate_NN(h, nn.Softmax(dim=1)(w1))
             e2 = aggregate_NN(h, nn.Softmax(dim=1)(w2))
 
