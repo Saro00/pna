@@ -18,7 +18,6 @@ class MoleculeDGL(torch.utils.data.Dataset):
         self.data_dir = data_dir
         self.split = split
         self.num_graphs = num_graphs
-        print("I'm here")
 
         with open(data_dir + "/%s.pickle" % self.split, "rb") as f:
         #with open('data/ZINC.pkl', "rb") as f:
@@ -45,7 +44,6 @@ class MoleculeDGL(torch.utils.data.Dataset):
         self.graph_lists = []
         self.graph_labels = []
         self.n_samples = len(self.data)
-        print('pass here')
         self._prepare()
 
     def _prepare(self):
@@ -64,10 +62,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
             g = dgl.DGLGraph()
             g.add_nodes(molecule['num_atom'])
             g.ndata['feat'] = node_features
-            print(g.ndata['feat'].shape)
-            print('this')
-            print(type(g.ndata['feat']))
-            print(g.ndata['feat'])
+
 
             for src, dst in edge_list:
                 g.add_edges(src.item(), dst.item())
@@ -81,9 +76,6 @@ class MoleculeDGL(torch.utils.data.Dataset):
         for g in self.graph_lists:
             A = g.adjacency_matrix().to_dense()
             g.ndata['eig'] = get_k_lowest_eig(A, 5)
-            if a:
-                print(g.ndata['eig'].shape)
-                a = False
 
 
     def __len__(self):
@@ -161,7 +153,6 @@ class MoleculeDataset(torch.utils.data.Dataset):
         with open(data_dir + name + '.pkl', "rb") as f:
             f = pickle.load(f)
             f[0].get_eig()
-            print(f[0].graph_lists[0].ndata['eig'])
             self.train = f[0]
             f[1].get_eig()
             self.val = f[1]
