@@ -64,8 +64,12 @@ class EIGLayer(nn.Module):
         eig_d = nodes.mailbox['eig_d']
         D = h.shape[-2]
         if self.NN_eig:
-            e1 = aggregate_NN(h, self.eigfilt(torch.cat([eig_s[:,:,1].unsqueeze(-1), eig_d[:][:,:,1].unsqueeze(-1)], dim=-1)))
-            e2 = aggregate_NN(h, self.eigfilt(torch.cat([eig_s[:,:,2].unsqueeze(-1), eig_d[:][:,:,2].unsqueeze(-1)], dim=-1)))
+            w1 = self.eigfilt(torch.cat([eig_s[:, :, 1].unsqueeze(-1), eig_d[:][:, :, 1].unsqueeze(-1)], dim=-1))
+            w2 = self.eigfilt(torch.cat([eig_s[:, :, 2].unsqueeze(-1), eig_d[:][:, :, 2].unsqueeze(-1)], dim=-1))
+            print(w1.shape)
+            print(h.shape)
+            e1 = aggregate_NN(h, w1/torch.sum(w1, dim=1 ,keepdim=True))
+            e2 = aggregate_NN(h, w2/torch.sum(w2, dim=1 ,keepdim=True))
 
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
