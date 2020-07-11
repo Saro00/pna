@@ -18,6 +18,8 @@ class EIGLayer(nn.Module):
     def __init__(self, in_features, out_features, dropout, graph_norm, batch_norm, aggregators, scalers, avg_d,
                  pretrans_layers, posttrans_layers, edge_features=False, edge_dim=0):
         super().__init__()
+        self.in_features = in_features
+        self.out_features = out_features
         self.dropout = dropout
         self.graph_norm = graph_norm
         self.batch_norm = batch_norm
