@@ -16,7 +16,7 @@ from .scalers import SCALERS
 
 class EIGLayer(nn.Module):
     def __init__(self, in_features, out_features, dropout, graph_norm, batch_norm, aggregators, scalers, avg_d,
-                 pretrans_layers, posttrans_layers, edge_features=False, edge_dim=0):
+                 pretrans_layers, posttrans_layers, NN_eig=False, edge_features=False, edge_dim=0):
         super().__init__()
         self.in_features = in_features
         self.out_features = out_features
@@ -24,6 +24,7 @@ class EIGLayer(nn.Module):
         self.graph_norm = graph_norm
         self.batch_norm = batch_norm
         self.edge_features = edge_features
+        self.NN_eig = NN_eig
 
         self.fc = nn.Linear(in_features, out_features, bias=False)
         self.attn_fc = nn.Linear(2 * out_features, 1, bias=False)
@@ -33,9 +34,15 @@ class EIGLayer(nn.Module):
         self.scalers = [SCALERS[scale] for scale in scalers.split()]
         self.pretrans = MLP(in_size=2 * in_features + (edge_dim if edge_features else 0), hidden_size=in_features,
                             out_size=in_features, layers=pretrans_layers, mid_activation='relu', last_activation='none')
-        self.posttrans = MLP(in_size=(len(aggregators.split()) * len(scalers.split()) + 1) * in_features,
+        if NN_eig:
+            self.posttrans = MLP(in_size=(len(aggregators.split()) * len(scalers.split()) + 3) * in_features,
                              hidden_size=out_features,
                              out_size=out_features, layers=posttrans_layers, mid_activation='relu', last_activation='none')
+        else:
+            self.posttrans = MLP(in_size=(len(aggregators.split()) * len(scalers.split()) + 1) * in_features,
+                             hidden_size=out_features,
+                             out_size=out_features, layers=posttrans_layers, mid_activation='relu', last_activation='none')
+        self.eigfilt = MLP(in_size=2, hidden_size=7, out_size=1, layers=3, mid_activation='relu', last_activation='none')
         self.avg_d = avg_d
 
     def pretrans_edges(self, edges):
@@ -57,6 +64,10 @@ class EIGLayer(nn.Module):
         eig_d = nodes.mailbox['eig_d']
         D = h.shape[-2]
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
+        if self.NN_eig:
+            h = torch.cat([h, aggregate_NN(h, self.eigfilt(eig_s[:][:][1], eig_d[:][:][1]).unsqueeze(-1))])
+            h = torch.cat([h, aggregate_NN(h, self.eigfilt(eig_s[:][:][2], eig_d[:][:][2]).unsqueeze(-1))])
+
         h = torch.cat([scale(h, D=D, avg_d=self.avg_d) for scale in self.scalers], dim=1)
         return {'h': h}
 
