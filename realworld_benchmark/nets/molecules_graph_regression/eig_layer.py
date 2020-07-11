@@ -42,7 +42,7 @@ class EIGLayer(nn.Module):
             self.posttrans = MLP(in_size=(len(aggregators.split()) * len(scalers.split()) + 1) * in_features,
                              hidden_size=out_features,
                              out_size=out_features, layers=posttrans_layers, mid_activation='relu', last_activation='none')
-        self.eigfilt = MLP(in_size=2, hidden_size=5, out_size=1, layers=3, mid_activation='relu', last_activation='none')
+        self.eigfilt = MLP(in_size=2,  out_size=1, layers=2, last_activation='none')
         self.avg_d = avg_d
 
     def pretrans_edges(self, edges):
