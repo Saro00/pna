@@ -61,7 +61,9 @@ class EIGLayer(nn.Module):
     def reduce_func(self, nodes):
         h = nodes.mailbox['e']
         eig_s = nodes.mailbox['eig_s']
+        print(nodes.mailbox['eig_s'])
         eig_d = nodes.mailbox['eig_d']
+        print(nodes.mailbox['eig_d'])
         D = h.shape[-2]
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
         if self.NN_eig:
