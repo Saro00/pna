@@ -55,7 +55,7 @@ def aggregate_eig(h, eig_s, eig_d, eig_idx):
     #check right unsqueeze...
     h_mod = torch.mul(h, (torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])/torch.sum(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]), dim=1, keepdim=True)).unsqueeze(-1))
     return torch.sum(h_mod, dim=1)
-def aggregate_NN(h, eig_filt, eig_idx):
+def aggregate_NN(h, eig_filt):
     h_mod = torch.mul(h, eig_filt)
     return torch.sum(h_mod, dim=1)
 
