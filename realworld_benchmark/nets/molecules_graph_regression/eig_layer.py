@@ -66,8 +66,8 @@ class EIGLayer(nn.Module):
         if self.NN_eig:
             w1 = self.eigfilt(torch.cat([eig_s[:, :, 1].unsqueeze(-1), eig_d[:][:, :, 1].unsqueeze(-1)], dim=-1))
             w2 = self.eigfilt(torch.cat([eig_s[:, :, 2].unsqueeze(-1), eig_d[:][:, :, 2].unsqueeze(-1)], dim=-1))
-            e1 = aggregate_NN(h, w1/torch.sum(torch.abs(w1), dim=1 ,keepdim=True))
-            e2 = aggregate_NN(h, w2/torch.sum(torch.abs(w2), dim=1 ,keepdim=True))
+            e1 = aggregate_NN(h, torch.nn.Softmax(w1, dim = 1))
+            e2 = aggregate_NN(h, torch.nn.Softmax(w2, dim = 1))
 
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
