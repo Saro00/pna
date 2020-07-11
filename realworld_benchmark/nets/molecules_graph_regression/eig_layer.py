@@ -42,7 +42,7 @@ class EIGLayer(nn.Module):
             self.posttrans = MLP(in_size=(len(aggregators.split()) * len(scalers.split()) + 1) * in_features,
                              hidden_size=out_features,
                              out_size=out_features, layers=posttrans_layers, mid_activation='relu', last_activation='none')
-        self.eigfilt = nn.Linear(in_features=2, out_features=1, bias=True)
+        self.eigfilt = MLP(in_size=2, hidden_size=7, out_size=1, layers=3, mid_activation='relu', last_activation='none')
         self.avg_d = avg_d
 
     def pretrans_edges(self, edges):
@@ -66,10 +66,8 @@ class EIGLayer(nn.Module):
         if self.NN_eig:
             w1 = self.eigfilt(torch.cat([eig_s[:, :, 1].unsqueeze(-1), eig_d[:][:, :, 1].unsqueeze(-1)], dim=-1))
             w2 = self.eigfilt(torch.cat([eig_s[:, :, 2].unsqueeze(-1), eig_d[:][:, :, 2].unsqueeze(-1)], dim=-1))
-            w1 = nn.LeakyReLU(0.2)(w1)
-            w2 = nn.LeakyReLU(0.2)(w2)
-            e1 = aggregate_NN(h, nn.Softmax(dim=1)(w1))
-            e2 = aggregate_NN(h, nn.Softmax(dim=1)(w2))
+            e1 = aggregate_NN(h, w1/torch.sum(torch.abs(w1), dim=1 ,keepdim=True))
+            e2 = aggregate_NN(h, w2/torch.sum(torch.abs(w2), dim=1 ,keepdim=True))
 
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
