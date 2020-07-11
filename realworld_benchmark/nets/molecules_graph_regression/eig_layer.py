@@ -35,7 +35,7 @@ class EIGLayer(nn.Module):
         self.pretrans = MLP(in_size=2 * in_features + (edge_dim if edge_features else 0), hidden_size=in_features,
                             out_size=in_features, layers=pretrans_layers, mid_activation='relu', last_activation='none')
         if NN_eig:
-            self.posttrans = MLP(in_size=(len(aggregators.split()) * len(scalers.split()) + 3) * in_features,
+            self.posttrans = MLP(in_size=((len(aggregators.split())+2) * len(scalers.split()) + 1) * in_features,
                              hidden_size=out_features,
                              out_size=out_features, layers=posttrans_layers, mid_activation='relu', last_activation='none')
         else:
