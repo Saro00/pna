@@ -75,8 +75,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
         a = True
         for g in self.graph_lists:
             A = g.adjacency_matrix().to_dense()
-            L = get_laplacian_matrix(A, False)
-            g.ndata['eig'] = get_k_lowest_eig(L, 5)
+            g.ndata['eig'] = get_k_lowest_eig(A, 5)
 
 
     def __len__(self):
