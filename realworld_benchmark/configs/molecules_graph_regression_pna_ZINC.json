@@ -13,7 +13,7 @@
     "init_lr": 0.001,
     "lr_reduce_factor": 0.5,
     "lr_schedule_patience": 5,
-    "min_lr": 1e-5,
+    "min_lr": 1e-6,
     "weight_decay": 3e-6,
     "print_epoch_interval": 5,
     "max_time": 48
