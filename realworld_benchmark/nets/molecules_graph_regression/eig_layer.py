@@ -35,14 +35,14 @@ class EIGLayer(nn.Module):
         self.pretrans = MLP(in_size=2 * in_features + (edge_dim if edge_features else 0), hidden_size=in_features,
                             out_size=in_features, layers=pretrans_layers, mid_activation='relu', last_activation='none')
         if NN_eig:
-            self.posttrans = MLP(in_size=((len(aggregators.split())+2) * len(scalers.split()) + 1) * in_features,
+            self.posttrans = MLP(in_size=((len(aggregators.split())+1) * len(scalers.split()) + 1) * in_features,
                              hidden_size=out_features,
                              out_size=out_features, layers=posttrans_layers, mid_activation='relu', last_activation='none')
         else:
             self.posttrans = MLP(in_size=(len(aggregators.split()) * len(scalers.split()) + 1) * in_features,
                              hidden_size=out_features,
                              out_size=out_features, layers=posttrans_layers, mid_activation='relu', last_activation='none')
-        self.eigfilt1 = MLP(in_size=2, hidden_size=7, out_size=1, layers=3, mid_activation='relu', last_activation='none')
+        self.eigfilt = MLP(in_size=8, hidden_size=5, out_size=1, layers=3, mid_activation='relu', last_activation='none')
         self.eigfilt2 = MLP(in_size=2, hidden_size=7, out_size=1, layers=3, mid_activation='relu', last_activation='none')
         self.avg_d = avg_d
 
@@ -65,15 +65,13 @@ class EIGLayer(nn.Module):
         eig_d = nodes.mailbox['eig_d']
         D = h.shape[-2]
         if self.NN_eig:
-            w1 = self.eigfilt1(torch.cat([eig_s[:, :, 1].unsqueeze(-1), eig_d[:][:, :, 1].unsqueeze(-1)], dim=-1))
-            w2 = self.eigfilt2(torch.cat([eig_s[:, :, 2].unsqueeze(-1), eig_d[:][:, :, 2].unsqueeze(-1)], dim=-1))
-            e1 = aggregate_NN(h, w1)
-            e2 = aggregate_NN(h, w2)
+            w = self.eigfilt(torch.cat([eig_s[:, :, 1].unsqueeze(-1), eig_s[:, :, 2].unsqueeze(-1), eig_s[:, :, 3].unsqueeze(-1), eig_s[:, :, 4].unsqueeze(-1), eig_d[:][:, :, 1].unsqueeze(-1), eig_d[:][:, :, 2].unsqueeze(-1), eig_d[:][:, :, 3].unsqueeze(-1), eig_d[:][:, :, 4].unsqueeze(-1)], dim=-1))
+            e = aggregate_NN(h, w)
 
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
         if self.NN_eig:
-            h = torch.cat([h, e1, e2], dim=1)
+            h = torch.cat([h, e], dim=1)
 
         h = torch.cat([scale(h, D=D, avg_d=self.avg_d) for scale in self.scalers], dim=1)
         return {'h': h}
