@@ -72,7 +72,7 @@ class EIGLayer(nn.Module):
                                        [eig_d[:][:, :, i].unsqueeze(-1) for i in range(1, 9)], dim=-1))
             #e1 = aggregate_NN(h, w1)
             #e2 = aggregate_NN(h, w2)
-            e = aggregate(h, w)
+            e = aggregate_NN(h, w)
 
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
