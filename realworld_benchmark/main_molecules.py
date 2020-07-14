@@ -140,6 +140,8 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                 writer.add_scalar('train/_mae', epoch_train_mae, epoch)
                 writer.add_scalar('val/_mae', epoch_val_mae, epoch)
                 writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+                for _ in range(10):
+                    print('Sampled value is ', model.layers[1].eigfilt(torch.Tensor([random.random() for i in range(6)])))
 
                 _, epoch_test_mae = evaluate_network(model, device, test_loader, epoch)
                 t.set_postfix(time=time.time() - start, lr=optimizer.param_groups[0]['lr'],
