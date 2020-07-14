@@ -13,6 +13,7 @@ from .scalers import SCALERS
     https://arxiv.org/abs/2004.05718
 """
 
+EPS = 1e-5
 
 class EIGLayer(nn.Module):
     def __init__(self, in_features, out_features, dropout, graph_norm, batch_norm, aggregators, scalers, avg_d,
@@ -54,7 +55,7 @@ class EIGLayer(nn.Module):
         else:
             z2 = torch.cat([edges.src['h'], edges.dst['h']], dim=1)
 
-        return {'e': edges.dst['h'], 'eig_s': edges.src['eig'], 'eig_d': edges.dst['eig']}
+        return {'e': self.pretrans(z2), 'eig_s': edges.src['eig'], 'eig_d': edges.dst['eig']}
 
     def message_func(self, edges):
 
@@ -70,10 +71,10 @@ class EIGLayer(nn.Module):
             #w2 = self.eigfilt2(torch.cat([eig_s[:, :, 2].unsqueeze(-1), eig_d[:][:, :, 2].unsqueeze(-1)], dim=-1))
             w = self.eigfilt(torch.cat([eig_s[:, :, i].unsqueeze(-1) for i in range(1, 4)] +
                                        [eig_d[:][:, :, i].unsqueeze(-1) for i in range(1, 4)], dim=-1))
-            w_norm = w / torch.sum(w, dim=1, keepdim=True)
+            w_norm = w / (torch.sum(w, dim=1, keepdim=True) + EPS)
             #e1 = aggregate_NN(h, w1)
             #e2 = aggregate_NN(h, w2)
-            e = aggregate_NN(h, w)
+            e = aggregate_NN(h, w_norm)
 
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
