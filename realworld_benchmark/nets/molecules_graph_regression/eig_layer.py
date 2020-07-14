@@ -44,7 +44,7 @@ class EIGLayer(nn.Module):
                              out_size=out_features, layers=posttrans_layers, mid_activation='relu', last_activation='none')
         self.eigfilt1 = MLP(in_size=2, hidden_size=7, out_size=1, layers=3, mid_activation='relu', last_activation='none')
         self.eigfilt2 = MLP(in_size=2, hidden_size=7, out_size=1, layers=3, mid_activation='relu', last_activation='none')
-        self.eigfilt = MLP(in_size=6, hidden_size=7, out_size=1, layers=3, mid_activation='relu', last_activation='none')
+        self.eigfilt = MLP(in_size=6,  out_size=1, layers=2, last_activation='relu')
         self.avg_d = avg_d
 
     def pretrans_edges(self, edges):
@@ -70,9 +70,10 @@ class EIGLayer(nn.Module):
             #w2 = self.eigfilt2(torch.cat([eig_s[:, :, 2].unsqueeze(-1), eig_d[:][:, :, 2].unsqueeze(-1)], dim=-1))
             w = self.eigfilt(torch.cat([eig_s[:, :, i].unsqueeze(-1) for i in range(1, 4)] +
                                        [eig_d[:][:, :, i].unsqueeze(-1) for i in range(1, 4)], dim=-1))
+            w_norm = w / torch.sum(w, dim=1, keepdim=True)
             #e1 = aggregate_NN(h, w1)
             #e2 = aggregate_NN(h, w2)
-            e = aggregate_NN(h, w)
+            e = aggregate_NN(h, w_norm)
 
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
