@@ -180,7 +180,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     print("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
 
     for _ in range(10):
-        print('Sampled value is ', model.layers[1].eigfilt.forward(torch.cat([random.random() for i in range(6)])))
+        print('Sampled value is ', model.layers[1].eigfilt.forward(torch.Tensor([random.random() for i in range(6)])))
    # print('Value for ', (i - 10) / 10, (j - 10) / 10, ' is ', model.layers[1].eigfilt2.forward((i - 10) / 10, (j - 10) / 10))
 
     writer.close()
