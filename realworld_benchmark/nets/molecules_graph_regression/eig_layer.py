@@ -73,7 +73,7 @@ class EIGLayer(nn.Module):
             w_norm = w / torch.sum(w, dim=1, keepdim=True)
             #e1 = aggregate_NN(h, w1)
             #e2 = aggregate_NN(h, w2)
-            e = aggregate_NN(h, w_norm)
+            e = aggregate_NN(h, w)
 
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
