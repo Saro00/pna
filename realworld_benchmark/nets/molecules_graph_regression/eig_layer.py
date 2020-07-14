@@ -54,7 +54,7 @@ class EIGLayer(nn.Module):
         else:
             z2 = torch.cat([edges.src['h'], edges.dst['h']], dim=1)
 
-        return {'e': self.pretrans(z2), 'eig_s': edges.src['eig'], 'eig_d': edges.dst['eig']}
+        return {'e': edges.dst['h'], 'eig_s': edges.src['eig'], 'eig_d': edges.dst['eig']}
 
     def message_func(self, edges):
 
