@@ -76,7 +76,7 @@ class EIGTower(nn.Module):
 
         if self.NN_eig:
             #h = torch.cat([h, e1, e2], dim=1)
-            h = torch.cat([h, el], dim=1)
+            h = torch.cat([h, eb], dim=1)
 
         h = torch.cat([scale(h, D=D, avg_d=self.avg_d) for scale in self.scalers], dim=1)
         return {'h': h}
