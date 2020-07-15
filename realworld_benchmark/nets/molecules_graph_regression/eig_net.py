@@ -28,6 +28,7 @@ class EIGNet(nn.Module):
         self.towers = net_params['towers']
         self.divide_input_first = net_params['divide_input_first']
         self.divide_input_last = net_params['divide_input_last']
+        self.residual = net_params['residual']
         self.edge_feat = net_params['edge_feat']
         edge_dim = net_params['edge_dim']
         pretrans_layers = net_params['pretrans_layers']
