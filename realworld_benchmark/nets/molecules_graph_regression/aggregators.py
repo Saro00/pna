@@ -63,6 +63,6 @@ def aggregate_NN(h, eig_filt):
 
 AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_max, 'min': aggregate_min,
                'std': aggregate_std, 'var': aggregate_var, 'moment3': aggregate_moment_3, 'moment4': aggregate_moment_4,
-               'moment5': aggregate_moment_5,  'eig1-smooth': partial(aggregate_eig, eig_idx=1),
-               'eig2-smooth': partial(aggregate_eig, eig_idx=2), 'eig3-smooth': partial(aggregate_eig, eig_idx=3),
+               'moment5': aggregate_moment_5,  'eig1-smooth': partial(aggregate_eig, eig_idx=[1]),
+               'eig2-smooth': partial(aggregate_eig, eig_idx=[2]), 'eig3-smooth': partial(aggregate_eig, eig_idx=[3]),
                'aggregate_NN': aggregate_NN}
