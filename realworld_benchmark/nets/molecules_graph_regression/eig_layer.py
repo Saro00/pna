@@ -64,17 +64,19 @@ class EIGTower(nn.Module):
                                         torch.mul(eig_d[:, :, 1:4], torch.sign(eig_s[:, :, 1:4])) ], dim=-1))
             ws = torch.sigmoid(self.eigfilt(torch.cat([eig_s[:, :, 1:4], eig_d[:, :, 1:4]], dim=-1)))
             wb = self.eigfilter(torch.abs(eig_s[:, :, 1:4] - eig_d[:, :, 1:4]))
+            wl = self.eigfilt(torch.cat([eig_s[:, :, 1:4], eig_d[:, :, 1:4]], dim=-1))
             w_norm = w / (torch.sum(w, dim=1, keepdim=True) + EPS)
             #e1 = aggregate_NN(h, w1)
             #e2 = aggregate_NN(h, w2)
             e = aggregate_NN(h, ws)
             eb = aggregate_NN(h, wb)
+            el = aggregate_NN(h, wl)
 
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
         if self.NN_eig:
             #h = torch.cat([h, e1, e2], dim=1)
-            h = torch.cat([h, eb], dim=1)
+            h = torch.cat([h, el], dim=1)
 
         h = torch.cat([scale(h, D=D, avg_d=self.avg_d) for scale in self.scalers], dim=1)
         return {'h': h}
