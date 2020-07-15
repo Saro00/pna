@@ -249,7 +249,7 @@ def main():
     parser.add_argument('--NN_eig', action='store_true', default=False, help='NN eig aggr.')
     parser.add_argument('--towers', type=int, default=5, help='Towers to use.')
     parser.add_argument('--divide_input_first', type=bool, help='Whether to divide the input in first layer.')
-    parser.add_argument('--divide_input_middle', type=bool, help='Whether to divide the input in middle layers.')
+    parser.add_argument('--divide_input_last', type=bool, help='Whether to divide the input in last layers.')
     parser.add_argument('--gru', type=bool, help='Whether to use gru.')
     parser.add_argument('--edge_dim', type=int, help='Size of edge embeddings.')
     parser.add_argument('--pretrans_layers', type=int, help='pretrans_layers.')
@@ -353,6 +353,12 @@ def main():
         net_params['aggregators'] = args.aggregators
     if args.scalers is not None:
         net_params['scalers'] = args.scalers
+    if args.towers is not None:
+        net_params['towers'] = args.towers
+    if args.divide_input_first is not None:
+        net_params['divide_input_first'] = args.divide_input_first
+    if args.divide_input_last is not None:
+        net_params['divide_input_last'] = args.divide_input_last
     if args.NN_eig is not None:
         net_params['NN_eig'] = args.NN_eig
     if args.gru is not None:
