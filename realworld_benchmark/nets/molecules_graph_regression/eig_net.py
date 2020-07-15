@@ -25,6 +25,9 @@ class EIGNet(nn.Module):
         self.scalers = net_params['scalers']
         self.NN_eig = net_params['NN_eig']
         self.avg_d = net_params['avg_d']
+        self.towers = net_params['towers']
+        self.divide_input_first = net_params['divide_input_first']
+        self.divide_input_middle = net_params['divide_input_middle']
         self.edge_feat = net_params['edge_feat']
         edge_dim = net_params['edge_dim']
         pretrans_layers = net_params['pretrans_layers']
@@ -39,18 +42,19 @@ class EIGNet(nn.Module):
         if self.edge_feat:
             self.embedding_e = nn.Embedding(num_bond_type, edge_dim)
 
-        self.layers = nn.ModuleList([EIGLayer(in_features=hidden_dim, out_features=hidden_dim, dropout=dropout,
+        self.layers = nn.ModuleList([EIGLayer(in_dim=hidden_dim, out_dim=hidden_dim, dropout=dropout,
                                               graph_norm=self.graph_norm, batch_norm=self.batch_norm,
-                                              aggregators=self.aggregators, scalers=self.scalers, NN_eig=self.NN_eig,
-                                              avg_d=self.avg_d, edge_features=self.edge_feat,
-                                              edge_dim=edge_dim,
+                                              residual=self.residual, aggregators=self.aggregators, scalers=self.scalers,
+                                              avg_d=self.avg_d, towers=self.towers, edge_features=self.edge_feat, NN_eig = self.NN_eig,
+                                              edge_dim=edge_dim, divide_input=self.divide_input_first,
                                               pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers) for _
                                      in range(n_layers - 1)])
         self.layers.append(EIGLayer(in_features=hidden_dim, out_features=out_dim, dropout=dropout,
                                     graph_norm=self.graph_norm, batch_norm=self.batch_norm,
-                                    aggregators=self.aggregators, scalers=self.scalers, NN_eig=self.NN_eig,
-                                    avg_d=self.avg_d,
-                                    edge_features=self.edge_feat, edge_dim=edge_dim,
+                                    residual=self.residual, aggregators=self.aggregators, scalers=self.scalers,
+                                    avg_d=self.avg_d, towers=self.towers, edge_features=self.edge_feat,
+                                    NN_eig=self.NN_eig,
+                                    edge_dim=edge_dim, divide_input=self.divide_input_first,
                                     pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers))
 
         if self.gru_enable:

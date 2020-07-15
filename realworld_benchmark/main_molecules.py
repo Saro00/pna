@@ -243,10 +243,13 @@ def main():
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--expid', help='Experiment id.')
 
-    # pna params
+    # eig params
     parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
     parser.add_argument('--scalers', type=str, help='Scalers to use.')
     parser.add_argument('--NN_eig', action='store_true', default=False, help='NN eig aggr.')
+    parser.add_argument('--towers', type=int, default=5, help='Towers to use.')
+    parser.add_argument('--divide_input_first', type=bool, help='Whether to divide the input in first layer.')
+    parser.add_argument('--divide_input_middle', type=bool, help='Whether to divide the input in middle layers.')
     parser.add_argument('--gru', type=bool, help='Whether to use gru.')
     parser.add_argument('--edge_dim', type=int, help='Size of edge embeddings.')
     parser.add_argument('--pretrans_layers', type=int, help='pretrans_layers.')
