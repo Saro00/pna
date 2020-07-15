@@ -39,7 +39,7 @@ class EIGTower(nn.Module):
         self.avg_d = avg_d
         self.eigfilt = MLP(in_size=6, hidden_size=3, out_size=1, layers=3, mid_activation='relu', last_activation='Sigmoid')
         self.eigfiltbis = nn.Linear(6, 1, bias=True)
-        self.eigfilter = MLP(in_size=3,hidden_size=3, out_size=1, mid_activation='relu', last_activation='none')
+        self.eigfilter = MLP(in_size=3, hidden_size=3, out_size=1, layers=3,  mid_activation='relu', last_activation='none')
 
     def pretrans_edges(self, edges):
         if self.edge_features:
@@ -63,7 +63,7 @@ class EIGTower(nn.Module):
             w = self.eigfilt(torch.cat([torch.mul(eig_s[:, :, 1:4], torch.sign(eig_s[:, :, 1:4])),
                                         torch.mul(eig_d[:, :, 1:4], torch.sign(eig_s[:, :, 1:4])) ], dim=-1))
             ws = torch.sigmoid(self.eigfilt(torch.cat([eig_s[:, :, 1:4], eig_d[:, :, 1:4]], dim=-1)))
-            wb = self.eigfilt(torch.abs(eig_s[:, :, 1:4] - eig_d[:, :, 1:4]))
+            wb = self.eigfilter(torch.abs(eig_s[:, :, 1:4] - eig_d[:, :, 1:4]))
             w_norm = w / (torch.sum(w, dim=1, keepdim=True) + EPS)
             #e1 = aggregate_NN(h, w1)
             #e2 = aggregate_NN(h, w2)
