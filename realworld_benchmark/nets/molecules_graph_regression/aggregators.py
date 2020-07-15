@@ -55,6 +55,12 @@ def aggregate_eig(h, eig_s, eig_d, eig_idx):
     #check right unsqueeze...
     h_mod = torch.mul(h, (torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])/(torch.sum(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]), dim=1, keepdim=True) + EPS)).unsqueeze(-1))
     return torch.sum(h_mod, dim=1)
+
+def aggregate_eig_bis(h, eig_s, eig_d, eig_idx):
+    #check right unsqueeze...
+    h_mod = torch.mul(h, (eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]/(torch.sum(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx], dim=1, keepdim=True) + EPS)).unsqueeze(-1))
+    return torch.abs(torch.sum(h_mod, dim=1))
+
 def aggregate_NN(h, eig_filt):
     h_mod = torch.mul(h, eig_filt)
     return torch.sum(h_mod, dim=1)
@@ -65,4 +71,5 @@ AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_ma
                'std': aggregate_std, 'var': aggregate_var, 'moment3': aggregate_moment_3, 'moment4': aggregate_moment_4,
                'moment5': aggregate_moment_5,  'eig1-smooth': partial(aggregate_eig, eig_idx=1),
                'eig2-smooth': partial(aggregate_eig, eig_idx=2), 'eig3-smooth': partial(aggregate_eig, eig_idx=3),
-               'aggregate_NN': aggregate_NN}
+               'eig1-dx': partial(aggregate_eig_bis, eig_idx=1), 'eig2-dx': partial(aggregate_eig_bis, eig_idx=2),
+               'eig3-dx': partial(aggregate_eig_bis, eig_idx=3), 'aggregate_NN': aggregate_NN}
