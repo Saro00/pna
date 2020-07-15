@@ -136,7 +136,7 @@ class EIGLayer(nn.Module):
         # convolution
         self.towers = nn.ModuleList()
         for _ in range(towers):
-            self.towers.append(PNATower(in_dim=self.input_tower, out_dim=self.output_tower, aggregators=aggregators,
+            self.towers.append(EIGTower(in_dim=self.input_tower, out_dim=self.output_tower, aggregators=aggregators,
                                         scalers=scalers, NN_eig=self.NN_eig, avg_d=avg_d, pretrans_layers=pretrans_layers,
                                         posttrans_layers=posttrans_layers, batch_norm=batch_norm, dropout=dropout,
                                         graph_norm=graph_norm, edge_features=edge_features, edge_dim=edge_dim))
