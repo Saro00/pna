@@ -60,17 +60,17 @@ class EIGTower(nn.Module):
         if self.NN_eig:
             #w1 = self.eigfilt1(torch.cat([eig_s[:, :, 1].unsqueeze(-1), eig_d[:][:, :, 1].unsqueeze(-1)], dim=-1))
             #w2 = self.eigfilt2(torch.cat([eig_s[:, :, 2].unsqueeze(-1), eig_d[:][:, :, 2].unsqueeze(-1)], dim=-1))
-            w = self.eigfilt(torch.cat([torch.mul(eig_s[:, :, 1:4], torch.sign(eig_s[:, :, 1:4])),
+            #w = self.eigfilt(torch.cat([torch.mul(eig_s[:, :, 1:4], torch.sign(eig_s[:, :, 1:4])),
                                         torch.mul(eig_d[:, :, 1:4], torch.sign(eig_s[:, :, 1:4])) ], dim=-1))
-            ws = torch.sigmoid(self.eigfilt(torch.cat([eig_s[:, :, 1:4], eig_d[:, :, 1:4]], dim=-1)))
+            #ws = torch.sigmoid(self.eigfilt(torch.cat([eig_s[:, :, 1:4], eig_d[:, :, 1:4]], dim=-1)))
             wb = self.eigfilter(torch.abs(eig_s[:, :, 1:4] - eig_d[:, :, 1:4]))
-            wl = self.eigfilt(torch.cat([eig_s[:, :, 1:4], eig_d[:, :, 1:4]], dim=-1))
-            w_norm = w / (torch.sum(w, dim=1, keepdim=True) + EPS)
+            #wl = self.eigfilt(torch.cat([eig_s[:, :, 1:4], eig_d[:, :, 1:4]], dim=-1))
+            #w_norm = w / (torch.sum(w, dim=1, keepdim=True) + EPS)
             #e1 = aggregate_NN(h, w1)
             #e2 = aggregate_NN(h, w2)
-            e = aggregate_NN(h, ws)
+            #e = aggregate_NN(h, ws)
             eb = aggregate_NN(h, wb)
-            el = aggregate_NN(h, wl)
+            #el = aggregate_NN(h, wl)
 
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
