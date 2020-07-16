@@ -39,7 +39,7 @@ class EIGTower(nn.Module):
         self.avg_d = avg_d
         self.eigfilt = MLP(in_size=6, hidden_size=3, out_size=1, layers=3, mid_activation='relu', last_activation='Sigmoid')
         self.eigfiltbis = nn.Linear(6, 1, bias=True)
-        self.eigfilter = MLP(in_size=3, hidden_size=3, out_size=1, layers=3,  mid_activation='relu', last_activation='none')
+        self.eigfilter = MLP(in_size=3, hidden_size=2, out_size=1, layers=3,  mid_activation='relu', last_activation='Sigmoid')
 
     def pretrans_edges(self, edges):
         if self.edge_features:
