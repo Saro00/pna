@@ -30,10 +30,9 @@ class DotDict(dict):
 """
     IMPORTING CUSTOM MODULES/METHODS
 """
-from realworld_benchmark.nets.superpixels_graph_classification.eig_net import PNANet
-from realworld_benchmark.data.superpixels import SuperPixDataset  # import dataset
-from realworld_benchmark.train.train_superpixels_graph_classification import train_epoch, \
-    evaluate_network  # import train functions
+from nets.superpixels_graph_classification.eig_net import EIGNet
+from data.superpixels import SuperPixDataset  # import dataset
+from train.train_superpixels_graph_classification import train_epoch, evaluate_network
 
 """
     GPU Setup
@@ -59,7 +58,7 @@ def gpu_setup(use_gpu, gpu_id):
 
 
 def view_model_param(MODEL_NAME, net_params):
-    model = PNANet(net_params)
+    model = EIGNet(net_params)
     total_param = 0
     print("MODEL DETAILS:\n")
     # print(model)
@@ -105,7 +104,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     print("Validation Graphs: ", len(valset))
     print("Test Graphs: ", len(testset))
 
-    model = PNANet(net_params)
+    model = EIGNet(net_params)
     model = model.to(device)
 
     optimizer = optim.Adam(model.parameters(), lr=params['init_lr'], weight_decay=params['weight_decay'])
@@ -251,9 +250,10 @@ def main():
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--expid', help='Experiment id.')
 
-    # pna params
+    # eig params
     parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
     parser.add_argument('--scalers', type=str, help='Scalers to use.')
+    parser.add_argument('--NN_eig', action='store_true', default=False, help='NN eig aggr.')
     parser.add_argument('--towers', type=int, help='Towers to use.')
     parser.add_argument('--divide_input_first', type=bool, help='Whether to divide the input in first layers.')
     parser.add_argument('--divide_input_last', type=bool, help='Whether to divide the input in last layer.')
@@ -368,6 +368,8 @@ def main():
         net_params['divide_input_first'] = args.divide_input_first
     if args.divide_input_last is not None:
         net_params['divide_input_last'] = args.divide_input_last
+    if args.NN_eig is not None:
+        net_params['NN_eig'] = args.NN_eig
     if args.gru is not None:
         net_params['gru'] = args.gru
     if args.edge_dim is not None:
@@ -383,7 +385,7 @@ def main():
     num_classes = len(np.unique(np.array(dataset.train[:][1])))
     net_params['n_classes'] = num_classes
 
-    if MODEL_NAME == 'PNA':
+    if MODEL_NAME == 'EIG':
         D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
                        dataset.train.graph_lists])
         net_params['avg_d'] = dict(lin=torch.mean(D),

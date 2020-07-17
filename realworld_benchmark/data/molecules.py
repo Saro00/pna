@@ -72,10 +72,9 @@ class MoleculeDGL(torch.utils.data.Dataset):
             self.graph_labels.append(molecule['logP_SA_cycle_normalized'])
 
     def get_eig(self):
-        a = True
         for g in self.graph_lists:
             A = g.adjacency_matrix().to_dense()
-            g.ndata['eig'] = get_k_lowest_eig(A, 9)
+            g.ndata['eig'] = get_k_lowest_eig(A, 5)
 
 
     def __len__(self):
