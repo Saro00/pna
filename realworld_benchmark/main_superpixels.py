@@ -385,10 +385,9 @@ def main():
     num_classes = len(np.unique(np.array(dataset.train[:][1])))
     net_params['n_classes'] = num_classes
 
-    if MODEL_NAME == 'EIG':
-        D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
+    D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
                        dataset.train.graph_lists])
-        net_params['avg_d'] = dict(lin=torch.mean(D),
+    net_params['avg_d'] = dict(lin=torch.mean(D),
                                    exp=torch.mean(torch.exp(torch.div(1, D)) - 1),
                                    log=torch.mean(torch.log(D + 1)))
 
