@@ -72,5 +72,6 @@ AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_ma
                'std': aggregate_std, 'var': aggregate_var, 'moment3': aggregate_moment_3, 'moment4': aggregate_moment_4,
                'moment5': aggregate_moment_5,  'eig1-smooth': partial(aggregate_eig, eig_idx=1),
                'eig2-smooth': partial(aggregate_eig, eig_idx=2), 'eig3-smooth': partial(aggregate_eig, eig_idx=3),
+                'eig4-smooth': partial(aggregate_eig, eig_idx=4),'eig5-smooth': partial(aggregate_eig, eig_idx=5),
                'eig1-dx': partial(aggregate_eig_bis, eig_idx=1), 'eig2-dx': partial(aggregate_eig_bis, eig_idx=2),
                'eig3-dx': partial(aggregate_eig_bis, eig_idx=3), 'aggregate_NN': aggregate_NN}
