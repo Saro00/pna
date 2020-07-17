@@ -185,9 +185,8 @@ class DGLFormDataset(torch.utils.data.Dataset):
         self.lists = lists
         self.graph_lists = lists[0]
         self.graph_labels = lists[1]
-        self._get_eig()
 
-    def _get_eig(self):
+    def get_eig(self):
         for g in graph_lists[0]:
             A = g.adjacency_matrix().to_dense()
             g.ndata['eig'] = get_k_lowest_eig(A, 5)
@@ -279,8 +278,11 @@ class SuperPixDataset(torch.utils.data.Dataset):
         data_dir = 'data/'
         with open(data_dir+name+'.pkl',"rb") as f:
             f = pickle.load(f)
+            f[0].get_eig()
             self.train = f[0]
+            f[1].get_eig()
             self.val = f[1]
+            f[2].get_eig()
             self.test = f[2]
         print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
         print("[I] Finished loading.")
