@@ -137,7 +137,9 @@ class SuperPixDGL(torch.utils.data.Dataset):
         for index in range(len(self.sp_data)):
             g = dgl.DGLGraph()
             g.add_nodes(self.node_features[index].shape[0])
-            g.ndata['feat'] = torch.Tensor(self.node_features[index]).half() 
+            g.ndata['feat'] = torch.Tensor(self.node_features[index]).half()
+            A = g.adjacency_matrix().to_dense()
+            g.ndata['eig'] = get_k_lowest_eig(A, 5)
 
             for src, dsts in enumerate(self.edges_lists[index]):
                 # handling for 1 node where the self loop would be the only edge
@@ -153,11 +155,6 @@ class SuperPixDGL(torch.utils.data.Dataset):
             g.edata['feat'] = torch.Tensor(self.edge_features[index]).unsqueeze(1).half()  # NEW 
 
             self.graph_lists.append(g)
-
-    def get_eig(self):
-        for g in self.graph_lists:
-            A = g.adjacency_matrix().to_dense()
-            g.ndata['eig'] = get_k_lowest_eig(A, 5)
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
@@ -277,12 +274,8 @@ class SuperPixDataset(torch.utils.data.Dataset):
         data_dir = 'data/'
         with open(data_dir+name+'.pkl',"rb") as f:
             f = pickle.load(f)
-            print(f[0].lists)
-            f[0].get_eig()
             self.train = f[0]
-            f[1].get_eig()
             self.val = f[1]
-            f[2].get_eig()
             self.test = f[2]
         print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
         print("[I] Finished loading.")
