@@ -380,7 +380,7 @@ def main():
                                    exp=torch.mean(torch.exp(torch.div(1, D)) - 1),
                                    log=torch.mean(torch.log(D + 1)))
 
-    DATASET_NAME='EIG'
+    MODEL_NAME='EIG'
 
     root_log_dir = out_dir + 'logs/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(
         config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
