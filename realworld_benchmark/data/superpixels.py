@@ -138,8 +138,7 @@ class SuperPixDGL(torch.utils.data.Dataset):
             g = dgl.DGLGraph()
             g.add_nodes(self.node_features[index].shape[0])
             g.ndata['feat'] = torch.Tensor(self.node_features[index]).half()
-            A = g.adjacency_matrix().to_dense()
-            g.ndata['eig'] = get_k_lowest_eig(A, 5)
+
 
             for src, dsts in enumerate(self.edges_lists[index]):
                 # handling for 1 node where the self loop would be the only edge
@@ -186,6 +185,12 @@ class DGLFormDataset(torch.utils.data.Dataset):
         self.lists = lists
         self.graph_lists = lists[0]
         self.graph_labels = lists[1]
+        self._get_eig()
+
+    def _get_eig(self):
+        for g in graph_lists[0]:
+            A = g.adjacency_matrix().to_dense()
+            g.ndata['eig'] = get_k_lowest_eig(A, 5)
 
     def __getitem__(self, index):
         return tuple(li[index] for li in self.lists)
