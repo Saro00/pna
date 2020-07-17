@@ -155,6 +155,11 @@ class SuperPixDGL(torch.utils.data.Dataset):
 
             self.graph_lists.append(g)
 
+    def get_eigI(self):
+        for g in self.graph_lists:
+            A = g.adjacency_matrix().to_dense()
+            g.ndata['eig'] = get_k_lowest_eig(A, 5)
+
     def __len__(self):
         """Return the number of graphs in the dataset."""
         return self.n_samples
