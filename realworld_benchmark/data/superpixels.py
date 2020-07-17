@@ -16,7 +16,7 @@ import time
 
 import csv
 from sklearn.model_selection import StratifiedShuffleSplit
-
+EPS = 1e-5
 
 
 
