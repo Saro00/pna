@@ -1,8 +1,7 @@
 import torch.nn as nn
 import dgl
-import sys
 from nets.gru import GRU
-from .eig_layer import EIGLayer
+from nets.eig_layer import EIGLayer
 from nets.mlp_readout_layer import MLPReadout
 
 

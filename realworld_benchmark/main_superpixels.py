@@ -31,7 +31,7 @@ class DotDict(dict):
 """
     IMPORTING CUSTOM MODULES/METHODS
 """
-from realworld_benchmark.nets.superpixels_graph_classification.pna_net import PNANet
+from realworld_benchmark.nets.superpixels_graph_classification.eig_net import PNANet
 from realworld_benchmark.data.superpixels import SuperPixDataset  # import dataset
 from realworld_benchmark.train.train_superpixels_graph_classification import train_epoch, \
     evaluate_network  # import train functions
