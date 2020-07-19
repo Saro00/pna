@@ -43,7 +43,7 @@ class EIGTower(nn.Module):
 
     def reset(self):
         for layer in self.eigfilt.fully_connected:
-            torch.nn.init.xavier_uniform(layer.weight)
+            layer.reset_parameters()
 
     def pretrans_edges(self, edges):
         if self.edge_features:
