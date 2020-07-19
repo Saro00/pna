@@ -121,8 +121,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     try:
         with tqdm(range(params['epochs']), unit='epoch') as t:
             for epoch in t:
-                print(epoch)
-                if epoch == 10:
+                if epoch == -1:
                     model.reset_params()
 
 
@@ -167,7 +166,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                     break
 
                 for _ in range(10):
-                    print('Sampled value is ', model.layers[1].towers[0].eigfilter(torch.FloatTensor([random.random() for i in range(2)]).to('cuda')))
+                    print('Sampled value is ', model.layers[1].towers[0].eigfiltbis(torch.FloatTensor([random.random() for i in range(4)]).to('cuda')))
 
     except KeyboardInterrupt:
         print('-' * 89)
@@ -186,6 +185,10 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     print("Test MAE: {:.4f}".format(test_mae))
     print("TOTAL TIME TAKEN: {:.4f}s".format(time.time() - t0))
     print("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
+    for i, layer in enumerate(model.layers):
+        for j, tower in enumerate(layer.towers):
+            print('For layer ', i, ' tower ', j, ' the weights are ', tower.eigfiltbis.weight)
+            print('For layer ', i, ' tower ', j, ' the bias are ', tower.eigfiltbis.bias)
 
 
     writer.close()
