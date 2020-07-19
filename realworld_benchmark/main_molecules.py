@@ -165,7 +165,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                     print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
                     break
 
-                for _ in range(10):
+                for _ in range(5):
                     print('Sampled value is ', model.layers[1].towers[0].eigfiltbis(torch.FloatTensor([random.random() for i in range(4)]).to('cuda')))
 
     except KeyboardInterrupt:
@@ -187,8 +187,8 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     print("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
     for i, layer in enumerate(model.layers):
         for j, tower in enumerate(layer.towers):
-            print('For layer ', i, ' tower ', j, ' the weights are ', tower.eigfiltbis.weight)
-            print('For layer ', i, ' tower ', j, ' the bias are ', tower.eigfiltbis.bias)
+            print('For layer ', i, ' tower ', j, ' the weights are ', tower.bias)
+            print('For layer ', i, ' tower ', j, ' the bias are ', tower.bias)
 
 
     writer.close()
