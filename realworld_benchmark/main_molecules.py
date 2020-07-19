@@ -122,7 +122,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
         with tqdm(range(params['epochs']), unit='epoch') as t:
             for epoch in t:
                 print(epoch)
-                if epoch == 15:
+                if epoch == 5:
                     model.reset_params()
 
 
