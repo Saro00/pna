@@ -1,5 +1,6 @@
 import torch
 from functools import partial
+from
 
 EPS = 1e-5
 
@@ -53,7 +54,7 @@ def aggregate_sum(self, h, eig_s, eig_d):
 
 def aggregate_eig(self, h, eig_s, eig_d, eig_idx):
     #check right unsqueeze...
-    h_mod = torch.mul(h, ((torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]) + self.bias)/(torch.sum((torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]) + self.bias), dim=1, keepdim=True) + EPS)).unsqueeze(-1))
+    h_mod = torch.mul(h, (torch.nn.Softmax(1)(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]))).unsqueeze(-1))
     return torch.sum(h_mod, dim=1)
 
 def aggregate_eig_bis(self, h, eig_s, eig_d, eig_idx):
