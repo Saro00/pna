@@ -41,6 +41,9 @@ class EIGTower(nn.Module):
         self.eigfiltbis = nn.Linear(4, 1, bias=True)
         self.eigfilter = MLP(in_size=3, hidden_size=2, out_size=1, layers=3,  mid_activation='relu', last_activation='none')
 
+    def reset(self):
+        torch.nn.init.xavier_uniform(eigfilt.weight)
+
     def pretrans_edges(self, edges):
         if self.edge_features:
             z2 = torch.cat([edges.src['h'], edges.dst['h'], edges.data['ef']], dim=1)
@@ -60,24 +63,24 @@ class EIGTower(nn.Module):
         if self.NN_eig:
             #w1 = self.eigfilt1(torch.cat([eig_s[:, :, 1].unsqueeze(-1), eig_d[:][:, :, 1].unsqueeze(-1)], dim=-1))
             #w2 = self.eigfilt2(torch.cat([eig_s[:, :, 2].unsqueeze(-1), eig_d[:][:, :, 2].unsqueeze(-1)], dim=-1))
-            #w = self.eigfilt(torch.cat([torch.mul(eig_s[:, :, 1:3], torch.sign(eig_s[:, :, 1:3])),
-                                        #torch.mul(eig_d[:, :, 1:3], torch.sign(eig_s[:, :, 1:3])) ], dim=-1))
+            w = self.eigfilt(torch.cat([torch.mul(eig_s[:, :, 1:3], torch.sign(eig_s[:, :, 1:3])),
+                                        torch.mul(eig_d[:, :, 1:3], torch.sign(eig_s[:, :, 1:3])) ], dim=-1))
             #ws = torch.sigmoid(self.eigfilt(torch.cat([eig_s[:, :, 1:4], eig_d[:, :, 1:4]], dim=-1)))
             #wb = self.eigfilter(torch.abs(eig_s[:, :, 1:4] - eig_d[:, :, 1:4]))
-            wl = self.eigfiltbis(torch.cat([torch.mul(eig_s[:, :, 1:3], torch.sign(eig_s[:, :, 1:3])),
-                                        torch.mul(eig_d[:, :, 1:3], torch.sign(eig_s[:, :, 1:3])) ], dim=-1))
+            #wl = self.eigfiltbis(torch.cat([torch.mul(eig_s[:, :, 1:3], torch.sign(eig_s[:, :, 1:3])),
+                                        #torch.mul(eig_d[:, :, 1:3], torch.sign(eig_s[:, :, 1:3])) ], dim=-1))
             #w_norm = w / (torch.sum(w, dim=1, keepdim=True) + EPS)
             #e1 = aggregate_NN(h, w1)
             #e2 = aggregate_NN(h, w2)
-            #e = aggregate_NN(h, w)
+            e = aggregate_NN(h, w)
             #eb = aggregate_NN(h, wb)
-            el = aggregate_NN(h, wl)
+            #el = aggregate_NN(h, wl)
 
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
         if self.NN_eig:
             #h = torch.cat([h, e1, e2], dim=1)
-            h = torch.cat([h, el], dim=1)
+            h = torch.cat([h, e], dim=1)
 
         h = torch.cat([scale(h, D=D, avg_d=self.avg_d) for scale in self.scalers], dim=1)
         return {'h': h}
@@ -151,6 +154,10 @@ class EIGLayer(nn.Module):
                                         graph_norm=graph_norm, edge_features=edge_features, edge_dim=edge_dim))
         # mixing network
         self.mixing_network = FCLayer(out_dim, out_dim, activation='LeakyReLU')
+
+    def reset_params(self):
+        for tower in self.towers:
+            tower.reset()
 
     def forward(self, g, h, e, snorm_n):
         h_in = h  # for residual connection
