@@ -38,7 +38,7 @@ class EIGTower(nn.Module):
                              out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation='none')
         self.avg_d = avg_d
         self.eigfilt = MLP(in_size=4, hidden_size=3, out_size=1, layers=3, mid_activation='relu', last_activation='none')
-        self.eigfiltbis = nn.Linear(6, 1, bias=True)
+        self.eigfiltbis = nn.Linear(4, 1, bias=True)
         self.eigfilter = MLP(in_size=3, hidden_size=2, out_size=1, layers=3,  mid_activation='relu', last_activation='none')
 
     def pretrans_edges(self, edges):
@@ -63,20 +63,21 @@ class EIGTower(nn.Module):
             #w = self.eigfilt(torch.cat([torch.mul(eig_s[:, :, 1:3], torch.sign(eig_s[:, :, 1:3])),
                                         #torch.mul(eig_d[:, :, 1:3], torch.sign(eig_s[:, :, 1:3])) ], dim=-1))
             #ws = torch.sigmoid(self.eigfilt(torch.cat([eig_s[:, :, 1:4], eig_d[:, :, 1:4]], dim=-1)))
-            wb = self.eigfilter(torch.abs(eig_s[:, :, 1:4] - eig_d[:, :, 1:4]))
-            #wl = self.eigfilt(torch.cat([eig_s[:, :, 1:4], eig_d[:, :, 1:4]], dim=-1))
+            #wb = self.eigfilter(torch.abs(eig_s[:, :, 1:4] - eig_d[:, :, 1:4]))
+            wl = self.eigfiltbis(torch.cat([torch.mul(eig_s[:, :, 1:3], torch.sign(eig_s[:, :, 1:3])),
+                                        torch.mul(eig_d[:, :, 1:3], torch.sign(eig_s[:, :, 1:3])) ], dim=-1))
             #w_norm = w / (torch.sum(w, dim=1, keepdim=True) + EPS)
             #e1 = aggregate_NN(h, w1)
             #e2 = aggregate_NN(h, w2)
             #e = aggregate_NN(h, w)
-            eb = aggregate_NN(h, wb)
-            #el = aggregate_NN(h, wl)
+            #eb = aggregate_NN(h, wb)
+            el = aggregate_NN(h, wl)
 
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
         if self.NN_eig:
             #h = torch.cat([h, e1, e2], dim=1)
-            h = torch.cat([h, eb], dim=1)
+            h = torch.cat([h, el], dim=1)
 
         h = torch.cat([scale(h, D=D, avg_d=self.avg_d) for scale in self.scalers], dim=1)
         return {'h': h}
