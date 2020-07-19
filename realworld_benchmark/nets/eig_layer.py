@@ -42,7 +42,8 @@ class EIGTower(nn.Module):
         self.eigfilter = MLP(in_size=3, hidden_size=2, out_size=1, layers=3,  mid_activation='relu', last_activation='none')
 
     def reset(self):
-        torch.nn.init.xavier_uniform(self.eigfilt.weight)
+        for layer in self.eigfilt.fully_connected:
+            torch.nn.init.xavier_uniform(layer.weight)
 
     def pretrans_edges(self, edges):
         if self.edge_features:
