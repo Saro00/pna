@@ -163,7 +163,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                     break
 
                 for _ in range(10):
-                    print('Sampled value is ', model.layers[1].towers[0].eigfilt(torch.FloatTensor([random.random() for i in range(4)]).to('cuda')))
+                    print('Sampled value is ', model.layers[1].towers[0].eigfilter(torch.FloatTensor([random.random() for i in range(3)]).to('cuda')))
 
     except KeyboardInterrupt:
         print('-' * 89)
