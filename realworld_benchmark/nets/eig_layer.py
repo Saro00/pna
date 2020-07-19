@@ -37,6 +37,7 @@ class EIGTower(nn.Module):
                              hidden_size=out_dim,
                              out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation='none')
         self.avg_d = avg_d
+        self.bias = nn.Parameter(torch.ones(1))
         self.eigfilt = MLP(in_size=4, hidden_size=3, out_size=1, layers=3, mid_activation='relu', last_activation='none')
         self.eigfiltbis = nn.Linear(4, 1, bias=True)
         self.eigfilter = MLP(in_size=2, hidden_size=2, out_size=1, layers=3,  mid_activation='relu', last_activation='none')
@@ -77,6 +78,7 @@ class EIGTower(nn.Module):
             #eb = aggregate_NN(h, wb)
             el = aggregate_NN(h, wl)
 
+        eig_s = eig_s + self.bias
         h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
         if self.NN_eig:
