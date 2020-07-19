@@ -78,8 +78,8 @@ class EIGTower(nn.Module):
             #eb = aggregate_NN(h, wb)
             el = aggregate_NN(h, wl)
 
-        eig_s = eig_s + self.bias
-        h = torch.cat([aggregate(h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
+
+        h = torch.cat([aggregate(self, h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
 
         if self.NN_eig:
             #h = torch.cat([h, e1, e2], dim=1)
