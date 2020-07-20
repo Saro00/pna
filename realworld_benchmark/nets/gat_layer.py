@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from dgl.nn.pytorch import GATConv
+from .GATConvEIG import GATConv
 
 """
     GAT: Graph Attention Network
