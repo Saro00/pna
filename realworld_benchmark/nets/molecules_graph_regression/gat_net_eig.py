@@ -11,7 +11,7 @@ from nets.mlp_readout_layer import MLPReadout
 """
 
 
-class GATNet(nn.Module):
+class GATNetEIG(nn.Module):
     def __init__(self, net_params):
         super().__init__()
         num_atom_type = net_params['num_atom_type']
