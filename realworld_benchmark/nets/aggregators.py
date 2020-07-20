@@ -1,6 +1,7 @@
 import torch
 from functools import partial
 
+
 EPS = 1e-5
 
 
@@ -52,18 +53,20 @@ def aggregate_sum(self, h, eig_s, eig_d):
     return torch.sum(h, dim=1)
 
 def aggregate_eig(self, h, eig_s, eig_d, eig_idx):
-    #check right unsqueeze...
-    h_mod = torch.mul(h, (torch.nn.Softmax(1)(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]))).unsqueeze(-1))
+    h_mod = torch.mul(h, (torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])/
+                      (torch.sum(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]), keepdim=True, dim=1))).unsqueeze(-1))
     return torch.sum(h_mod, dim=1)
 
-def aggregate_eig_bis(self, h, eig_s, eig_d, eig_idx):
-    #check right unsqueeze...
-    h_mod = torch.mul(h, torch.relu(torch.mul(torch.sign(eig_s[:, :, eig_idx]).unsqueeze(-1),
-            ((eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])/(torch.sum(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx], dim=1, keepdim=True) + EPS)).unsqueeze(-1))))
+def aggregate_eig_softmax(self, h, eig_s, eig_d, eig_idx):
+    h_mod = torch.mul(h, (torch.nn.Softmax(1)(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])).unsqueeze(-1))
+    return torch.sum(h_mod, dim=1)
+
+def aggregate_eig_dx(self, h, eig_s, eig_d, eig_idx):
+    h_mod = torch.mul(h, torch.abs((eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])/
+                      (torch.sum(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx], keepdim=True, dim=1))).unsqueeze(-1))
     return torch.sum(h_mod, dim=1)
 
 def aggregate_eig_bis2(self, h, eig_s, eig_d, eig_idx):
-    #check right unsqueeze...
     h_mod = torch.mul(h, torch.relu(-torch.mul(torch.sign(eig_s[:, :, eig_idx]).unsqueeze(-1),
             ((eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])/(torch.sum(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx], dim=1, keepdim=True) + EPS)).unsqueeze(-1))))
     return torch.sum(h_mod, dim=1)
@@ -79,6 +82,8 @@ AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_ma
                'moment5': aggregate_moment_5,  'eig1-smooth': partial(aggregate_eig, eig_idx=1),
                'eig2-smooth': partial(aggregate_eig, eig_idx=2), 'eig3-smooth': partial(aggregate_eig, eig_idx=3),
                 'eig4-smooth': partial(aggregate_eig, eig_idx=4),'eig5-smooth': partial(aggregate_eig, eig_idx=5),
-                'eig1-up' : partial(aggregate_eig_bis, eig_idx=1), 'eig2-up' : partial(aggregate_eig_bis, eig_idx=2),
+                'eig1-dx' : partial(aggregate_eig_dx, eig_idx=1), 'eig2-dx' : partial(aggregate_eig_dx, eig_idx=2),
+                'eig3-dx' : partial(aggregate_eig_dx, eig_idx=3), 'eig1-softmax' : partial(aggregate_eig_softmax, eig_idx=1),
+                'eig2-softmax' : partial(aggregate_eig_softmax, eig_idx=2), 'eig3-softmax' : partial(aggregate_eig_softmax, eig_idx=3),
                 'eig1-down' : partial(aggregate_eig_bis2, eig_idx=1), 'eig2-down' : partial(aggregate_eig_bis2, eig_idx=2),
                 'aggregate_NN': aggregate_NN}

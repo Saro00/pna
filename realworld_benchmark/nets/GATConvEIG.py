@@ -51,7 +51,7 @@ class GATConvEIG(nn.Module):
                  negative_slope=0.2,
                  residual=False,
                  activation=None):
-        super(GATConv, self).__init__()
+        super(GATConvEIG, self).__init__()
         self._num_heads = num_heads
         self._in_feats = in_feats
         self._out_feats = out_feats
