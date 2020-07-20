@@ -98,6 +98,8 @@ class GATConvEIG(nn.Module):
             is the number of heads, and :math:`D_{out}` is size of output feature.
         """
         graph = graph.local_var()
+        print(h.shape)
+        print(graph.ndata['eig'].shape)
         h = self.feat_drop(th.cat([feat, graph.ndata['eig'][:,:,1:3]], dim=-1))
         feat = self.fc(h).view(-1, self._num_heads, self._out_feats)
 
