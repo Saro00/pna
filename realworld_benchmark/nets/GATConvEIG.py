@@ -55,7 +55,7 @@ class GATConvEIG(nn.Module):
         self._num_heads = num_heads
         self._in_feats = in_feats
         self._out_feats = out_feats
-        self.fc = nn.Linear(in_feats + 2, out_feats * num_heads, bias=False)
+        self.fc = nn.Linear(in_feats + 1, out_feats * num_heads, bias=False)
         self.attn_l = nn.Parameter(th.FloatTensor(size=(1, num_heads, out_feats)))
         self.attn_r = nn.Parameter(th.FloatTensor(size=(1, num_heads, out_feats)))
         self.feat_drop = nn.Dropout(feat_drop)
@@ -98,7 +98,7 @@ class GATConvEIG(nn.Module):
             is the number of heads, and :math:`D_{out}` is size of output feature.
         """
         graph = graph.local_var()
-        h = self.feat_drop(th.cat([feat, graph.ndata['eig'][:, 1:3]], dim=-1))
+        h = self.feat_drop(th.cat([feat, graph.ndata['eig'][:, 1:2]], dim=-1))
         feat = self.fc(h).view(-1, self._num_heads, self._out_feats)
 
         el = (feat * self.attn_l).sum(dim=-1).unsqueeze(-1)
