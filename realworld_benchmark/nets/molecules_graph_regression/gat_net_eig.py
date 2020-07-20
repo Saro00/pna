@@ -37,7 +37,7 @@ class GATNetEIG(nn.Module):
                                     dropout, self.batch_norm, self.residual))
         self.MLP_layer = MLPReadout(out_dim, 1)  # 1 out dim since regression problem
 
-    def forward(self, g, h, e):
+    def forward(self, g, h, e, snorm_n, snorm_e):
         h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
         for conv in self.layers:
