@@ -27,7 +27,7 @@ class DotDict(dict):
     IMPORTING CUSTOM MODULES/METHODS
 """
 from nets.molecules_graph_regression.eig_net import EIGNet
-from nets.molecules_graph_regression.eig_net import GATNet
+from nets.molecules_graph_regression.gat_net import GATNet
 from data.molecules import MoleculeDataset  # import dataset
 from train.train_molecules_graph_regression import train_epoch, evaluate_network
 
