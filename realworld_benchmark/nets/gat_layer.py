@@ -80,7 +80,7 @@ class GATLayer(nn.Module):
         if self.activation:
             h = self.activation(h)
 
-        if self.residual:
+        if False:#self.residual:
             h = h_in + h  # residual connection
 
         return h
