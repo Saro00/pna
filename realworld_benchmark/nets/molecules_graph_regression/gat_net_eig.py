@@ -1,7 +1,7 @@
 import torch.nn as nn
 import dgl
 from nets.gru import GRU
-from nets.gat_layer import GATLayerEIG
+from nets.gat_layer_eig import GATLayerEIG
 from nets.mlp_readout_layer import MLPReadout
 
 """

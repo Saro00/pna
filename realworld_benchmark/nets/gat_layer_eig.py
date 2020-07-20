@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from dgl.nn.pytorch import GATConv
+from .GATConvEIG import GATConvEIG
 
 """
     GAT: Graph Attention Network
@@ -43,7 +43,7 @@ class GATLayer(nn.Module):
         if in_dim != (out_dim * num_heads):
             self.residual = False
 
-        self.gatconv = GATConv(in_dim, out_dim, num_heads, dropout, dropout)
+        self.gatconv = GATConvEIG(in_dim, out_dim, num_heads, dropout, dropout)
 
         if self.batch_norm:
             self.batchnorm_h = nn.BatchNorm1d(out_dim * num_heads)
