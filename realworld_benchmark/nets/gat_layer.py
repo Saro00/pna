@@ -68,9 +68,9 @@ class GATLayer(nn.Module):
         z = self.fc(h)
         g.ndata['z'] = z
         # equation (2)
-        self.g.apply_edges(self.edge_attention)
+        g.apply_edges(self.edge_attention)
         # equation (3) & (4)
-        self.g.update_all(self.message_func, self.reduce_func)
+        g.update_all(self.message_func, self.reduce_func)
 
         h = g.ndata['h']
 
