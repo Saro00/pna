@@ -4,7 +4,7 @@ from torch import nn
 import dgl.function as fn
 from dgl.nn.pytorch.softmax import edge_softmax
 from dgl.nn.pytorch.utils import Identity
-from dgl.nn.pytorch.utils import expand_as_pair
+from dgl.utils import expand_as_pair
 
 # pylint: enable=W0235
 class GATConv(nn.Module):
