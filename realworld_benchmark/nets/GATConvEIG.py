@@ -4,7 +4,14 @@ from torch import nn
 import dgl.function as fn
 from dgl.nn.pytorch.softmax import edge_softmax
 from dgl.nn.pytorch.utils import Identity
-from dgl.utils import expand_as_pair
+
+def expand_as_pair(input_):
+    """Return a pair of same element if the input is not a pair.
+    """
+    if isinstance(input_, tuple):
+        return input_
+    else:
+        return input_, input_
 
 # pylint: enable=W0235
 class GATConv(nn.Module):
