@@ -62,7 +62,6 @@ class GATLayer(nn.Module):
         return {'h': h}
 
     def forward(self, g, h):
-        print('ok')
         h_in = h  # for residual connection
 
         # equation (1)
