@@ -11,7 +11,7 @@ from .GATConvEIG import GATConvEIG
 """
 
 
-class GATLayer(nn.Module):
+class GATLayerEIG(nn.Module):
     """
     Parameters
     ----------
