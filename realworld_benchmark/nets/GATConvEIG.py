@@ -7,7 +7,7 @@ from dgl.nn.pytorch.utils import Identity
 
 
 # pylint: enable=W0235
-class GATConv(nn.Module):
+class GATConvEIG(nn.Module):
     r"""Apply `Graph Attention Network <https://arxiv.org/pdf/1710.10903.pdf>`__
     over an input signal.
 
@@ -55,7 +55,7 @@ class GATConv(nn.Module):
         self._num_heads = num_heads
         self._in_feats = in_feats
         self._out_feats = out_feats
-        self.fc = nn.Linear(in_feats, out_feats * num_heads, bias=False)
+        self.fc = nn.Linear(in_feats + 2, out_feats * num_heads, bias=False)
         self.attn_l = nn.Parameter(th.FloatTensor(size=(1, num_heads, out_feats)))
         self.attn_r = nn.Parameter(th.FloatTensor(size=(1, num_heads, out_feats)))
         self.feat_drop = nn.Dropout(feat_drop)
@@ -98,10 +98,11 @@ class GATConv(nn.Module):
             is the number of heads, and :math:`D_{out}` is size of output feature.
         """
         graph = graph.local_var()
-        h = self.feat_drop(feat)
+        h = self.feat_drop(th.cat([feat, graph.ndata['eig'][:,:,1:3]], dim=-1))
         feat = self.fc(h).view(-1, self._num_heads, self._out_feats)
-        el = (feat * self.attn_l).sum(dim=-1).unsqueeze(-1)
-        er = (feat * self.attn_r).sum(dim=-1).unsqueeze(-1)
+
+        el = (feat_eig * self.attn_l).sum(dim=-1).unsqueeze(-1)
+        er = (feat_eig * self.attn_r).sum(dim=-1).unsqueeze(-1)
         graph.ndata.update({'ft': feat, 'el': el, 'er': er})
         # compute edge attention
         graph.apply_edges(fn.u_add_v('el', 'er', 'e'))
