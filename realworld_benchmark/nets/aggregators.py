@@ -58,7 +58,7 @@ def aggregate_eig(self, h, eig_s, eig_d, eig_idx):
     return torch.sum(h_mod, dim=1)
 
 def aggregate_eig_softmax(self, h, eig_s, eig_d, eig_idx):
-    h_mod = torch.mul(h, (torch.nn.Softmax(1)(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])).unsqueeze(-1))
+    h_mod = torch.mul(h, torch.nn.Softmax(1)(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])).unsqueeze(-1))
     return torch.sum(h_mod, dim=1)
 
 def aggregate_eig_dx(self, h, eig_s, eig_d, eig_idx):
