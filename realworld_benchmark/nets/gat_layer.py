@@ -74,7 +74,7 @@ class GATLayer(nn.Module):
 
         h = g.ndata['h']
 
-        if self.batch_norm:
+        if False:#self.batch_norm:
             h = self.batchnorm_h(h)
 
         if self.activation:
