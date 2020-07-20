@@ -100,7 +100,7 @@ class GATConvEIG(nn.Module):
         graph = graph.local_var()
         print(feat.shape)
         print(graph.ndata['eig'].shape)
-        h = self.feat_drop(th.cat([feat, graph.ndata['eig'][:,:,1:3]], dim=-1))
+        h = self.feat_drop(th.cat([feat, graph.ndata['eig'][:, 1:3]], dim=-1))
         feat = self.fc(h).view(-1, self._num_heads, self._out_feats)
 
         el = (feat_eig * self.attn_l).sum(dim=-1).unsqueeze(-1)
