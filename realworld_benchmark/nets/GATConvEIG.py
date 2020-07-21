@@ -104,15 +104,12 @@ class GATConvEIG(nn.Module):
         feat = self.fc(h).view(-1, self._num_heads, self._out_feats)
         feat_normal = feat[:, :4, :]
         feat_eig = feat[:, 4:, :]
-
         el_normal = (feat_normal * self.attn_l).sum(dim=-1).unsqueeze(-1)
         er_normal = (feat_normal * self.attn_r).sum(dim=-1).unsqueeze(-1)
         el_eig = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, self._num_heads // 2, -1) * self.attn_l_eig).sum(dim=-1).unsqueeze(-1)
         er_eig = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, self._num_heads // 2, -1) * self.attn_r_eig).sum(dim=-1).unsqueeze(-1)
-
         el = th.cat([el_normal, el_eig], dim=1)
         er = th.cat([er_normal, er_eig], dim=1)
-
         graph.ndata.update({'ft': feat, 'el': el, 'er': er})
         # compute edge attention
         graph.apply_edges(fn.u_add_v('el', 'er', 'e'))

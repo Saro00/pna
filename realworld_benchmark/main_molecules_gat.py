@@ -122,9 +122,6 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     try:
         with tqdm(range(params['epochs']), unit='epoch') as t:
             for epoch in t:
-                if epoch == -1:
-                    model.reset_params()
-
 
                 t.set_description('Epoch %d' % epoch)
 
