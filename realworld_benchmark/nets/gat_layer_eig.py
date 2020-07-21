@@ -52,7 +52,7 @@ class GATLayerEIG(nn.Module):
         h_in = h  # for residual connection
 
         h = self.gatconv(g, h).flatten(1)
-
+        print('the dim is ', h.shape)
         if self.batch_norm:
             print(h.shape)
             h = self.batchnorm_h(h)
