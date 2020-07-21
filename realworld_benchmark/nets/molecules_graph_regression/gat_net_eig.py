@@ -44,6 +44,7 @@ class GATNetEIG(nn.Module):
         print(len(self.layers))
         for conv in self.layers:
             print('double passed')
+            print(h.shape)
             h = conv(g, h)
         print('a')
         g.ndata['h'] = h
