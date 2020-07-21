@@ -34,7 +34,7 @@ class GATNetEIG(nn.Module):
         self.layers = nn.ModuleList([GATLayerEIG(hidden_dim * num_heads, hidden_dim, num_heads,
                                               dropout, self.batch_norm, self.residual) for _ in range(n_layers - 1)])
         self.layers.append(GATLayerEIG(hidden_dim * num_heads, out_dim, 1,
-                                    dropout, False, self.residual))
+                                    dropout, self.batch_norm, self.residual))
         self.MLP_layer = MLPReadout(out_dim, 1)  # 1 out dim since regression problem
 
     def forward(self, g, h, e, snorm_n, snorm_e):

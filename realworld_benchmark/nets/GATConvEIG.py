@@ -62,8 +62,8 @@ class GATConvEIG(nn.Module):
             self.attn_l_eig = nn.Parameter(th.FloatTensor(size=(1, 1, 2)))
             self.attn_r_eig = nn.Parameter(th.FloatTensor(size=(1, 1, 2)))
         else:
-            self.attn_l = nn.Parameter(th.FloatTensor(size=(1, 8, 2)))
-            self.attn_r = nn.Parameter(th.FloatTensor(size=(1, 8, 2)))
+            self.attn_l = nn.Parameter(th.FloatTensor(size=(1, num_heads, 2)))
+            self.attn_r = nn.Parameter(th.FloatTensor(size=(1, num_heads, 2)))
         self.feat_drop = nn.Dropout(feat_drop)
         self.attn_drop = nn.Dropout(attn_drop)
         self.leaky_relu = nn.LeakyReLU(negative_slope)
@@ -116,10 +116,8 @@ class GATConvEIG(nn.Module):
             el = th.cat([el_normal, el_eig], dim=1)
             er = th.cat([er_normal, er_eig], dim=1)
         else:
-            print(th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, 8, -1).shape)
-            print(self.attn_l.shape)
-            el = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, 8, -1) * self.attn_l).sum(dim=-1).unsqueeze(-1)
-            er = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, 8, -1) * self.attn_r).sum(dim=-1).unsqueeze(-1)
+            el = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, self._num_heads, -1) * self.attn_l).sum(dim=-1).unsqueeze(-1)
+            er = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, self._num_heads, -1) * self.attn_r).sum(dim=-1).unsqueeze(-1)
         graph.ndata.update({'ft': feat, 'el': el, 'er': er})
         # compute edge attention
         graph.apply_edges(fn.u_add_v('el', 'er', 'e'))
