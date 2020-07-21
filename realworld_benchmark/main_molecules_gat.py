@@ -124,36 +124,30 @@ def train_val_pipeline(dataset, params, net_params, dirs):
             for epoch in t:
 
                 t.set_description('Epoch %d' % epoch)
-                print(1)
 
                 start = time.time()
-                print(2)
+
                 epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader,
                                                                            epoch)
                 epoch_val_loss, epoch_val_mae = evaluate_network(model, device, val_loader, epoch)
-                print(3)
 
                 epoch_train_losses.append(epoch_train_loss)
                 epoch_val_losses.append(epoch_val_loss)
                 epoch_train_MAEs.append(epoch_train_mae.detach().cpu().item())
                 epoch_val_MAEs.append(epoch_val_mae.detach().cpu().item())
-                print(4)
 
                 writer.add_scalar('train/_loss', epoch_train_loss, epoch)
                 writer.add_scalar('val/_loss', epoch_val_loss, epoch)
                 writer.add_scalar('train/_mae', epoch_train_mae, epoch)
                 writer.add_scalar('val/_mae', epoch_val_mae, epoch)
                 writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
-                print(5)
 
 
                 _, epoch_test_mae = evaluate_network(model, device, test_loader, epoch)
-                print(6)
                 t.set_postfix(time=time.time() - start, lr=optimizer.param_groups[0]['lr'],
                               train_loss=epoch_train_loss, val_loss=epoch_val_loss,
                               train_MAE=epoch_train_mae.item(), val_MAE=epoch_val_mae.item(),
                               test_MAE=epoch_test_mae.item(), refresh=False)
-                print(7)
                 per_epoch_time.append(time.time() - start)
 
                 scheduler.step(epoch_val_loss)
