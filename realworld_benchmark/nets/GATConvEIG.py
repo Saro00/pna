@@ -100,10 +100,8 @@ class GATConvEIG(nn.Module):
         graph = graph.local_var()
         h = self.feat_drop(feat)
         feat = self.fc(h).view(-1, self._num_heads, self._out_feats)
-        print(graph.ndata['eig'][:, 1:3].shape)
-        print(feat.shape)
-        el = (th.cat([feat, graph.ndata['eig'][:, 1:3].unsqueeze(1).expand(-1, self._num_heads, -1)], dim=-1) * self.attn_l).sum(dim=-1).unsqueeze(-1)
-        er = (th.cat([feat, graph.ndata['eig'][:, 1:3].unsqueeze(1).expand(-1, self._num_heads, -1)], dim=-1) * self.attn_r).sum(dim=-1).unsqueeze(-1)
+        el = (th.cat([feat, torch.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, self._num_heads, -1)], dim=-1) * self.attn_l).sum(dim=-1).unsqueeze(-1)
+        er = (th.cat([feat, torch.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, self._num_heads, -1)], dim=-1) * self.attn_r).sum(dim=-1).unsqueeze(-1)
         graph.ndata.update({'ft': feat, 'el': el, 'er': er})
         # compute edge attention
         graph.apply_edges(fn.u_add_v('el', 'er', 'e'))
