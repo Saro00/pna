@@ -30,9 +30,11 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
         batch_targets = batch_targets.to(device)
         batch_snorm_n = batch_snorm_n.to(device)         # num x 1
         optimizer.zero_grad()
-        
+        print(5)
         batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
+        print(6)
         loss = model.loss(batch_scores, batch_targets)
+        print(7)
         loss.backward()
         optimizer.step()
         epoch_loss += loss.detach().item()
