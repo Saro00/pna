@@ -62,8 +62,8 @@ class GATConvEIG(nn.Module):
             self.attn_l_eig = nn.Parameter(th.FloatTensor(size=(1, 1, 2)))
             self.attn_r_eig = nn.Parameter(th.FloatTensor(size=(1, 1, 2)))
         else:
-            self.attn_l = nn.Parameter(th.FloatTensor(size=(1, 2, out_feats)))
-            self.attn_r = nn.Parameter(th.FloatTensor(size=(1, 2, out_feats)))
+            self.attn_l = nn.Parameter(th.FloatTensor(size=(1, 8, out_feats)))
+            self.attn_r = nn.Parameter(th.FloatTensor(size=(1, 8, out_feats)))
         self.feat_drop = nn.Dropout(feat_drop)
         self.attn_drop = nn.Dropout(attn_drop)
         self.leaky_relu = nn.LeakyReLU(negative_slope)
