@@ -57,10 +57,10 @@ class GATConvEIG(nn.Module):
         self._out_feats = out_feats
         self.fc = nn.Linear(in_feats, out_feats * num_heads, bias=False)
         if num_heads == 8:
-            self.attn_l = nn.Parameter(th.FloatTensor(size=(1, 6, out_feats)))
-            self.attn_r = nn.Parameter(th.FloatTensor(size=(1, 6, out_feats)))
-            self.attn_l_eig = nn.Parameter(th.FloatTensor(size=(1, 2, 2)))
-            self.attn_r_eig = nn.Parameter(th.FloatTensor(size=(1, 2, 2)))
+            self.attn_l = nn.Parameter(th.FloatTensor(size=(1, 5, out_feats)))
+            self.attn_r = nn.Parameter(th.FloatTensor(size=(1, 5, out_feats)))
+            self.attn_l_eig = nn.Parameter(th.FloatTensor(size=(1, 3, 2)))
+            self.attn_r_eig = nn.Parameter(th.FloatTensor(size=(1, 3, 2)))
         else:
             self.attn_l = nn.Parameter(th.FloatTensor(size=(1, num_heads, 2)))
             self.attn_r = nn.Parameter(th.FloatTensor(size=(1, num_heads, 2)))
@@ -107,12 +107,12 @@ class GATConvEIG(nn.Module):
         h = self.feat_drop(feat)
         feat = self.fc(h).view(-1, self._num_heads, self._out_feats)
         if self._num_heads == 8:
-            feat_normal = feat[:, 2:, :]
-            feat_eig = feat[:, :2, :]
+            feat_normal = feat[:, 3:, :]
+            feat_eig = feat[:, :3, :]
             el_normal = (feat_normal * self.attn_l).sum(dim=-1).unsqueeze(-1)
             er_normal = (feat_normal * self.attn_r).sum(dim=-1).unsqueeze(-1)
-            el_eig = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, 2, -1) * self.attn_l_eig).sum(dim=-1).unsqueeze(-1)
-            er_eig = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, 2, -1) * self.attn_r_eig).sum(dim=-1).unsqueeze(-1)
+            el_eig = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, 3, -1) * self.attn_l_eig).sum(dim=-1).unsqueeze(-1)
+            er_eig = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, 3, -1) * self.attn_r_eig).sum(dim=-1).unsqueeze(-1)
             el = th.cat([el_normal, el_eig], dim=1)
             er = th.cat([er_normal, er_eig], dim=1)
         else:
