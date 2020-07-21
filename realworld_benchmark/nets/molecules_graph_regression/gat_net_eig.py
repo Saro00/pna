@@ -38,17 +38,11 @@ class GATNetEIG(nn.Module):
         self.MLP_layer = MLPReadout(out_dim, 1)  # 1 out dim since regression problem
 
     def forward(self, g, h, e, snorm_n, snorm_e):
-        print('passed')
         h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
-        print(len(self.layers))
         for conv in self.layers:
-            print('double passed')
-            print(h.shape)
             h = conv(g, h)
-        print('a')
         g.ndata['h'] = h
-        print('b')
 
         if self.readout == "sum":
             hg = dgl.sum_nodes(g, 'h')
@@ -59,7 +53,6 @@ class GATNetEIG(nn.Module):
         else:
             hg = dgl.mean_nodes(g, 'h')  # default readout is mean nodes
 
-        print('c')
         return self.MLP_layer(hg)
 
     def loss(self, scores, targets):
