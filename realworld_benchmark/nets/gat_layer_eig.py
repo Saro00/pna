@@ -54,6 +54,7 @@ class GATLayerEIG(nn.Module):
         h = self.gatconv(g, h).flatten(1)
 
         if self.batch_norm:
+            print(h.shape)
             h = self.batchnorm_h(h)
 
         if self.activation:
