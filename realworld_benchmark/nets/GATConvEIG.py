@@ -107,9 +107,8 @@ class GATConvEIG(nn.Module):
         h = self.feat_drop(feat)
         feat = self.fc(h).view(-1, self._num_heads, self._out_feats)
         if self._num_heads == 8:
-            feat_normal = feat[:, :1, :]
-            print(feat_normal.shape)
-            feat_eig = feat[:, 1:, :]
+            feat_normal = feat[:, 1:, :]
+            feat_eig = feat[:, :1, :]
             el_normal = (feat_normal * self.attn_l).sum(dim=-1).unsqueeze(-1)
             er_normal = (feat_normal * self.attn_r).sum(dim=-1).unsqueeze(-1)
             el_eig = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, 1, -1) * self.attn_l_eig).sum(dim=-1).unsqueeze(-1)
