@@ -117,10 +117,13 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, collate_fn=dataset.collate)
     val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
     test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
+    print('here')
 
     # At any point you can hit Ctrl + C to break out of training early.
     try:
+        print('there')
         with tqdm(range(params['epochs']), unit='epoch') as t:
+            print('per')
             for epoch in t:
 
                 t.set_description('Epoch %d' % epoch)
