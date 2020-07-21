@@ -41,6 +41,7 @@ class GATNetEIG(nn.Module):
         print('passed')
         h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
+        print(len(self.layers))
         for conv in self.layers:
             print('double passed')
             h = conv(g, h)
