@@ -116,6 +116,8 @@ class GATConvEIG(nn.Module):
             el = th.cat([el_normal, el_eig], dim=1)
             er = th.cat([er_normal, er_eig], dim=1)
         else:
+            print(th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, 8, -1).shape)
+            print(self.attn_l.shape)
             el = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, 8, -1) * self.attn_l).sum(dim=-1).unsqueeze(-1)
             er = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, 8, -1) * self.attn_r).sum(dim=-1).unsqueeze(-1)
         graph.ndata.update({'ft': feat, 'el': el, 'er': er})
