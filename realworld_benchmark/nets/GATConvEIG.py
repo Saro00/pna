@@ -70,7 +70,7 @@ class GATConvEIG(nn.Module):
                 self.res_fc = Identity()
         else:
             self.register_buffer('res_fc', None)
-        self.reset_parameters()
+        #self.reset_parameters()
         self.activation = activation
 
     def reset_parameters(self):
