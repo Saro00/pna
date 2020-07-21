@@ -56,7 +56,7 @@ class GATConvEIG(nn.Module):
         self._in_feats = in_feats
         self._out_feats = out_feats
         self.fc = nn.Linear(in_feats, out_feats * num_heads, bias=False)
-        self.attn_l = nn.Parameter(th.FloatTensor(size=(1, num_heads, 2))
+        self.attn_l = nn.Parameter(th.FloatTensor(size=(1, num_heads, 2)))
         self.attn_r = nn.Parameter(th.FloatTensor(size=(1, num_heads, 2)))
         self.feat_drop = nn.Dropout(feat_drop)
         self.attn_drop = nn.Dropout(attn_drop)
