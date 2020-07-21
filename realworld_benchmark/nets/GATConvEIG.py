@@ -56,14 +56,14 @@ class GATConvEIG(nn.Module):
         self._in_feats = in_feats
         self._out_feats = out_feats
         self.fc = nn.Linear(in_feats, out_feats * num_heads, bias=False)
-        if num_heads == 8:
+        if False:#num_heads == 8:
             self.attn_l = nn.Parameter(th.FloatTensor(size=(1, 7, out_feats)))
             self.attn_r = nn.Parameter(th.FloatTensor(size=(1, 7, out_feats)))
             self.attn_l_eig = nn.Parameter(th.FloatTensor(size=(1, 1, 2)))
             self.attn_r_eig = nn.Parameter(th.FloatTensor(size=(1, 1, 2)))
         else:
-            self.attn_l = nn.Parameter(th.FloatTensor(size=(1, num_heads, out_feats)))
-            self.attn_r = nn.Parameter(th.FloatTensor(size=(1, num_heads, out_feats)))
+            self.attn_l = nn.Parameter(th.FloatTensor(size=(1, 2, out_feats)))
+            self.attn_r = nn.Parameter(th.FloatTensor(size=(1, 2, out_feats)))
         self.feat_drop = nn.Dropout(feat_drop)
         self.attn_drop = nn.Dropout(attn_drop)
         self.leaky_relu = nn.LeakyReLU(negative_slope)
@@ -106,7 +106,7 @@ class GATConvEIG(nn.Module):
         graph = graph.local_var()
         h = self.feat_drop(feat)
         feat = self.fc(h).view(-1, self._num_heads, self._out_feats)
-        if self._num_heads == 8:
+        if False:#self._num_heads == 8:
             feat_normal = feat[:, 1:, :]
             feat_eig = feat[:, :1, :]
             el_normal = (feat_normal * self.attn_l).sum(dim=-1).unsqueeze(-1)
@@ -116,8 +116,8 @@ class GATConvEIG(nn.Module):
             el = th.cat([el_normal, el_eig], dim=1)
             er = th.cat([er_normal, er_eig], dim=1)
         else:
-            el = (feat * self.attn_l).sum(dim=-1).unsqueeze(-1)
-            er = (feat * self.attn_r).sum(dim=-1).unsqueeze(-1)
+            el = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, 8, -1) * self.attn_l).sum(dim=-1).unsqueeze(-1)
+            er = (th.abs(graph.ndata['eig'][:, 1:3]).unsqueeze(1).expand(-1, 8, -1) * self.attn_r).sum(dim=-1).unsqueeze(-1)
         graph.ndata.update({'ft': feat, 'el': el, 'er': er})
         # compute edge attention
         graph.apply_edges(fn.u_add_v('el', 'er', 'e'))
