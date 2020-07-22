@@ -1,4 +1,4 @@
-cuda10.0
+cuda==10.0
 cudatoolkit==10.0
 cudnn==7.6.5
 python==3.7.4
