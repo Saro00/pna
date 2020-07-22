@@ -165,6 +165,8 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                     print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
                     break
 
+                print('')
+
                 #for _ in range(5):
                     #print('Sampled value is ', model.layers[1].towers[0].eigfiltbis(torch.FloatTensor([random.random() for i in range(4)]).to('cuda')))
 
