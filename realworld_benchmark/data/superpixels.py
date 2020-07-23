@@ -284,7 +284,7 @@ class SuperPixDataset(torch.utils.data.Dataset):
         with open(data_dir+name+'.pkl',"rb") as f:
             f = pickle.load(f)
             f[0].get_eig()
-            print(f[0][0])
+            print(f[0][0].adjacency_matrix())
             self.train = f[0]
             f[1].get_eig()
             self.val = f[1]
