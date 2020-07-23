@@ -286,7 +286,7 @@ class SuperPixDataset(torch.utils.data.Dataset):
             f[0].get_eig()
             print(f[0][0])
             print(type(f[0][0]))
-            print(f[0][0][0])
+            print(f[0][0][0].adjacency_matrix())
             print(f[0][0][1])
             self.train = f[0]
             f[1].get_eig()
