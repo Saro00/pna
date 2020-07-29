@@ -359,6 +359,7 @@ def main():
         net_params['cat'] = True if args.cat == 'True' else False
     if args.self_loop is not None:
         net_params['self_loop'] = True if args.self_loop == 'True' else False
+    print('another one ', args.aggregators)
     if args.aggregators is not None:
         net_params['aggregators'] = args.aggregators
     if args.scalers is not None:
