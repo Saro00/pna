@@ -265,6 +265,7 @@ def main():
     parser.add_argument('--posttrans_layers', type=int, help='posttrans_layers.')
 
     args = parser.parse_args()
+    print(args['aggregators'])
 
     with open(args.config) as f:
         config = json.load(f)
