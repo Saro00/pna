@@ -265,7 +265,6 @@ def main():
     parser.add_argument('--posttrans_layers', type=int, help='posttrans_layers.')
 
     args = parser.parse_args()
-    print(args.aggregators, 'this one')
 
     with open(args.config) as f:
         config = json.load(f)
@@ -280,7 +279,6 @@ def main():
         DATASET_NAME = args.dataset
     else:
         DATASET_NAME = config['dataset']
-    print('ok')
     print(DATASET_NAME)
     dataset = MoleculeDataset(DATASET_NAME)
     if args.out_dir is not None:
@@ -359,10 +357,8 @@ def main():
         net_params['cat'] = True if args.cat == 'True' else False
     if args.self_loop is not None:
         net_params['self_loop'] = True if args.self_loop == 'True' else False
-    print('another one ', args.aggregators)
     if args.aggregators is not None:
         net_params['aggregators'] = args.aggregators
-    print('the end', net_params['aggregators'])
     if args.scalers is not None:
         net_params['scalers'] = args.scalers
     if args.towers is not None:
@@ -409,9 +405,7 @@ def main():
 
     if not os.path.exists(out_dir + 'configs'):
         os.makedirs(out_dir + 'configs')
-    print(net_params['aggregators'], ' this king')
     net_params['total_param'] = view_model_param(net_params)
-    print(net_params['aggregators'], ' this')
     train_val_pipeline(dataset, params, net_params, dirs)
 
 
