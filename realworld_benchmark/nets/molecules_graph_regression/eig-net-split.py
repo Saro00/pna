@@ -84,6 +84,7 @@ class EIGNet(nn.Module):
                     h_t = self.gru[i](h, h_t)
                 h = h_t
             if i == 0:
+                print(h.shape)
                 out = h
             else:
                 out = torch.cat([h, out])
