@@ -107,8 +107,10 @@ class EIGNetSplit(nn.Module):
         for agg in self.aggregators.split():
             net_params['aggregators'] = agg
             net_params_list.append(net_params)
+        print(len(net_params_list))
 
         self.models = nn.ModuleList([EIGHead(net_params_list[i]) for i in range(len(net_params_list))])
+        print(self.models)
         self.MLP_layer = MLPReadout(self.out_dim * len(self.aggregators), 1)
 
 
