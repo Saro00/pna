@@ -107,14 +107,12 @@ class EIGNetSplit(nn.Module):
             net_params_list.append(net_params)
 
         self.models = nn.ModuleList([EIGHead(net_params_list[i]) for i in range(len(net_params_list))])
-        self.fintransf = nn.MLPReadout(self.out_dim * len(self.aggregators), 1)
+        self.fintransf = MLPReadout(self.out_dim * len(self.aggregators), 1)
 
 
 
     def forward(self, g, h, e, snorm_n, snorm_e):
-
         out = torch.cat([model.forward(g, h, e, snorm_n, snorm_e) for model in self.models])
-
         return self.MLP_layer(out)
 
 
