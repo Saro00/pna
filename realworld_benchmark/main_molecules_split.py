@@ -408,6 +408,7 @@ def main():
         os.makedirs(out_dir + 'configs')
 
     net_params['total_param'] = view_model_param(net_params)
+    print(net_params['aggregators'], ' this')
     train_val_pipeline(dataset, params, net_params, dirs)
 
 
