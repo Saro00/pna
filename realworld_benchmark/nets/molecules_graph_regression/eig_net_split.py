@@ -55,8 +55,8 @@ class EIGNet(nn.Module):
                                         NN_eig=self.NN_eig,
                                         edge_dim=edge_dim, divide_input=self.divide_input_last,
                                         pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers))
-        self.embedding_h = nn.ModuleList([nn.Embedding(num_atom_type, hidden_dim) for _ in range(len(self.models))])
-
+        #self.embedding_h = nn.ModuleList([nn.Embedding(num_atom_type, hidden_dim) for _ in range(len(self.models))])
+        self.embedding_h = nn.Embedding(num_atom_type, hidden_dim)
         if self.edge_feat:
             self.embedding_e = nn.ModuleList([nn.Embedding(num_bond_type, edge_dim) for _ in range(len(self.models))])
 
@@ -75,7 +75,7 @@ class EIGNet(nn.Module):
         for i, model in enumerate(self.models):
             print(self.embedding_h[i])
             print(h.device)
-            h = self.embedding_h[i](h)
+            h = self.embedding_h(h)
             h = self.in_feat_dropout(h)
             if self.edge_feat:
                 e = self.embedding_e[i](e)
