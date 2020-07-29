@@ -55,13 +55,13 @@ class EIGNet(nn.Module):
                                         NN_eig=self.NN_eig,
                                         edge_dim=edge_dim, divide_input=self.divide_input_last,
                                         pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers))
-        self.embedding_h = [nn.Embedding(num_atom_type, hidden_dim) for _ in range(n_layers)]
+        self.embedding_h = [nn.Embedding(num_atom_type, hidden_dim) for _ in range(len(models))]
 
         if self.edge_feat:
-            self.embedding_e = [nn.Embedding(num_bond_type, edge_dim) for _ in range(n_layers)]
+            self.embedding_e = [nn.Embedding(num_bond_type, edge_dim) for _ in range(len(models))]
 
         if self.gru_enable:
-            self.gru = [GRU(hidden_dim, hidden_dim, device) for _ in range(n_layers)]
+            self.gru = [GRU(hidden_dim, hidden_dim, device) for _ in range(models)]
 
         self.MLP_layer = MLPReadout(out_dim, 1)  # 1 out dim since regression problem
 
@@ -73,6 +73,7 @@ class EIGNet(nn.Module):
     def forward(self, g, h, e, snorm_n, snorm_e):
 
         for i, model in enumerate(self.models):
+            print(self.embedding_h[i])
             h = self.embedding_h[i](h)
             h = self.in_feat_dropout(h)
             if self.edge_feat:
