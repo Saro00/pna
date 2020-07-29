@@ -362,6 +362,7 @@ def main():
     print('another one ', args.aggregators)
     if args.aggregators is not None:
         net_params['aggregators'] = args.aggregators
+    print('the end', net_params['aggregators'])
     if args.scalers is not None:
         net_params['scalers'] = args.scalers
     if args.towers is not None:
@@ -408,7 +409,7 @@ def main():
 
     if not os.path.exists(out_dir + 'configs'):
         os.makedirs(out_dir + 'configs')
-
+    print(net_params['aggregators'], ' this')
     net_params['total_param'] = view_model_param(net_params)
     print(net_params['aggregators'], ' this')
     train_val_pipeline(dataset, params, net_params, dirs)
