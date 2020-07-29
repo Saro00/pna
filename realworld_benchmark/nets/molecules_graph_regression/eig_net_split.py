@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch
 import dgl
 from nets.gru import GRU
 from nets.eig_layer import EIGLayer
