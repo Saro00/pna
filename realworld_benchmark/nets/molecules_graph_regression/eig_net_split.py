@@ -43,14 +43,14 @@ class EIGNet(nn.Module):
 
             self.models.append(nn.ModuleList([EIGLayer(in_dim=hidden_dim, out_dim=hidden_dim, dropout=dropout,
                                                   graph_norm=self.graph_norm, batch_norm=self.batch_norm,
-                                                  residual=self.residual, aggregators=[aggregator], scalers=self.scalers,
+                                                  residual=self.residual, aggregators=aggregator, scalers=self.scalers,
                                                   avg_d=self.avg_d, towers=self.towers, edge_features=self.edge_feat, NN_eig = self.NN_eig,
                                                   edge_dim=edge_dim, divide_input=self.divide_input_first,
                                                   pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers) for _
                                          in range(n_layers - 1)]))
             self.models[i].append(EIGLayer(in_dim=hidden_dim, out_dim=out_dim, dropout=dropout,
                                         graph_norm=self.graph_norm, batch_norm=self.batch_norm,
-                                        residual=self.residual, aggregators=[aggregator], scalers=self.scalers,
+                                        residual=self.residual, aggregators=aggregator, scalers=self.scalers,
                                         avg_d=self.avg_d, towers=self.towers, edge_features=self.edge_feat,
                                         NN_eig=self.NN_eig,
                                         edge_dim=edge_dim, divide_input=self.divide_input_last,
