@@ -103,11 +103,12 @@ class EIGNetSplit(nn.Module):
         self.out_dim = net_params['out_dim']
         print(self.aggregators)
         print(self.aggregators.split())
+        net_params_copy = net_params.copy()
 
         net_params_list = []
         for agg in self.aggregators.split():
-            net_params['aggregators'] = agg
-            net_params_list.append(net_params)
+            net_params_copy['aggregators'] = agg
+            net_params_list.append(net_params_copy)
         print(len(net_params_list))
 
         self.models = nn.ModuleList([EIGHead(net_params_list[i]) for i in range(len(net_params_list))])
