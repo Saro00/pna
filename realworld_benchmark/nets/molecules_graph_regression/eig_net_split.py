@@ -101,6 +101,7 @@ class EIGNetSplit(nn.Module):
 
         self.aggregators = net_params['aggregators']
         self.out_dim = net_params['out_dim']
+        print(self.aggregators)
         print(self.aggregators.split())
 
         net_params_list = []
