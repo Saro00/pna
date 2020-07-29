@@ -94,5 +94,8 @@ AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_ma
                 'eig1-100' : partial(aggregate_eig_softmax, eig_idx=1, alpha=100), 'eig2-100' : partial(aggregate_eig_softmax, eig_idx=2, alpha=100),
                 'eig1-0.01' : partial(aggregate_eig_softmax, eig_idx=1, alpha=0.01), 'eig2-0.01' : partial(aggregate_eig_softmax, eig_idx=2, alpha=0.01),
                 'eig1-0.001' : partial(aggregate_eig_softmax, eig_idx=1, alpha=0.001), 'eig2-0.001' : partial(aggregate_eig_softmax, eig_idx=2, alpha=0.001),
+                'eig1-neg-1' : partial(aggregate_eig_softmax, eig_idx=1, alpha=-1), 'eig2-neg-1' : partial(aggregate_eig_softmax, eig_idx=2, alpha=-1),
+                'eig1-neg-10' : partial(aggregate_eig_softmax, eig_idx=1, alpha=-10), 'eig2-neg-10' : partial(aggregate_eig_softmax, eig_idx=2, alpha=-10),
+                'eig1-neg-0.1' : partial(aggregate_eig_softmax, eig_idx=1, alpha=-0.1), 'eig2-neg-0.1' : partial(aggregate_eig_softmax, eig_idx=2, alpha=-0.1),
                 'eig1-down' : partial(aggregate_eig_bis2, eig_idx=1), 'eig2-down' : partial(aggregate_eig_bis2, eig_idx=2),
                 'aggregate_NN': aggregate_NN}
