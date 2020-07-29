@@ -73,7 +73,7 @@ class EIGNet(nn.Module):
     def forward(self, g, h, e, snorm_n, snorm_e):
 
         for i, model in enumerate(self.models):
-            print(self.embedding_h[i])
+            #print(self.embedding_h[i])
             print(h.device)
             h = self.embedding_h(h)
             h = self.in_feat_dropout(h)
