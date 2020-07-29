@@ -37,11 +37,6 @@ class EIGNet(nn.Module):
 
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
 
-        self.embedding_h = nn.Embedding(num_atom_type, hidden_dim)
-
-        if self.edge_feat:
-            self.embedding_e = nn.Embedding(num_bond_type, edge_dim)
-
         self.models = []
 
         for i, aggregator in enumerate(self.aggregators.split()):
@@ -60,9 +55,13 @@ class EIGNet(nn.Module):
                                         NN_eig=self.NN_eig,
                                         edge_dim=edge_dim, divide_input=self.divide_input_last,
                                         pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers))
+        self.embedding_h = [nn.Embedding(num_atom_type, hidden_dim) for _ in range(n_layers)]
+
+        if self.edge_feat:
+            self.embedding_e = [nn.Embedding(num_bond_type, edge_dim) for _ in range(n_layers)]
 
         if self.gru_enable:
-            self.gru = GRU(hidden_dim, hidden_dim, device)
+            self.gru = [GRU(hidden_dim, hidden_dim, device) for _ in range(n_layers)]
 
         self.MLP_layer = MLPReadout(out_dim, 1)  # 1 out dim since regression problem
 
@@ -72,18 +71,23 @@ class EIGNet(nn.Module):
                 layer.reset_params()
 
     def forward(self, g, h, e, snorm_n, snorm_e):
-        h = self.embedding_h(h)
-        h = self.in_feat_dropout(h)
-        if self.edge_feat:
-            e = self.embedding_e(e)
 
-        for i, conv in enumerate(self.layers):
-            h_t = conv(g, h, e, snorm_n)
-            if self.gru_enable and i != len(self.layers) - 1:
-                h_t = self.gru(h, h_t)
-            h = h_t
+        for i, model in enumerate(self.models):
+            h = self.embedding_h[i](h)
+            h = self.in_feat_dropout(h)
+            if self.edge_feat:
+                e = self.embedding_e[i](e)
 
-        g.ndata['h'] = h
+            for i, conv in enumerate(model):
+                h_t = conv(g, h, e, snorm_n)
+                if self.gru_enable and i != len(self.layers) - 1:
+                    h_t = self.gru[i](h, h_t)
+                h = h_t
+            if i == 0:
+                out = h
+            else:
+                out = torch.cat([h, out])
+
 
         if self.readout == "sum":
             hg = dgl.sum_nodes(g, 'h')
