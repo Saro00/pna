@@ -120,7 +120,7 @@ class EIGNetSplit(nn.Module):
     def forward(self, g, h, e, snorm_n, snorm_e):
         print(len(self.models))
         for model in self.models:
-            print(self.model.forward(g, h, e, snorm_n, snorm_e).shape, ' MODEL')
+            print(model.forward(g, h, e, snorm_n, snorm_e).shape, ' MODEL')
         out = torch.cat([model.forward(g, h, e, snorm_n, snorm_e) for model in self.models])
         print(out.shape)
         return self.MLP_layer(out)
