@@ -74,6 +74,7 @@ class EIGNet(nn.Module):
 
         for i, model in enumerate(self.models):
             print(self.embedding_h[i])
+            print(h.device)
             h = self.embedding_h[i](h)
             h = self.in_feat_dropout(h)
             if self.edge_feat:
