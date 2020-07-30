@@ -84,7 +84,7 @@ def evaluate_network_sparse(model, device, graph, pos_train_edges,
             x_pos_enc = graph.ndata['pos_enc'].to(device)
             h = model(graph, x, e, x_pos_enc)
         except:
-            h = model(graph, x, e)
+            h = model(graph, x, e, False, False)
 
         pos_train_edges = pos_train_edges.to(device)
         pos_valid_edges = pos_valid_edges.to(device)
