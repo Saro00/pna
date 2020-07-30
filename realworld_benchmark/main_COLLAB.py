@@ -435,8 +435,7 @@ def main():
     net_params['in_dim_edge'] = dataset.graph.edata['feat'].shape[-1]
     net_params['n_classes'] = 1  # binary prediction
 
-    D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
-                       dataset.graph])
+    D = torch.sparse.sum(dataset.graph.adjacency_matrix(transpose=True), dim=-1).to_dense()
     net_params['avg_d'] = dict(lin=torch.mean(D),
                                    exp=torch.mean(torch.exp(torch.div(1, D)) - 1),
                                    log=torch.mean(torch.log(D + 1)))
