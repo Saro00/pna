@@ -99,7 +99,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
 
     evaluator = dataset.evaluator
 
-    train_edges, val_edges, val_edges_neg, test_edges, test_edges_neg = dataset.train_edges[:10000], dataset.val_edges[:1000], dataset.val_edges_neg[:1000], dataset.test_edges[:1000], dataset.test_edges_neg[:1000]
+    train_edges, val_edges, val_edges_neg, test_edges, test_edges_neg = dataset.train_edges[:1000], dataset.val_edges[:100], dataset.val_edges_neg[:100], dataset.test_edges[:1000], dataset.test_edges_neg[:1000]
 
     root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
     device = net_params['device']
