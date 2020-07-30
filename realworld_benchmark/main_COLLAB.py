@@ -70,7 +70,6 @@ def view_model_param(MODEL_NAME, net_params):
     model = EIGNet(net_params)
     total_param = 0
     print("MODEL DETAILS:\n")
-    print(model)
     for param in model.parameters():
         # print(param.data.size())
         total_param += np.prod(list(param.data.size()))
