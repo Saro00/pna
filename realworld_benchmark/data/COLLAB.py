@@ -59,7 +59,7 @@ class COLLABDataset(Dataset):
 
         self.evaluator = Evaluator(name='ogbl-collab')
         for i in range(10):
-            a = rd.randint(1, 1000)
+            a = rd.randint(1, 235868)
             print('Eig for ', a, ' is: ', self.graph.ndata['eig'][a, :])
 
         print("[I] Finished loading.")
