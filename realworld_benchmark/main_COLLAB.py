@@ -296,6 +296,20 @@ def main():
     parser.add_argument('--layer_type', help="Please give a value for layer_type (for GAT and GatedGCN only)")
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
+
+
+    # eig params
+    parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
+    parser.add_argument('--scalers', type=str, help='Scalers to use.')
+    parser.add_argument('--NN_eig', action='store_true', default=False, help='NN eig aggr.')
+    parser.add_argument('--towers', type=int, default=5, help='Towers to use.')
+    parser.add_argument('--divide_input_first', type=bool, help='Whether to divide the input in first layer.')
+    parser.add_argument('--divide_input_last', type=bool, help='Whether to divide the input in last layers.')
+    parser.add_argument('--gru', type=bool, help='Whether to use gru.')
+    parser.add_argument('--edge_dim', type=int, help='Size of edge embeddings.')
+    parser.add_argument('--pretrans_layers', type=int, help='pretrans_layers.')
+    parser.add_argument('--posttrans_layers', type=int, help='posttrans_layers.')
+
     args = parser.parse_args()
     with open(args.config) as f:
         config = json.load(f)
@@ -396,7 +410,26 @@ def main():
         net_params['pos_enc'] = True if args.pos_enc == 'True' else False
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
-
+    if args.aggregators is not None:
+        net_params['aggregators'] = args.aggregators
+    if args.scalers is not None:
+        net_params['scalers'] = args.scalers
+    if args.towers is not None:
+        net_params['towers'] = args.towers
+    if args.divide_input_first is not None:
+        net_params['divide_input_first'] = args.divide_input_first
+    if args.divide_input_last is not None:
+        net_params['divide_input_last'] = args.divide_input_last
+    if args.NN_eig is not None:
+        net_params['NN_eig'] = args.NN_eig
+    if args.gru is not None:
+        net_params['gru'] = args.gru
+    if args.edge_dim is not None:
+        net_params['edge_dim'] = args.edge_dim
+    if args.pretrans_layers is not None:
+        net_params['pretrans_layers'] = args.pretrans_layers
+    if args.posttrans_layers is not None:
+        net_params['posttrans_layers'] = args.posttrans_layers
 
     # COLLAB
     net_params['in_dim'] = dataset.graph.ndata['feat'].shape[-1]
