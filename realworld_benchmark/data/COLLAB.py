@@ -29,7 +29,7 @@ def positional_encoding(g, pos_enc_dim):
     # EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
     EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=1e-2)
     EigVec = EigVec[:, EigVal.argsort()]  # increasing order
-    g.ndata['pos_enc'] = torch.from_numpy(np.real(EigVec[:, 1:pos_enc_dim + 1])).float()
+    g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, 1:pos_enc_dim + 1])).float()
 
     return g
 
@@ -42,15 +42,13 @@ class COLLABDataset(Dataset):
         self.dataset = DglLinkPropPredDataset(name='ogbl-collab')
 
         self.graph = self.dataset[0]  # single DGL graph
+        self._add_positional_encodings(5)
 
         # Create edge feat by concatenating weight and year
         self.graph.edata['feat'] = torch.cat(
             [self.graph.edata['edge_weight'], self.graph.edata['edge_year']],
             dim=1
         )
-        #A = self.graph.adjacency_matrix().to_dense()
-        #self.graph.ndata['eig'] = get_k_lowest_eig(A, 4)
-        self.graph.ndata['eig'] = torch.rand((235868, 5))
 
         self.split_edge = self.dataset.get_edge_split()
         self.train_edges = self.split_edge['train']['edge']  # positive train edges
@@ -58,12 +56,7 @@ class COLLABDataset(Dataset):
         self.val_edges_neg = self.split_edge['valid']['edge_neg']  # negative val edges
         self.test_edges = self.split_edge['test']['edge']  # positive test edges
         self.test_edges_neg = self.split_edge['test']['edge_neg']  # negative test edges
-        print(self.split_edge['train'].keys())
-        print(self.train_edges,  ' positive train edges')
-        print(self.val_edges , ' positive val edges')
-        print(self.val_edges_neg, ' negative val edges')
-        print(self.test_edges , ' positive test edges')
-        print(self.test_edges_neg, ' negative test edges')
+        self.
 
         self.evaluator = Evaluator(name='ogbl-collab')
 
