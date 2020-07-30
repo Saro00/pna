@@ -42,7 +42,7 @@ def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size,
             x_pos_enc = x_pos_enc * sign_flip.unsqueeze(0)
             h = model(graph, x, e, x_pos_enc)
         except:
-            h = model(graph, x, e)
+            h = model(graph, x, e, False, False)
 
         # Positive samples
         edge = train_edges[perm].t()
