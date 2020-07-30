@@ -397,6 +397,7 @@ def main():
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
 
+
     # COLLAB
     net_params['in_dim'] = dataset.graph.ndata['feat'].shape[-1]
     net_params['in_dim_edge'] = dataset.graph.edata['feat'].shape[-1]
