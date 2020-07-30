@@ -153,10 +153,3 @@ def evaluate_network_sparse(model, device, graph, pos_train_edges,
         )
 
     return train_hits, valid_hits, test_hits
-
-    © 2020
-    GitHub, Inc.
-    Terms
-    Privacy
-    Security
-    Status
