@@ -25,7 +25,7 @@
 
     "net_params": {
         "layer_type": "dgl",
-        "L": 4,
+        "L": 3,
         "hidden_dim": 19,
         "out_dim": 76,
         "residual": true,
