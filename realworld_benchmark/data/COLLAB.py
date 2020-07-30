@@ -58,6 +58,7 @@ class COLLABDataset(Dataset):
         self.val_edges_neg = self.split_edge['valid']['edge_neg']  # negative val edges
         self.test_edges = self.split_edge['test']['edge']  # positive test edges
         self.test_edges_neg = self.split_edge['test']['edge_neg']  # negative test edges
+        print(self.split_edge['train'].keys())
         print(self.train_edges,  ' positive train edges')
         print(self.val_edges , ' positive val edges')
         print(self.val_edges_neg, ' negative val edges')
