@@ -20,7 +20,8 @@ class EIGNet(nn.Module):
         self.batch_norm = net_params['batch_norm']
         self.residual = net_params['residual']
         self.device = net_params['device']
-
+        self.edge_feat = net_params['edge_feat']
+        edge_dim = net_params['edge_dim']
         self.graph_norm = net_params['graph_norm']
         self.batch_norm = net_params['batch_norm']
         self.aggregators = net_params['aggregators']
