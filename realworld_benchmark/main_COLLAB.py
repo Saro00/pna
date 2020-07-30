@@ -2,7 +2,6 @@
 """
     IMPORTING LIBS
 """
-import dgl
 
 import numpy as np
 import os
