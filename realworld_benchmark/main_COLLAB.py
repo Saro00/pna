@@ -435,6 +435,10 @@ def main():
     net_params['in_dim_edge'] = dataset.graph.edata['feat'].shape[-1]
     net_params['n_classes'] = 1  # binary prediction
 
+    net_params['avg_d'] = dict(lin=torch.mean(D),
+                                   exp=torch.mean(torch.exp(torch.div(1, D)) - 1),
+                                   log=torch.mean(torch.log(D + 1)))
+
     root_log_dir = out_dir + 'logs/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(
         config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
     root_ckpt_dir = out_dir + 'checkpoints/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(
