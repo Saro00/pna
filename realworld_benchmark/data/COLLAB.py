@@ -58,6 +58,7 @@ class COLLABDataset(Dataset):
         self.test_edges_neg = self.split_edge['test']['edge_neg']  # negative test edges
 
         self.evaluator = Evaluator(name='ogbl-collab')
+        print(self.graph.ndata['eig'][0,:])
 
         print("[I] Finished loading.")
         print("[I] Data load time: {:.4f}s".format(time.time() - start))
