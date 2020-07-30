@@ -48,8 +48,9 @@ class COLLABDataset(Dataset):
             [self.graph.edata['edge_weight'], self.graph.edata['edge_year']],
             dim=1
         )
-        A = self.graph.adjacency_matrix().to_dense()
-        self.graph.ndata['eig'] = get_k_lowest_eig(A, 4)
+        #A = self.graph.adjacency_matrix().to_dense()
+        #self.graph.ndata['eig'] = get_k_lowest_eig(A, 4)
+        self.graph.ndata['eif'] = torch.rand((235868, 5))
 
         self.split_edge = self.dataset.get_edge_split()
         self.train_edges = self.split_edge['train']['edge']  # positive train edges
