@@ -1,6 +1,6 @@
 # Real-world benchmarks
 
-![plots](./real-world.png)
+![plots](./image.png)
 
 ## Overview
 
