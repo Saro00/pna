@@ -1,15 +1,11 @@
-# Directional GNN
+# Datasets
 
 ## Overview
 
-We provide the implementation of the Directional Graph Network (DGN) in PyTorch and DGL frameworks, along with scripts for running real-world benchmarks. The repository is organised as follows:
+The following datasets can be downloaded with the script download_datasets.sh':
 
-- `real_world` contains various scripts from [Benchmarking GNNs](https://github.com/graphdeeplearning/benchmarking-gnns) to download the real-world benchmarks and train the DGN on them. In `real_world/README.md` we provide instructions for the generation and training hyperparameters tuned.
+- `ZINC`, a dataset of molecules. The file 'molecules.py' contains the classes used to load and pre-process the pkl file. The pkl file contains an object of the class 'MoleculeDataset'. The first 5 eigenvectors are added to DGLGraphs as nodes' features with key 'eig'. They are computed once before starting the training.
 
-![multitask results plots](./multitask_benchmark/multitask-plots.png)
+- `CIFAR10`, a dataset of images saved as graphs. The file 'superpixels.py' contains the classes used to load and pre-process the pkl file. The pkl file contains an object of the class 'SuperPixDataset'. The first 5 eigenvectors are added to DGLGraphs as nodes' features with key 'eig'. They are computed once before starting the training.
 
-![real world results table](./realworld_benchmark/real-world.png)
-```
-
-## License
-MIT
+- `COLLAB`, a dataset of a collaboration network between scientists. The file 'COLLAB.py' contains the classes used to load and pre-process the pkl file. The pkl file contains an object of the class 'COLLABDataset'. The first 5 eigenvectors are added to DGLGraphs as nodes' features with key 'eig'. They are computed once before starting the training.
