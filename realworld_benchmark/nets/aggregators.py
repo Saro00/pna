@@ -61,9 +61,9 @@ def aggregate_eig_softmax(self, h, eig_s, eig_d, eig_idx, alpha):
     h_mod = torch.mul(h, torch.nn.Softmax(1)(alpha * (torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])).unsqueeze(-1)))
     return torch.sum(h_mod, dim=1)
 
-def aggregate_eig_dx(self, h, eig_s, eig_d, eig_idx):
-    h_mod = torch.mul(h, torch.abs((eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])/
-                      (torch.sum(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx], keepdim=True, dim=1))).unsqueeze(-1))
+def aggregate_eig_dir(self, h, eig_s, eig_d, eig_idx):
+    h_mod = torch.mul(h, (torch.abs((eig_s[:, :, eig_idx]) - torch.abs(eig_d[:, :, eig_idx]))/
+                      (torch.sum(torch.abs((eig_s[:, :, eig_idx]) - torch.abs(eig_d[:, :, eig_idx]), keepdim=True, dim=1))).unsqueeze(-1))
     return torch.sum(h_mod, dim=1)
 
 def aggregate_eig_bis2(self, h, eig_s, eig_d, eig_idx):
@@ -82,8 +82,8 @@ AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_ma
                'moment5': aggregate_moment_5,  'eig1-smooth': partial(aggregate_eig, eig_idx=1),
                'eig2-smooth': partial(aggregate_eig, eig_idx=2), 'eig3-smooth': partial(aggregate_eig, eig_idx=3),
                 'eig4-smooth': partial(aggregate_eig, eig_idx=4),'eig5-smooth': partial(aggregate_eig, eig_idx=5),
-                'eig1-dx' : partial(aggregate_eig_dx, eig_idx=1), 'eig2-dx' : partial(aggregate_eig_dx, eig_idx=2),
-                'eig3-dx' : partial(aggregate_eig_dx, eig_idx=3), 'eig1-1' : partial(aggregate_eig_softmax, eig_idx=1, alpha=1),
+                'eig1-dir' : partial(aggregate_eig_dir, eig_idx=1), 'eig2-dir' : partial(aggregate_eig_dir, eig_idx=2),
+                'eig3-dir' : partial(aggregate_eig_dir, eig_idx=3), 'eig1-1' : partial(aggregate_eig_softmax, eig_idx=1, alpha=1),
                 'eig1-0.5' : partial(aggregate_eig_softmax, eig_idx=1, alpha=0.5), 'eig1-0.1' : partial(aggregate_eig_softmax, eig_idx=1, alpha=0.1),
                 'eig1-2' : partial(aggregate_eig_softmax, eig_idx=1, alpha=2), 'eig1-5' : partial(aggregate_eig_softmax, eig_idx=1, alpha=5),
                 'eig1-10' : partial(aggregate_eig_softmax, eig_idx=1, alpha=10), 'eig2-1' : partial(aggregate_eig_softmax, eig_idx=2, alpha=1),
