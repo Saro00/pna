@@ -38,6 +38,9 @@ class DotDict(dict):
 
 from nets.SBMs_node_classification.load_net import gnn_model # import GNNs
 from data.data import LoadData # import dataset
+from data.SBMs import SBMsDataset
+from nets.SBMs_node_classification.eig_net import EIGNet
+from train.train_SBMs_node_classification import train_epoch_sparse as train_epoch, evaluate_network_sparse as evaluate_network
 
 
 
@@ -70,7 +73,7 @@ def gpu_setup(use_gpu, gpu_id):
     VIEWING MODEL CONFIG AND PARAMS
 """
 def view_model_param(MODEL_NAME, net_params):
-    model = gnn_model(MODEL_NAME, net_params)
+    model = EIGNet(net_params)
     total_param = 0
     print("MODEL DETAILS:\n")
     #print(model)
@@ -127,7 +130,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     print("Test Graphs: ", len(testset))
     print("Number of Classes: ", net_params['n_classes'])
 
-    model = gnn_model(MODEL_NAME, net_params)
+    model = EIGNet(net_params)
     model = model.to(device)
 
     optimizer = optim.Adam(model.parameters(), lr=params['init_lr'], weight_decay=params['weight_decay'])
@@ -139,22 +142,12 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     epoch_train_losses, epoch_val_losses = [], []
     epoch_train_accs, epoch_val_accs = [], [] 
     
-    if MODEL_NAME in ['RingGNN', '3WLGNN']:
-        # import train functions specific for WL-GNNs
-        from train.train_SBMs_node_classification import train_epoch_dense as train_epoch, evaluate_network_dense as evaluate_network
-        
-        train_loader = DataLoader(trainset, shuffle=True, collate_fn=dataset.collate_dense_gnn)
-        val_loader = DataLoader(valset, shuffle=False, collate_fn=dataset.collate_dense_gnn)
-        test_loader = DataLoader(testset, shuffle=False, collate_fn=dataset.collate_dense_gnn)
-        
-    else:
-        # import train functions for all other GCNs
-        from train.train_SBMs_node_classification import train_epoch_sparse as train_epoch, evaluate_network_sparse as evaluate_network 
-        
-        train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, collate_fn=dataset.collate)
-        val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
-        test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
-        
+
+
+    train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, collate_fn=dataset.collate)
+    val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
+    test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
+
     # At any point you can hit Ctrl + C to break out of training early.
     try:
         with tqdm(range(params['epochs'])) as t:
@@ -292,6 +285,19 @@ def main():
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
+
+    # eig params
+    parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
+    parser.add_argument('--scalers', type=str, help='Scalers to use.')
+    parser.add_argument('--NN_eig', action='store_true', default=False, help='NN eig aggr.')
+    parser.add_argument('--towers', type=int, default=5, help='Towers to use.')
+    parser.add_argument('--divide_input_first', type=bool, help='Whether to divide the input in first layer.')
+    parser.add_argument('--divide_input_last', type=bool, help='Whether to divide the input in last layers.')
+    parser.add_argument('--gru', type=bool, help='Whether to use gru.')
+    parser.add_argument('--edge_dim', type=int, help='Size of edge embeddings.')
+    parser.add_argument('--pretrans_layers', type=int, help='pretrans_layers.')
+    parser.add_argument('--posttrans_layers', type=int, help='posttrans_layers.')
+    
     args = parser.parse_args()
     with open(args.config) as f:
         config = json.load(f)
@@ -310,7 +316,7 @@ def main():
         DATASET_NAME = args.dataset
     else:
         DATASET_NAME = config['dataset']
-    dataset = LoadData(DATASET_NAME)
+    dataset = SBMsDataset(DATASET_NAME)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
@@ -390,14 +396,39 @@ def main():
         net_params['pos_enc'] = True if args.pos_enc=='True' else False
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = int(args.pos_enc_dim)
+    if args.aggregators is not None:
+        net_params['aggregators'] = args.aggregators
+    if args.scalers is not None:
+        net_params['scalers'] = args.scalers
+    if args.towers is not None:
+        net_params['towers'] = args.towers
+    if args.divide_input_first is not None:
+        net_params['divide_input_first'] = args.divide_input_first
+    if args.divide_input_last is not None:
+        net_params['divide_input_last'] = args.divide_input_last
+    if args.NN_eig is not None:
+        net_params['NN_eig'] = args.NN_eig
+    if args.gru is not None:
+        net_params['gru'] = args.gru
+    if args.edge_dim is not None:
+        net_params['edge_dim'] = args.edge_dim
+    if args.pretrans_layers is not None:
+        net_params['pretrans_layers'] = args.pretrans_layers
+    if args.posttrans_layers is not None:
+        net_params['posttrans_layers'] = args.posttrans_layers
+
         
     # SBM
     net_params['in_dim'] = torch.unique(dataset.train[0][0].ndata['feat'],dim=0).size(0) # node_dim (feat is an integer)
     net_params['n_classes'] = torch.unique(dataset.train[0][1],dim=0).size(0)
     
-    if MODEL_NAME == 'RingGNN':
-        num_nodes = [dataset.train[i][0].number_of_nodes() for i in range(len(dataset.train))]
-        net_params['avg_node_num'] = int(np.ceil(np.mean(num_nodes)))
+    D = torch.sparse.sum(dataset.graph.adjacency_matrix(transpose=True), dim=-1).to_dense()
+    net_params['avg_d'] = dict(lin=torch.mean(D),
+                                   exp=torch.mean(torch.exp(torch.div(1, D)) - 1),
+                                   log=torch.mean(torch.log(D + 1)))
+
+    num_nodes = [dataset.train[i][0].number_of_nodes() for i in range(len(dataset.train))]
+    net_params['avg_node_num'] = int(np.ceil(np.mean(num_nodes)))
 
     root_log_dir = out_dir + 'logs/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
     root_ckpt_dir = out_dir + 'checkpoints/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
