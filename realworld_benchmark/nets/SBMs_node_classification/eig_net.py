@@ -13,6 +13,7 @@ class EIGNet(nn.Module):
         super().__init__()
         in_dim_node = net_params['in_dim']
         hidden_dim = net_params['hidden_dim']
+        out_dim = net_params['out_dim']
         n_classes = net_params['n_classes']
         in_feat_dropout = net_params['in_feat_dropout']
         dropout = net_params['dropout']
