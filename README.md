@@ -8,7 +8,7 @@ We provide the implementation of the Directional Graph Network (DGN) in PyTorch 
 
 ![multitask results plots](./multitask_benchmark/multitask-plots.png)
 
-![real world results table](./realworld_benchmark/real-world.png)
+![real world results table](./realworld_benchmark/image.png)
 ```
 
 ## License
