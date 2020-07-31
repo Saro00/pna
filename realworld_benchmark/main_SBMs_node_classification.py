@@ -36,8 +36,6 @@ class DotDict(dict):
     IMPORTING CUSTOM MODULES/METHODS
 """
 
-from nets.SBMs_node_classification.load_net import gnn_model # import GNNs
-from data.data import LoadData # import dataset
 from data.SBMs import SBMsDataset
 from nets.SBMs_node_classification.eig_net import EIGNet
 from train.train_SBMs_node_classification import train_epoch_sparse as train_epoch, evaluate_network_sparse as evaluate_network
