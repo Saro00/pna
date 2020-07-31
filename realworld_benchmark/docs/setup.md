@@ -20,7 +20,6 @@ chmod +x ~/miniconda.sh
 
 source ~/.bashrc          # For Linux
 source ~/.bash_profile    # For OSX
-
 ```
 
 
@@ -39,7 +38,6 @@ conda env create -f environment_cpu.yml
 
 # Activate environment
 conda activate benchmark_gnn
-
 ```
 
 
@@ -75,7 +73,6 @@ conda env create -f environment_gpu.yml
 
 # Activate environment
 conda activate benchmark_gnn
-
 ```
 
 
@@ -105,8 +102,6 @@ conda env create -f environment_gpu.yml
 
 # Activate environment
 conda activate benchmark_gnn
-
-
 ```
 <br>
 
@@ -131,16 +126,13 @@ sys.path.append('/usr/local/lib/python3.7/site-packages/')
 os.chdir('pna/realworld_benchmark/data')
 
 os.chdir('..')
-
-...
-
-
 ```
+
+
 ## 5. Download Datasets
 
 ```
 # At the root of the repo
 cd realworld_benchmark/data/ 
 bash download_datasets.sh
-
 ```
