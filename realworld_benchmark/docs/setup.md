@@ -102,16 +102,46 @@ conda env create -f environment_gpu.yml
 
 # Activate environment
 conda activate benchmark_gnn
-```
 
-## 4. Download Datasets
 
 ```
+<br>
+
+## 4. Colab Setup
+
+```
+
+# Install miniconda
+import os, sys
+! wget https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-Linux-x86_64.sh
+! chmod +x Miniconda3-py37_4.8.2-Linux-x86_64.sh
+! bash ./Miniconda3-py37_4.8.2-Linux-x86_64.sh -b -f -p /usr/local
+! PATH=${PATH}:/usr/local/lib/python3.7/site-packages/
+sys.path.append('/usr/local/lib/python3.7/site-packages/')
+
+# Clone GitHub repo
+!git clone https://github.com/Saro00/pna
+
+# Install python environment
+! conda env update --name base --file pna/realworld_benchmark/environment_colab.yml  --prune
+
+# Download dataset
+os.chdir('pna/realworld_benchmark/data')
+
+os.chdir('..')
+...
+
+<br>
+
+```
+## 5. Download Datasets
+
+```
+
 # At the root of the repo
 cd realworld_benchmark/data/ 
 bash download_datasets.sh
 ```
+```
 
-
-<br><br><br>
-
+<br
