@@ -139,7 +139,7 @@ def positional_encoding(g, pos_enc_dim):
     #EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
     EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR', tol=1e-2) # for 40 PEs
     EigVec = EigVec[:, EigVal.argsort()] # increasing order
-    g.ndata['pos_enc'] = torch.from_numpy(EigVec[:,1:pos_enc_dim+1]).float() 
+    g.ndata['eig'] = torch.from_numpy(EigVec[:,1:pos_enc_dim+1]).float() 
 
     return g
 
@@ -160,6 +160,7 @@ class SBMsDataset(torch.utils.data.Dataset):
             self.train = f[0]
             self.val = f[1]
             self.test = f[2]
+        self._add_positional_encodings(5)
         print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
         print("[I] Finished loading.")
         print("[I] Data load time: {:.4f}s".format(time.time()-start))
