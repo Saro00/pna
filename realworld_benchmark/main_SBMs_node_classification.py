@@ -419,6 +419,8 @@ def main():
         
     # SBM
     print(dataset.train[0][1])
+    print(len(dataset.train))
+    print(len(dataset.train[0])
     net_params['in_dim'] = torch.unique(dataset.train[0][0].ndata['feat'],dim=0).size(0) # node_dim (feat is an integer)
     net_params['n_classes'] = torch.unique(dataset.train[0][1],dim=0).size(0)
     
