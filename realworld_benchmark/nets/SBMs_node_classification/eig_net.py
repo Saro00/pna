@@ -87,7 +87,7 @@ class EIGNet(nn.Module):
                 h_t = self.gru(h, h_t)
             h = h_t
 
-
+        print('before last ', h)
         h_out = self.MLP_layer(h)
         print('after all ', h_out)
 
