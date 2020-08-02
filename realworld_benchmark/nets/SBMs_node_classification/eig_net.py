@@ -85,7 +85,7 @@ class EIGNet(nn.Module):
             h = h_t
 
         g.ndata['h'] = h
-        return h
+        return self.MLP_layer(h)
 
     
     def loss(self, pred, label):
