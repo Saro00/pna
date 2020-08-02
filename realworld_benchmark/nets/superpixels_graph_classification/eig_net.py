@@ -32,6 +32,7 @@ class EIGNet(nn.Module):
         self.scalers = net_params['scalers']
         self.NN_eig = net_params['NN_eig']
         self.avg_d = net_params['avg_d']
+        self.not_pre = net_params['not_pre']
         self.towers = net_params['towers']
         self.divide_input_first = net_params['divide_input_first']
         self.divide_input_last = net_params['divide_input_last']
@@ -51,14 +52,14 @@ class EIGNet(nn.Module):
                                               graph_norm=self.graph_norm, batch_norm=self.batch_norm,
                                               residual=self.residual, aggregators=self.aggregators,
                                               scalers=self.scalers,
-                                              avg_d=self.avg_d, towers=self.towers, edge_features=self.edge_feat, NN_eig = self.NN_eig,
+                                              avg_d=self.avg_d, not_pre=self.not_pre, towers=self.towers, edge_features=self.edge_feat, NN_eig = self.NN_eig,
                                               edge_dim=edge_dim, divide_input=self.divide_input_first,
                                               pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers) for _
                                      in range(n_layers - 1)])
         self.layers.append(EIGLayer(in_dim=hidden_dim, out_dim=out_dim, dropout=dropout,
                                     graph_norm=self.graph_norm, batch_norm=self.batch_norm,
                                     residual=self.residual, aggregators=self.aggregators, scalers=self.scalers,
-                                    avg_d=self.avg_d, towers=self.towers, divide_input=self.divide_input_last,
+                                    avg_d=self.avg_d, not_pre=self.not_pre, towers=self.towers, divide_input=self.divide_input_last,
                                     edge_features=self.edge_feat, edge_dim=edge_dim, NN_eig = self.NN_eig,
                                     pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers))
 

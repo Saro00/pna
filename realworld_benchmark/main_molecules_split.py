@@ -263,6 +263,7 @@ def main():
     parser.add_argument('--edge_dim', type=int, help='Size of edge embeddings.')
     parser.add_argument('--pretrans_layers', type=int, help='pretrans_layers.')
     parser.add_argument('--posttrans_layers', type=int, help='posttrans_layers.')
+    parser.add_argument('--not_pre', action='store_true', default=False, help='Not applying pre-transformation')
 
     args = parser.parse_args()
 
@@ -377,6 +378,8 @@ def main():
         net_params['pretrans_layers'] = args.pretrans_layers
     if args.posttrans_layers is not None:
         net_params['posttrans_layers'] = args.posttrans_layers
+    if args.not_pre is not None:
+        net_params['not_pre'] = args.not_pre
 
     # ZINC
     net_params['num_atom_type'] = dataset.num_atom_type

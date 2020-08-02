@@ -11,13 +11,14 @@ from .scalers import SCALERS
 
 
 class EIGTower(nn.Module):
-    def __init__(self, in_dim, out_dim, dropout, graph_norm, batch_norm, aggregators, scalers, NN_eig, avg_d,
+    def __init__(self, in_dim, out_dim, dropout, graph_norm, batch_norm, aggregators, scalers, NN_eig, avg_d, not_pre,
                  pretrans_layers, posttrans_layers, edge_features, edge_dim):
         super().__init__()
         self.dropout = dropout
         self.graph_norm = graph_norm
         self.batch_norm = batch_norm
         self.edge_features = edge_features
+        self.not_pre = not_pre
 
         self.fc = nn.Linear(in_dim, out_dim, bias=False)
         self.attn_fc = nn.Linear(2 * out_dim, 1, bias=False)
@@ -26,7 +27,8 @@ class EIGTower(nn.Module):
         self.aggregators = aggregators
         self.scalers = scalers
         self.NN_eig = NN_eig
-        self.pretrans = MLP(in_size=2 * in_dim + (edge_dim if edge_features else 0), hidden_size=in_dim,
+        if not not_pre:
+            self.pretrans = MLP(in_size=2 * in_dim + (edge_dim if edge_features else 0), hidden_size=in_dim,
                             out_size=in_dim, layers=pretrans_layers, mid_activation='relu', last_activation='none')
         if NN_eig:
             self.posttrans = MLP(in_size=((len(aggregators)+1) * len(scalers) + 1) * in_dim,
@@ -47,12 +49,17 @@ class EIGTower(nn.Module):
             layer.reset_parameters()
 
     def pretrans_edges(self, edges):
-        if self.edge_features:
-            z2 = torch.cat([edges.src['h'], edges.dst['h'], edges.data['ef']], dim=1)
-        else:
-            z2 = torch.cat([edges.src['h'], edges.dst['h']], dim=1)
+        if self.not_pre:
+            return {'e': edges.dst['h'], 'eig_s': edges.src['eig'], 'eig_d': edges.dst['eig']}
 
-        return {'e': self.pretrans(z2), 'eig_s': edges.src['eig'], 'eig_d': edges.dst['eig']}
+        else:
+            if self.edge_features:
+                z2 = torch.cat([edges.src['h'], edges.dst['h'], edges.data['ef']], dim=1)
+            else:
+                z2 = torch.cat([edges.src['h'], edges.dst['h']], dim=1)
+
+            return {'e': self.pretrans(z2), 'eig_s': edges.src['eig'], 'eig_d': edges.dst['eig']}
+
 
     def message_func(self, edges):
         return {'e': edges.data['e'], 'eig_s': edges.data['eig_s'], 'eig_d': edges.data['eig_d']}
@@ -123,7 +130,7 @@ class EIGLayer(nn.Module):
         Param: [in_dim, out_dim, n_heads]
     """
 
-    def __init__(self, in_dim, out_dim, aggregators, scalers, avg_d, dropout, graph_norm, batch_norm, NN_eig=False, towers=1,
+    def __init__(self, in_dim, out_dim, aggregators, scalers, avg_d, dropout, graph_norm, batch_norm, not_pre = False, NN_eig=False, towers=1,
                  pretrans_layers=1, posttrans_layers=1, divide_input=True, residual=False, edge_features=False,
                  edge_dim=0):
         super().__init__()
@@ -152,7 +159,7 @@ class EIGLayer(nn.Module):
         self.towers = nn.ModuleList()
         for _ in range(towers):
             self.towers.append(EIGTower(in_dim=self.input_tower, out_dim=self.output_tower, aggregators=aggregators,
-                                        scalers=scalers, NN_eig=self.NN_eig, avg_d=avg_d, pretrans_layers=pretrans_layers,
+                                        scalers=scalers, NN_eig=self.NN_eig, avg_d=avg_d, not_pre = not_pre, pretrans_layers=pretrans_layers,
                                         posttrans_layers=posttrans_layers, batch_norm=batch_norm, dropout=dropout,
                                         graph_norm=graph_norm, edge_features=edge_features, edge_dim=edge_dim))
         # mixing network
