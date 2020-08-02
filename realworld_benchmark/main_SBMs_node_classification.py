@@ -298,7 +298,6 @@ def main():
     parser.add_argument('--not_pre', action='store_true', default=False, help='Not applying pre-transformation')
     
     args = parser.parse_args()
-    print(args.config)
     with open(args.config) as f:
         config = json.load(f)
         
@@ -421,11 +420,8 @@ def main():
 
         
     # SBM
-    for i in range(10):
-        print(dataset.train[i][1])
-        
-    print(len(dataset.train))
-    print(len(dataset.train[0]))
+
+
     net_params['in_dim'] = torch.unique(dataset.train[0][0].ndata['feat'],dim=0).size(0) # node_dim (feat is an integer)
     net_params['n_classes'] = torch.unique(dataset.train[0][1],dim=0).size(0)
     
