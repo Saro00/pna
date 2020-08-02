@@ -104,6 +104,8 @@ class EIGNet(nn.Module):
         
         # weighted cross-entropy for unbalanced classes
         criterion = nn.CrossEntropyLoss(weight=weight)
+        print(pred.shape)
+        print(label.shape)
         loss = criterion(pred, label)
 
         return loss

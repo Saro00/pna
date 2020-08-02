@@ -36,8 +36,6 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
         loss.backward()
         optimizer.step()
         epoch_loss += loss.detach().item()
-        print(batch_scores)
-        print(batch_labels)
         epoch_train_acc += accuracy(batch_scores, batch_labels)
     epoch_loss /= (iter + 1)
     epoch_train_acc /= (iter + 1)
