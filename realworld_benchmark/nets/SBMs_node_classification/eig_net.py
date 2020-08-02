@@ -64,7 +64,8 @@ class EIGNet(nn.Module):
         if self.gru_enable:
             self.gru = GRU(hidden_dim, hidden_dim, device)
             
-        self.MLP_layer = MLPReadout(out_dim, n_classes)    
+        self.MLP_layer = MLPReadout(out_dim, n_classes)
+        self.reset_params()
         
         
        
