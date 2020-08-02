@@ -58,7 +58,7 @@ def evaluate_network_sparse(model, device, data_loader, epoch):
                 batch_pos_enc = batch_graphs.ndata['pos_enc'].to(device)
                 batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_pos_enc)
             except:
-                batch_scores = model.forward(batch_graphs, batch_x, batch_e, False, False)
+                batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True)
             loss = model.loss(batch_scores, batch_labels) 
             epoch_test_loss += loss.detach().item()
             epoch_test_acc += accuracy(batch_scores, batch_labels)
