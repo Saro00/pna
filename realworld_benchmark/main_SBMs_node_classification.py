@@ -179,6 +179,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                               train_loss=epoch_train_loss, val_loss=epoch_val_loss,
                               train_acc=epoch_train_acc, val_acc=epoch_val_acc,
                               test_acc=epoch_test_acc)
+                print('')
 
                 per_epoch_time.append(time.time()-start)
 
