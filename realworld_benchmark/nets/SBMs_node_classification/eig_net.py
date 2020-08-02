@@ -76,9 +76,7 @@ class EIGNet(nn.Module):
             
 
     def forward(self, g, h, e, snorm_n, snorm_e):
-        print('before emb ', h)
         h = self.embedding_h(h)
-        print('after emb ', h)
         h = self.in_feat_dropout(h)
 
         for i, conv in enumerate(self.layers):
@@ -87,9 +85,7 @@ class EIGNet(nn.Module):
                 h_t = self.gru(h, h_t)
             h = h_t
 
-        print('before last ', h)
         h_out = self.MLP_layer(h)
-        print('after all ', h_out)
 
         return h_out
 
