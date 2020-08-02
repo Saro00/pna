@@ -62,7 +62,7 @@ class EIGTower(nn.Module):
 
 
     def message_func(self, edges):
-        return {'e': edges.data['e'], 'eig_s': edges.data['eig_s'], 'eig_d': edges.data['eig_d']}
+        return {'e': edges.data['e'], 'eig_s': edges.data['eig_s'].to('cuda' if torch.cuda.is_available() else 'cpu'), 'eig_d': edges.data['eig_d'].to('cuda' if torch.cuda.is_available() else 'cpu')}
 
     def reduce_func(self, nodes):
         h = nodes.mailbox['e']
