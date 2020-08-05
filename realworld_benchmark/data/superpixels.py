@@ -156,9 +156,12 @@ class SuperPixDGL(torch.utils.data.Dataset):
             self.graph_lists.append(g)
 
     def get_eig(self):
-        for g in self.graph_lists:
-            A = g.adjacency_matrix().to_dense()
-            g.ndata['eig'] = get_k_lowest_eig(A, 7)
+        def get_eig(self):
+            self.graph_lists = [positional_encoding(g, pos_enc_dim) for g in self.graph_lists]
+
+            # for g in self.graph_lists:
+            # A = g.adjacency_matrix().to_dense()
+            # g.ndata['eig'] = get_k_lowest_eig(A, 7)
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
@@ -192,9 +195,12 @@ class DGLFormDataset(torch.utils.data.Dataset):
         self.graph_labels = lists[1]
 
     def get_eig(self):
-        for g in self.graph_lists:
-            A = g.adjacency_matrix().to_dense()
-            g.ndata['eig'] = get_k_lowest_eig(A, 7)
+        self.graph_lists = [positional_encoding(g, pos_enc_dim) for g in self.graph_lists]
+
+        #for g in self.graph_lists:
+            #A = g.adjacency_matrix().to_dense()
+            #g.ndata['eig'] = get_k_lowest_eig(A, 7)
+
 
     def __getitem__(self, index):
         return tuple(li[index] for li in self.lists)
@@ -475,3 +481,27 @@ def get_k_lowest_eig(adj, k):
     k_lowest_eigvec = torch.stack(k_lowest_eigvec, dim=0).view(*(shape[:-2] + [-1, k]))
 
     return k_lowest_eigvec.to('cuda' if torch.cuda.is_available() else 'cpu')
+
+def positional_encoding(g, pos_enc_dim):
+    """
+        Graph positional encoding v/ Laplacian eigenvectors
+    """
+
+    # Laplacian
+    A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+    N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+    L = sp.eye(g.number_of_nodes()) - N * A * N
+
+    # # Eigenvectors with numpy
+    # EigVal, EigVec = np.linalg.eig(L.toarray())
+    # idx = EigVal.argsort() # increasing order
+    # EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
+    # g.ndata['pos_enc'] = torch.from_numpy(np.abs(EigVec[:,1:pos_enc_dim+1])).float()
+
+    # Eigenvectors with scipy
+    #EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
+    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR', tol=1e-2) # for 40 PEs
+    EigVec = EigVec[:, EigVal.argsort()] # increasing order
+    g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:,1:pos_enc_dim+1])).float()
+
+    return g
