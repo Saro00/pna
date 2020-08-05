@@ -184,7 +184,6 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                     print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
                     break
 
-                print('')
 
                 # Saving checkpoint
                 if hydra.is_available() and (time.time() - last_hydra_checkpoint) > params['hydra_checkpoint_every']:
