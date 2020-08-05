@@ -74,7 +74,7 @@ def aggregate_eig_new(self, h, eig_s, eig_d, eig_idx):
 def aggregate_eig_new_abs(self, h, eig_s, eig_d, eig_idx):
     h_mod = torch.mul(h, (torch.abs(torch.abs(eig_s[:, :, eig_idx]) - torch.abs(eig_d[:, :, eig_idx]))/
                       (torch.sum(torch.abs(torch.abs(eig_s[:, :, eig_idx]) - torch.abs(eig_d[:, :, eig_idx])), keepdim=True, dim=1) + EPS)).unsqueeze(-1))
-    return torch.asb(torch.sum(h_mod, dim=1))
+    return torch.abs(torch.sum(h_mod, dim=1))
 
 
 def aggregate_eig_dx(self, h, eig_s, eig_d, eig_idx):
