@@ -71,6 +71,11 @@ def aggregate_eig_new(self, h, eig_s, eig_d, eig_idx):
                       (torch.sum(torch.abs(torch.abs(eig_s[:, :, eig_idx]) - torch.abs(eig_d[:, :, eig_idx])), keepdim=True, dim=1) + EPS)).unsqueeze(-1))
     return torch.sum(h_mod, dim=1)
 
+def aggregate_eig_new_abs(self, h, eig_s, eig_d, eig_idx):
+    h_mod = torch.mul(h, (torch.abs(torch.abs(eig_s[:, :, eig_idx]) - torch.abs(eig_d[:, :, eig_idx]))/
+                      (torch.sum(torch.abs(torch.abs(eig_s[:, :, eig_idx]) - torch.abs(eig_d[:, :, eig_idx])), keepdim=True, dim=1) + EPS)).unsqueeze(-1))
+    return torch.asb(torch.sum(h_mod, dim=1))
+
 
 def aggregate_eig_dx(self, h, eig_s, eig_d, eig_idx):
     h_mod = torch.mul(h, ((eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])/
@@ -105,5 +110,6 @@ AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_ma
                 'eig1-neg-0.1' : partial(aggregate_eig_softmax, eig_idx=1, alpha=-0.1), 'eig2-neg-0.1' : partial(aggregate_eig_softmax, eig_idx=2, alpha=-0.1),
                 'eig1-smooth-new' : partial(aggregate_eig_new, eig_idx=1), 'eig2-smooth-new' : partial(aggregate_eig_new, eig_idx=2),
                 'eig3-smooth-new' : partial(aggregate_eig_new, eig_idx=3), 'eig4-smooth-new' : partial(aggregate_eig_new, eig_idx=4),
+                'eig1-new-abs' : partial(aggregate_eig_new_abs, eig_idx=1), 'eig2-new-abs' : partial(aggregate_eig_new_abs, eig_idx=2),
                 'eig1-dx' : partial(aggregate_eig_dx, eig_idx=1), 'eig2-dx' : partial(aggregate_eig_dx, eig_idx=2),
                 'eig3-dx' : partial(aggregate_eig_dx, eig_idx=3), 'aggregate_NN': aggregate_NN}
