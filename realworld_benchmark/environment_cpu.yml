@@ -36,9 +36,9 @@ dependencies:
 - scikit-image=0.15.0
 - requests==2.22.0
 - tqdm==4.43.0
-- python-hydra
 - pip:
   - tensorflow==2.1.0
   - tensorflow-estimator==2.1.0
   - tensorboard==2.1.1
   - ogb==1.1.1
+  - python-hydra
