@@ -106,7 +106,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
         print("Training Graphs: ", len(trainset))
         print("Validation Graphs: ", len(valset))
         print("Test Graphs: ", len(testset))
-        print("Number of Classes: ", net_params['n_classes'])
+
 
     model = EIGNet(net_params)
     model = model.to(device)
