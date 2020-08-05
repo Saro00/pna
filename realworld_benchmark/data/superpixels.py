@@ -5,6 +5,7 @@
 import os
 import pickle
 from scipy.spatial.distance import cdist
+from scipy import sparse as sp
 import numpy as np
 import itertools
 
