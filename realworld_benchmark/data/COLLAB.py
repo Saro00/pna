@@ -35,9 +35,10 @@ def positional_encoding(g, pos_enc_dim):
 
 
 class COLLABDataset(Dataset):
-    def __init__(self, name):
+    def __init__(self, name, verbose=True):
         start = time.time()
-        print("[I] Loading dataset %s..." % (name))
+        if verbose:
+            print("[I] Loading dataset %s..." % (name))
         self.name = name
         self.dataset = DglLinkPropPredDataset(name='ogbl-collab')
 
@@ -61,9 +62,9 @@ class COLLABDataset(Dataset):
         for i in range(10):
             a = rd.randint(1, 235868)
             print('Eig for ', a, ' is: ', self.graph.ndata['eig'][a, :])
-
-        print("[I] Finished loading.")
-        print("[I] Data load time: {:.4f}s".format(time.time() - start))
+        if verbose:
+            print("[I] Finished loading.")
+            print("[I] Data load time: {:.4f}s".format(time.time() - start))
 
     def _add_positional_encodings(self, pos_enc_dim):
         # Graph positional encoding v/ Laplacian eigenvectors

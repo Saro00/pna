@@ -141,12 +141,13 @@ def self_loop(g):
 
 class MoleculeDataset(torch.utils.data.Dataset):
 
-    def __init__(self, name):
+    def __init__(self, name, verbose=True):
         """
             Loading SBM datasets
         """
         start = time.time()
-        print("[I] Loading dataset %s..." % (name))
+        if verbose:
+            print("[I] Loading dataset %s..." % (name))
         self.name = name
         data_dir = 'data/'
         with open(data_dir + name + '.pkl', "rb") as f:
@@ -159,9 +160,10 @@ class MoleculeDataset(torch.utils.data.Dataset):
             self.test = f[2]
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
-        print('train, test, val sizes :', len(self.train), len(self.test), len(self.val))
-        print("[I] Finished loading.")
-        print("[I] Data load time: {:.4f}s".format(time.time() - start))
+        if verbose:
+            print('train, test, val sizes :', len(self.train), len(self.test), len(self.val))
+            print("[I] Finished loading.")
+            print("[I] Data load time: {:.4f}s".format(time.time() - start))
 
     # form a mini batch from a given list of samples = [(graph, label) pairs]
     def collate(self, samples):

@@ -273,12 +273,13 @@ def self_loop(g):
 
 class SuperPixDataset(torch.utils.data.Dataset):
 
-    def __init__(self, name):
+    def __init__(self, name, verbose=True):
         """
             Loading Superpixels datasets
         """
         start = time.time()
-        print("[I] Loading dataset %s..." % (name))
+        if verbose:
+            print("[I] Loading dataset %s..." % (name))
         self.name = name
         data_dir = 'data/'
         with open(data_dir+name+'.pkl',"rb") as f:
@@ -293,9 +294,10 @@ class SuperPixDataset(torch.utils.data.Dataset):
             self.val = f[1]
             f[2].get_eig()
             self.test = f[2]
-        print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
-        print("[I] Finished loading.")
-        print("[I] Data load time: {:.4f}s".format(time.time()-start))
+        if verbose:
+            print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
+            print("[I] Finished loading.")
+            print("[I] Data load time: {:.4f}s".format(time.time()-start))
 
 
     # form a mini batch from a given list of samples = [(graph, label) pairs]

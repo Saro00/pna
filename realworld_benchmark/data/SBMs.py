@@ -147,12 +147,13 @@ def positional_encoding(g, pos_enc_dim):
     
 class SBMsDataset(torch.utils.data.Dataset):
 
-    def __init__(self, name):
+    def __init__(self, name, verbose=True):
         """
             Loading SBM datasets
         """
         start = time.time()
-        print("[I] Loading dataset %s..." % (name))
+        if verbose:
+            print("[I] Loading dataset %s..." % (name))
         self.name = name
         data_dir = 'data/'
         with open(data_dir+name+'.pkl',"rb") as f:
@@ -161,9 +162,10 @@ class SBMsDataset(torch.utils.data.Dataset):
             self.val = f[1]
             self.test = f[2]
         self._add_positional_encodings(5)
-        print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
-        print("[I] Finished loading.")
-        print("[I] Data load time: {:.4f}s".format(time.time()-start))
+        if verbose:
+            print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
+            print("[I] Finished loading.")
+            print("[I] Data load time: {:.4f}s".format(time.time()-start))
 
 
     # form a mini batch from a given list of samples = [(graph, label) pairs]
