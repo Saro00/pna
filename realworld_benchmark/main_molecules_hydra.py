@@ -119,6 +119,9 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     if hydra.is_first_execution():
         start_epoch = 0
     else:
+        print('')
+        print('I am loading old model')
+        print('')
         t0 -= hydra.retrieved_checkpoint.time_elapsed
         start_epoch = hydra.retrieved_checkpoint.last_epoch
         states = torch.load(hydra.retrieved_checkpoint.linked_files()[0])
@@ -300,7 +303,7 @@ def main():
     parser.add_argument('--hydra', action='store_true', default=False, help='Run in Hydra environment.')
     parser.add_argument('--hydra_checkpoint_every', type=int, default=100, help='Save checkpoints to hydra every.')
     parser.add_argument('--hydra_eta_every', type=int, default=100, help='Update ETA to hydra every.')
-    parser.add_argument('--hydra_progress_bar_every', type=float, default=120.0,
+    parser.add_argument('--hydra_progress_bar_every', type=float, default=1,
                         help='Update progress hydra every (seconds).')
 
     # eig params
