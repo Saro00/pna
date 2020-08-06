@@ -158,6 +158,7 @@ class SuperPixDGL(torch.utils.data.Dataset):
 
     def get_eig(self):
         self.graph_lists = [positional_encoding(g, 7) for g in self.graph_lists]
+        self.graph_lists = sort_list_eig(self.graph_lists)
 
         #for g in self.graph_lists:
             #A = g.adjacency_matrix().to_dense()
@@ -196,6 +197,7 @@ class DGLFormDataset(torch.utils.data.Dataset):
 
     def get_eig(self):
         self.graph_lists = [positional_encoding(g, 7) for g in self.graph_lists]
+        self.graph_lists = sort_list_eig(self.graph_lists)
 
         #for g in self.graph_lists:
             #A = g.adjacency_matrix().to_dense()
@@ -501,3 +503,53 @@ def positional_encoding(g, pos_enc_dim):
     g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:,:pos_enc_dim])).float()
 
     return g
+
+def get_scores(x, y, eig):
+
+  n = len(x)
+  hor = 0
+  ver = 0
+  for i in range(n):
+    if eig[i] > 0:
+      if x[i] > 0.5:
+        hor += 1
+      else:
+        hor -= 1
+      if y[i] > 0.5:
+        ver += 1
+      else:
+        ver -= 1
+
+  scores = {}
+  scores['hor'] = abs(hor)
+  scores['ver'] = abs(ver)
+
+  return scores
+
+def sort_eig(graph):
+    x = graph.ndata['feat'][:, 3]
+    y = graph.ndata['feat'][:, 4]
+    eigs = graph.ndata['eig'].copy()
+    eig1 = eigs[:, 1]
+    eig2 = eigs[:, 2]
+    scores1 = get_scores(x, y, eig1)
+    scores2 = get_scores(x, y, eig2)
+
+    if scores1['hor'] == max(scores1['hor'], scores2['ver'], scores1['ver'], scores2['hor']):
+        return graph
+    elif scores2['ver'] == max(scores1['hor'], scores2['ver'], scores1['ver'], scores2['hor']):
+        return graph
+    elif scores1['ver'] == max(scores1['hor'], scores2['ver'], scores1['ver'], scores2['hor']):
+        eigs[:, 1] = eig2
+        eigs[:, 2] = eig1
+        graph.ndata['eig'] = eigs
+        return graph
+    else:
+        eigs[:, 1] = eig2
+        eigs[:, 2] = eig1
+        graph.ndata['eig'] = eigs
+        return graph
+
+def sort_list_eig(list):
+    list_new = [sort_eig(graph) for graph in list]
+    return list_new
