@@ -496,7 +496,7 @@ def positional_encoding(g, pos_enc_dim):
 
     # Eigenvectors with scipy
     #EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
-    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR', tol=1e-2) # for 40 PEs
+    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR') # for 40 PEs
     EigVec = EigVec[:, EigVal.argsort()] # increasing order
     g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:,:pos_enc_dim])).float()
 
