@@ -138,7 +138,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     if hydra.is_first_execution():
         start_epoch = 0
     else:
-        t0 -= hydra.retrieved_checkpoint.time_elapsed
+        start0 -= hydra.retrieved_checkpoint.time_elapsed
         start_epoch = hydra.retrieved_checkpoint.last_epoch
         states = torch.load(hydra.retrieved_checkpoint.linked_files()[0])
         model.load_state_dict(states['model'])
@@ -152,7 +152,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
     test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
 
-    last_hydra_checkpoint = t0
+    last_hydra_checkpoint = start0
 
     # At any point you can hit Ctrl + C to break out of training early.
     try:
@@ -231,7 +231,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                     }, ck_path)
                     ck = hydra.checkpoint()
                     ck.last_epoch = epoch + 1
-                    ck.time_elapsed = time.time() - t0
+                    ck.time_elapsed = time.time() - start0
                     # save best epoch
                     ck.link_file(ck_path)
                     ck.save_to_server()
@@ -257,7 +257,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         hydra.save_output({'loss': {'train': epoch_train_losses, 'val': epoch_val_losses},
                            'MAE': {'train': epoch_train_acc, 'val': epoch_val_acc}}, 'history')
         hydra.save_output(
-            {'test_acc': test_acc, 'train_acc': train_acc, 'val_acc': val_acc, 'total_time': time.time() - t0,
+            {'test_acc': test_acc, 'train_acc': train_acc, 'val_acc': val_acc, 'total_time': time.time() - start0,
              'avg_epoch_time': np.mean(per_epoch_time)}, 'summary')
 
 
