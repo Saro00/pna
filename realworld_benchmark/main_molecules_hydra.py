@@ -116,16 +116,9 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                                                      factor=params['lr_reduce_factor'],
                                                      patience=params['lr_schedule_patience'],
                                                      verbose=True)
-    print('I am passi')
     if hydra.is_first_execution():
-        print('')
-        print('It is the first execution')
-        print('')
         start_epoch = 0
     else:
-        print('')
-        print('I am loading old model')
-        print('')
         t0 -= hydra.retrieved_checkpoint.time_elapsed
         start_epoch = hydra.retrieved_checkpoint.last_epoch
         states = torch.load(hydra.retrieved_checkpoint.linked_files()[0])
