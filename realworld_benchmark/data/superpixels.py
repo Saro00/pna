@@ -157,12 +157,11 @@ class SuperPixDGL(torch.utils.data.Dataset):
             self.graph_lists.append(g)
 
     def get_eig(self):
-        def get_eig(self):
-            self.graph_lists = [positional_encoding(g, 7) for g in self.graph_lists]
+        #self.graph_lists = [positional_encoding(g, 7) for g in self.graph_lists]
 
-            # for g in self.graph_lists:
-            # A = g.adjacency_matrix().to_dense()
-            # g.ndata['eig'] = get_k_lowest_eig(A, 7)
+        for g in self.graph_lists:
+            A = g.adjacency_matrix().to_dense()
+            g.ndata['eig'] = get_k_lowest_eig(A, 7)
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
@@ -196,11 +195,11 @@ class DGLFormDataset(torch.utils.data.Dataset):
         self.graph_labels = lists[1]
 
     def get_eig(self):
-        self.graph_lists = [positional_encoding(g, 7) for g in self.graph_lists]
+        #self.graph_lists = [positional_encoding(g, 7) for g in self.graph_lists]
 
-        #for g in self.graph_lists:
-            #A = g.adjacency_matrix().to_dense()
-            #g.ndata['eig'] = get_k_lowest_eig(A, 7)
+        for g in self.graph_lists:
+            A = g.adjacency_matrix().to_dense()
+            g.ndata['eig'] = get_k_lowest_eig(A, 7)
 
 
     def __getitem__(self, index):
