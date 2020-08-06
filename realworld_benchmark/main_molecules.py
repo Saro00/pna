@@ -303,6 +303,7 @@ def main():
     if args.lr_schedule_patience is not None:
         params['lr_schedule_patience'] = int(args.lr_schedule_patience)
     if args.min_lr is not None:
+        params['min_lr'] = float(args.min_lr)
     if args.min_daalr is not None:
         params['min_lr'] = float(args.min_lr)
     if args.weight_decay is not None:
