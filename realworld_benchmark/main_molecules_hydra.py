@@ -116,6 +116,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                                                      factor=params['lr_reduce_factor'],
                                                      patience=params['lr_schedule_patience'],
                                                      verbose=True)
+    print(I am passi)
     if hydra.is_first_execution():
         print('')
         print('It is the first execution')
@@ -326,6 +327,7 @@ def main():
 
     # hydra load
     if args.hydra:
+        print('I am passing here 1')
         if not hydra.is_available():
             print('hydra: not available')
             args.hydra = False
