@@ -117,6 +117,9 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                                                      patience=params['lr_schedule_patience'],
                                                      verbose=True)
     if hydra.is_first_execution():
+        print('')
+        print('It is the first execution')
+        print('')
         start_epoch = 0
     else:
         print('')
