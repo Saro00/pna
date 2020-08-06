@@ -74,7 +74,7 @@ def view_model_param(net_params, verbose=True):
         # print(param.data.size())
         total_param += np.prod(list(param.data.size()))
     if verbose:
-        print('MODEL/Total parameters:', MODEL_NAME, total_param)
+        print('MODEL/Total parameters:', total_param)
     return total_param
 
 
