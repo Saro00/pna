@@ -178,7 +178,10 @@ class EIGLayer(nn.Module):
         else:
             h_cat = torch.cat([tower(g, h, e, snorm_n) for tower in self.towers], dim=1)
 
-        h_out = self.mixing_network(h_cat)
+        if len(self.towers) > 1:
+            h_out = self.mixing_network(h_cat)
+        else:
+            h_out = h_cat
 
         if self.residual:
             h_out = h_in + h_out  # residual connection
