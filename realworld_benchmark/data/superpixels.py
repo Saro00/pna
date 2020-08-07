@@ -505,26 +505,25 @@ def positional_encoding(g, pos_enc_dim):
     return g
 
 def get_scores(x, y, eig):
+    n = x.shape[0]
+    hor = 0
+    ver = 0
+    for i in range(n):
+        if eig[i] > 0:
+            if x[i] > 0.5:
+                hor += 1
+            else:
+                hor -= 1
+            if y[i] > 0.5:
+                ver += 1
+            else:
+                ver -= 1
 
-  n = len(x)
-  hor = 0
-  ver = 0
-  for i in range(n):
-    if eig[i] > 0:
-      if x[i] > 0.5:
-        hor += 1
-      else:
-        hor -= 1
-      if y[i] > 0.5:
-        ver += 1
-      else:
-        ver -= 1
+    scores = {}
+    scores['hor'] = abs(hor)
+    scores['ver'] = abs(ver)
 
-  scores = {}
-  scores['hor'] = abs(hor)
-  scores['ver'] = abs(ver)
-
-  return scores
+    return scores
 
 def sort_eig(graph):
     x = graph.ndata['feat'][:, 3]
