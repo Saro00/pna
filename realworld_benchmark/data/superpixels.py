@@ -529,7 +529,7 @@ def get_scores(x, y, eig):
 def sort_eig(graph):
     x = graph.ndata['feat'][:, 3]
     y = graph.ndata['feat'][:, 4]
-    eigs = graph.ndata['eig'].copy()
+    eigs = graph.ndata['eig']
     eig1 = eigs[:, 1]
     eig2 = eigs[:, 2]
     scores1 = get_scores(x, y, eig1)
