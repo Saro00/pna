@@ -509,12 +509,12 @@ def get_scores(x, y, eig):
     hor = 0
     ver = 0
     for i in range(n):
-        if eig[i] > 0:
-            if x[i] > 0.5:
+        if float(eig[i]) > 0:
+            if float(x[i]) > 0.5:
                 hor += 1
             else:
                 hor -= 1
-            if y[i] > 0.5:
+            if float(y[i]) > 0.5:
                 ver += 1
             else:
                 ver -= 1
