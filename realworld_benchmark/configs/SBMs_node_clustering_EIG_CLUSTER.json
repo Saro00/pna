@@ -25,8 +25,8 @@
     "net_params": {
         "layer_type": "dgl",
         "L": 4,
-        "hidden_dim": 20,
-        "out_dim": 150,
+        "hidden_dim": 80,
+        "out_dim": 85
         "residual": true,
         "edge_feat": false,
         "readout": "mean",
@@ -34,8 +34,8 @@
         "dropout": 0.0,
         "graph_norm": true,
         "batch_norm": true,
-        "aggregators": "mean max min std",
-        "scalers": "identity amplification attenuation",
+        "aggregators": "sum eig1-dx eig2-dx",
+        "scalers": "identity",
         "towers": 5,
         "divide_input_first": false,
         "divide_input_last": true,
