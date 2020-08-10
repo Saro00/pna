@@ -92,7 +92,9 @@ class EIGTower(nn.Module):
             #h = torch.cat([h, e1, e2], dim=1)
             h = torch.cat([h, el], dim=1)
 
-        h = torch.cat([scale(h, D=D, avg_d=self.avg_d) for scale in self.scalers], dim=1)
+        if len(self.scalers) > 1:
+            h = torch.cat([scale(h, D=D, avg_d=self.avg_d) for scale in self.scalers], dim=1)
+
         return {'h': h}
 
     def posttrans_nodes(self, nodes):
