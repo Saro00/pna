@@ -40,9 +40,6 @@ class EIGTower(nn.Module):
             self.eigfiltbis = nn.Linear(4, 1, bias=True)
             self.eigfilter = MLP(in_size=2, hidden_size=2, out_size=1, layers=3,  mid_activation='relu', last_activation='none')
 
-    def reset(self):
-        for layer in self.eigfilter.fully_connected:
-            layer.reset_parameters()
 
     def pretrans_edges(self, edges):
         if self.not_pre:
@@ -163,9 +160,6 @@ class EIGLayer(nn.Module):
         # mixing network
         self.mixing_network = FCLayer(out_dim, out_dim, activation='LeakyReLU')
 
-    def reset_params(self):
-        for tower in self.towers:
-            tower.reset()
 
     def forward(self, g, h, e, snorm_n):
         h_in = h  # for residual connection

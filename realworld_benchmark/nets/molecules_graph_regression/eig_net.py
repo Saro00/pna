@@ -63,9 +63,6 @@ class EIGNet(nn.Module):
 
         self.MLP_layer = MLPReadout(out_dim, 1)  # 1 out dim since regression problem
 
-    def reset_params(self):
-        for layer in self.layers:
-            layer.reset_params()
 
     def forward(self, g, h, e, snorm_n, snorm_e):
         h = self.embedding_h(h)
