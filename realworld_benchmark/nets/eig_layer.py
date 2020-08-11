@@ -23,6 +23,8 @@ class EIGTower(nn.Module):
         self.aggregators = aggregators
         self.scalers = scalers
         self.NN_eig = NN_eig
+
+        self.batchnorm_h = = nn.BatchNorm1d(out_dim)
         if not not_pre:
             self.pretrans = MLP(in_size=2 * in_dim + (edge_dim if edge_features else 0), hidden_size=in_dim,
                             out_size=in_dim, layers=pretrans_layers, mid_activation='relu', last_activation='none')
