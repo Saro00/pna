@@ -65,14 +65,8 @@ class EIGNet(nn.Module):
             self.gru = GRU(hidden_dim, hidden_dim, device)
             
         self.MLP_layer = MLPReadout(out_dim, n_classes)
-        self.reset_params()
-        
-        
        
-    
-    def reset_params(self):
-        for layer in self.layers:
-            layer.reset_params()
+
             
 
     def forward(self, g, h, e, snorm_n, snorm_e):
