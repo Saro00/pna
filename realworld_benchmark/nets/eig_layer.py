@@ -60,6 +60,7 @@ class EIGTower(nn.Module):
         return {'e': edges.data['e'], 'eig_s': edges.data['eig_s'].to('cuda' if torch.cuda.is_available() else 'cpu'), 'eig_d': edges.data['eig_d'].to('cuda' if torch.cuda.is_available() else 'cpu')}
 
     def reduce_func(self, nodes):
+        h_in = nodes.data['h']
         h = nodes.mailbox['e']
         eig_s = nodes.mailbox['eig_s']
         eig_d = nodes.mailbox['eig_d']
@@ -80,8 +81,15 @@ class EIGTower(nn.Module):
             #eb = aggregate_NN(h, wb)
             el = aggregate_NN(h, wl)
 
+        to_cat = []
 
-        h = torch.cat([aggregate(self, h, eig_s, eig_d) for aggregate in self.aggregators], dim=1)
+        for aggregate in self.aggregators:
+            try:
+                to_cat.append(aggregate(self, h, eig_s, eig_d))
+            except:
+                to_cat.append(aggregate(self, h, eig_s, eig_d, h_in))
+
+        h = torch.cat(to_cat, dim=1)
 
         if self.NN_eig:
             #h = torch.cat([h, e1, e2], dim=1)
