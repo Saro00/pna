@@ -236,19 +236,6 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                         np.mean(np.array(test_acc)) * 100, np.mean(np.array(train_acc)) * 100,
                         (time.time() - t0) / 3600, np.mean(per_epoch_time)))
 
-    # send results to gmail
-    try:
-        from gmail import send
-        subject = 'Result for Dataset: {}, Model: {}'.format(DATASET_NAME, MODEL_NAME)
-        body = """Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n{}\n\nTotal Parameters: {}\n\n
-    FINAL RESULTS\nTEST ACCURACY: {:.4f}\nTRAIN ACCURACY: {:.4f}\n\n
-    Total Time Taken: {:.4f} hrs\nAverage Time Per Epoch: {:.4f} s\n\n\n""" \
-            .format(DATASET_NAME, MODEL_NAME, params, net_params, model, net_params['total_param'],
-                    np.mean(np.array(test_acc)) * 100, np.mean(np.array(train_acc)) * 100, (time.time() - t0) / 3600,
-                    np.mean(per_epoch_time))
-        send(subject, body)
-    except:
-        pass
 
 
 def main():
