@@ -7,7 +7,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 import dgl
 import numpy as np
-
+from ogb.graphproppred import Evaluator
 from tqdm import tqdm
 
 """
@@ -15,141 +15,43 @@ from tqdm import tqdm
 """
 
 
-def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size, epoch, monet_pseudo=None):
+def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
     model.train()
+    epoch_loss = 0
+    epoch_train_ROC = 0
 
-    train_edges = train_edges.to(device)
-
-    total_loss = total_examples = 0
-    for perm in tqdm(DataLoader(range(train_edges.size(0)), batch_size, shuffle=True)):
-
+    for iter, (batch_graphs, batch_labels) in enumerate(data_loader):
+        batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
+        batch_e = batch_graphs.edata['feat'].to(device)
+        batch_labels = batch_labels.to(device)
         optimizer.zero_grad()
-
-        graph = graph.to(device)
-        x = graph.ndata['feat'].to(device)
-        e = graph.edata['feat'].to(device).float()
-
-        if monet_pseudo is not None:
-            # Assign e as pre-computed pesudo edges for MoNet
-            e = monet_pseudo.to(device)
-
-        # Compute node embeddings
-        try:
-            x_pos_enc = graph.ndata['pos_enc'].to(device)
-            sign_flip = torch.rand(x_pos_enc.size(1)).to(device)
-            sign_flip[sign_flip >= 0.5] = 1.0;
-            sign_flip[sign_flip < 0.5] = -1.0
-            x_pos_enc = x_pos_enc * sign_flip.unsqueeze(0)
-            h = model(graph, x, e, x_pos_enc)
-        except:
-            h = model(graph, x, e, True, True)
-
-        # Positive samples
-        edge = train_edges[perm].t()
-        pos_out = model.edge_predictor(h[edge[0]], h[edge[1]])
-
-        # Just do some trivial random sampling
-        edge = torch.randint(0, x.size(0), edge.size(), dtype=torch.long, device=x.device)
-        neg_out = model.edge_predictor(h[edge[0]], h[edge[1]])
-
-        loss = model.loss(pos_out, neg_out)
-
+        batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True)
+        loss = model.loss(batch_scores, batch_labels)
         loss.backward()
         optimizer.step()
+        epoch_loss += loss.detach().item()
+        evaluator = Evaluator(name='ogbg-molhiv')
+        epoch_train_ROC += evaluator.eval({'y_pred': batch_scores, 'y_true': batch_labels})
+    epoch_loss /= (iter + 1)
+    epoch_train_ROC /= (iter + 1)
 
-        num_examples = pos_out.size(0)
-        total_loss += loss.detach().item() * num_examples
-        total_examples += num_examples
-
-    return total_loss / total_examples, optimizer
+    return epoch_loss, epoch_train_ROC, optimizer
 
 
-def evaluate_network_sparse(model, device, graph, pos_train_edges,
-                            pos_valid_edges, neg_valid_edges,
-                            pos_test_edges, neg_test_edges,
-                            evaluator, batch_size, epoch, monet_pseudo=None):
+def evaluate_network_dense(model, device, data_loader, epoch):
     model.eval()
+    epoch_test_loss = 0
+    epoch_test_ROC = 0
     with torch.no_grad():
+        for iter, (x_with_node_feat, labels) in enumerate(data_loader):
+            x_with_node_feat = x_with_node_feat.to(device)
+            labels = labels.to(device)
+            scores = model.forward(x_with_node_feat)
+            loss = model.loss(scores, labels)
+            epoch_test_loss += loss.detach().item()
+            evaluator = Evaluator(name='ogbg-molhiv')
+            epoch_test_ROC += evaluator.eval({'y_pred': scores, 'y_true': labels})
+        epoch_test_loss /= (iter + 1)
+        epoch_test_ROC /= (iter + 1)
 
-        graph = graph.to(device)
-        x = graph.ndata['feat'].to(device)
-        e = graph.edata['feat'].to(device).float()
-
-        if monet_pseudo is not None:
-            # Assign e as pre-computed pesudo edges for MoNet
-            e = monet_pseudo.to(device)
-
-        # Compute node embeddings
-        try:
-            x_pos_enc = graph.ndata['pos_enc'].to(device)
-            h = model(graph, x, e, x_pos_enc)
-        except:
-            h = model(graph, x, e, True, True)
-
-        pos_train_edges = pos_train_edges.to(device)
-        pos_valid_edges = pos_valid_edges.to(device)
-        neg_valid_edges = neg_valid_edges.to(device)
-        pos_test_edges = pos_test_edges.to(device)
-        neg_test_edges = neg_test_edges.to(device)
-
-        pos_train_preds = []
-        for perm in DataLoader(range(pos_train_edges.size(0)), batch_size):
-            edge = pos_train_edges[perm].t()
-            pos_train_preds += [model.edge_predictor(h[edge[0]], h[edge[1]]).squeeze().cpu()]
-        pos_train_pred = torch.cat(pos_train_preds, dim=0)
-
-        pos_valid_preds = []
-        for perm in DataLoader(range(pos_valid_edges.size(0)), batch_size):
-            edge = pos_valid_edges[perm].t()
-            pos_valid_preds += [model.edge_predictor(h[edge[0]], h[edge[1]]).squeeze().cpu()]
-        pos_valid_pred = torch.cat(pos_valid_preds, dim=0)
-
-        neg_valid_preds = []
-        for perm in DataLoader(range(pos_valid_edges.size(0)), batch_size):
-            edge = neg_valid_edges[perm].t()
-            neg_valid_preds += [model.edge_predictor(h[edge[0]], h[edge[1]]).squeeze().cpu()]
-        neg_valid_pred = torch.cat(neg_valid_preds, dim=0)
-
-        pos_test_preds = []
-        for perm in DataLoader(range(pos_test_edges.size(0)), batch_size):
-            edge = pos_test_edges[perm].t()
-            pos_test_preds += [model.edge_predictor(h[edge[0]], h[edge[1]]).squeeze().cpu()]
-        pos_test_pred = torch.cat(pos_test_preds, dim=0)
-
-        neg_test_preds = []
-        for perm in DataLoader(range(pos_test_edges.size(0)), batch_size):
-            edge = neg_test_edges[perm].t()
-            neg_test_preds += [model.edge_predictor(h[edge[0]], h[edge[1]]).squeeze().cpu()]
-        neg_test_pred = torch.cat(neg_test_preds, dim=0)
-
-    train_hits = []
-    for K in [10, 50, 100]:
-        evaluator.K = K
-        train_hits.append(
-            evaluator.eval({
-                'y_pred_pos': pos_train_pred,
-                'y_pred_neg': neg_valid_pred,  # negative samples for valid == training
-            })[f'hits@{K}']
-        )
-
-    valid_hits = []
-    for K in [10, 50, 100]:
-        evaluator.K = K
-        valid_hits.append(
-            evaluator.eval({
-                'y_pred_pos': pos_valid_pred,
-                'y_pred_neg': neg_valid_pred,
-            })[f'hits@{K}']
-        )
-
-    test_hits = []
-    for K in [10, 50, 100]:
-        evaluator.K = K
-        test_hits.append(
-            evaluator.eval({
-                'y_pred_pos': pos_test_pred,
-                'y_pred_neg': neg_test_pred,
-            })[f'hits@{K}']
-        )
-
-    return train_hits, valid_hits, test_hits
+    return epoch_test_loss, epoch_test_ROC

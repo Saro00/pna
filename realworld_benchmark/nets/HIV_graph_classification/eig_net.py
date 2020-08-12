@@ -88,8 +88,10 @@ class EIGNet(nn.Module):
         else:
             hg = dgl.mean_nodes(g, 'h')  # default readout is mean nodes
 
-        return torch.sigmoid(self.MLP_layer(hg))
+        return self.MLP_layer(hg)
 
-    def loss(self, scores, targets):
-        loss = nn.L1Loss()(scores, targets)
+    def loss(self, scores, labels):
+        loss = torch.nn.BCEWithLogitsLoss()(scores, labels)
+
+
         return loss
