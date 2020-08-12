@@ -123,7 +123,10 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
         start_epoch = 0
         t0 = 0
     else:
+        print('not the first exec.')
+        print(t0, 'old')
         t0 -= hydra.retrieved_checkpoint.time_elapsed
+        print(t0, 'new')
         start_epoch = hydra.retrieved_checkpoint.last_epoch
         states = torch.load(hydra.retrieved_checkpoint.linked_files()[0])
         model.load_state_dict(states['model'])
