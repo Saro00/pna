@@ -84,6 +84,11 @@ def aggregate_eig_dx(self, h, eig_s, eig_d, h_in, eig_idx):
     h_mod = torch.mul(h, eig_w)
     return torch.abs(torch.sum(h_mod, dim=1) - torch.sum(eig_w, dim=1) * h_in)
 
+def aggregate_lap(self, h, eig_s, eig_d, h_in):
+    deg = h.shape[1]
+    return torch.sum(h, dim=1) - h_in * deg
+
+
 def aggregate_NN(h, eig_filt):
     h_mod = torch.mul(h, eig_filt)
     return torch.sum(h_mod, dim=1)
@@ -92,7 +97,7 @@ def aggregate_NN(h, eig_filt):
 
 AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_max, 'min': aggregate_min,
                'std': aggregate_std, 'var': aggregate_var, 'moment3': aggregate_moment_3, 'moment4': aggregate_moment_4,
-               'moment5': aggregate_moment_5,  'eig1-smooth': partial(aggregate_eig, eig_idx=1),
+               'moment5': aggregate_moment_5,  'lap': aggregate_lap, 'eig1-smooth': partial(aggregate_eig, eig_idx=1),
                'eig2-smooth': partial(aggregate_eig, eig_idx=2), 'eig3-smooth': partial(aggregate_eig, eig_idx=3),
                 'eig4-smooth': partial(aggregate_eig, eig_idx=4),'eig5-smooth': partial(aggregate_eig, eig_idx=5),
                 'eig1-dir' : partial(aggregate_eig_dir, eig_idx=1), 'eig2-dir' : partial(aggregate_eig_dir, eig_idx=2),
