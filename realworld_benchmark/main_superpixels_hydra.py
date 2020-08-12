@@ -121,7 +121,6 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     
     if hydra.is_first_execution():
         start_epoch = 0
-        t0 = 0
     else:
         print('not the first exec.')
         print(t0, 'old')

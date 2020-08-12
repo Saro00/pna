@@ -118,7 +118,6 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                                                      verbose=True)
     if hydra.is_first_execution():
         start_epoch = 0
-        t0 = 0
     else:
         t0 -= hydra.retrieved_checkpoint.time_elapsed
         start_epoch = hydra.retrieved_checkpoint.last_epoch
