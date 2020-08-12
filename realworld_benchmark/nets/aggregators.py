@@ -82,12 +82,6 @@ def aggregate_eig_dx(self, h, eig_s, eig_d, h_in, eig_idx):
     eig_w = ((eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]) /
      (torch.sum(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]), keepdim=True, dim=1) + EPS)).unsqueeze(-1)
     h_mod = torch.mul(h, eig_w)
-    print('shape of h_mod ', h_mod.shape)
-    print('shape of eig_w ', eig_w.shape)
-    print('shape of h_in ', h_in.shape)
-    sum = torch.sum(h_mod, dim=1)
-    sum -= torch.sum(eig_w, dim=-1) * h_in
-
     return torch.abs(torch.sum(h_mod, dim=1) - torch.sum(eig_w, dim=1) * h_in)
 
 def aggregate_NN(h, eig_filt):
