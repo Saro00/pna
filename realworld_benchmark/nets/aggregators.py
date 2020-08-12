@@ -83,7 +83,7 @@ def aggregate_eig_dx(self, h, eig_s, eig_d, h_in, eig_idx):
      (torch.sum(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]), keepdim=True, dim=1) + EPS)).unsqueeze(-1)
     h_mod = torch.mul(h, eig_w)
     print('shape of h_mod ', h_mod.shape)
-    print('shape of eig_w ', eig_w)
+    print('shape of eig_w ', eig_w.shape)
     h_mod -= torch.sum(eig_w, dim=-1) * h_in
 
     return torch.abs(torch.sum(h_mod, dim=1))
