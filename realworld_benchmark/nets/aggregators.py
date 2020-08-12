@@ -66,12 +66,12 @@ def aggregate_eig_dir(self, h, eig_s, eig_d, eig_idx):
                       (torch.sum(torch.abs(torch.abs(eig_s[:, :, eig_idx]) - torch.abs(eig_d[:, :, eig_idx])), keepdim=True, dim=1) + EPS)).unsqueeze(-1))
     return torch.sum(h_mod, dim=1)
 
-def aggregate_eig_new(self, h, eig_s, eig_d, eig_idx):
+def aggregate_eig_new(self, h, eig_s, eig_d, h_in, eig_idx):
     eig_w = (torch.abs(torch.abs(eig_s[:, :, eig_idx]) - torch.abs(eig_d[:, :, eig_idx]))/
                       (torch.sum(torch.abs(torch.abs(eig_s[:, :, eig_idx]) - torch.abs(eig_d[:, :, eig_idx])), keepdim=True, dim=1) + EPS)).unsqueeze(-1)
     h_mod = torch.mul(h, eig_w)
-    h_mod -= torch.sum(eig_w, dim=-1) * h_in
-    return torch.sum(h_mod, dim=1)
+    h_mod = torch.mul(h, eig_w)
+    return torch.abs(torch.sum(h_mod, dim=1) - torch.sum(eig_w, dim=1) * h_in)
 
 def aggregate_eig_new_abs(self, h, eig_s, eig_d, eig_idx):
     h_mod = torch.mul(h, (torch.abs(torch.abs(eig_s[:, :, eig_idx]) - torch.abs(eig_d[:, :, eig_idx]))/
