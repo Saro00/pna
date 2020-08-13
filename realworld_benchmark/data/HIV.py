@@ -79,10 +79,10 @@ class HIVDataset(Dataset):
             print("[I] Loading dataset %s..." % (name))
         self.name = name
         self.dataset = DglGraphPropPredDataset(name = 'ogbg-molhiv')
-        split_idx = dataset.get_idx_split()
-        self.train = HIVDGL(dataset, split_idx['train'])
-        self.val = HIVDGL(dataset, split_idx['valid'])
-        self.test = HIVDGL(dataset, split_idx['test'])
+        self.split_idx = self.dataset.get_idx_split()
+        self.train = HIVDGL(dataset, self.split_idx['train'])
+        self.val = HIVDGL(dataset, self.split_idx['valid'])
+        self.test = HIVDGL(dataset, self.split_idx['test'])
 
         self.evaluator = Evaluator(name='ogbg-molhiv')
 
