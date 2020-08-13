@@ -38,16 +38,17 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
     return epoch_loss, epoch_train_ROC, optimizer
 
 
-def evaluate_network_dense(model, device, data_loader, epoch):
+def evaluate_network_sparse(model, device, data_loader, epoch):
     model.eval()
     epoch_test_loss = 0
     epoch_test_ROC = 0
     with torch.no_grad():
-        for iter, (x_with_node_feat, labels) in enumerate(data_loader):
-            x_with_node_feat = x_with_node_feat.to(device)
-            labels = labels.to(device)
-            scores = model.forward(x_with_node_feat)
-            loss = model.loss(scores, labels)
+        for iter, (batch_graphs, batch_labels) in enumerate(data_loader):
+            batch_x = batch_graphs.ndata['feat'].to(device)
+            batch_e = batch_graphs.edata['feat'].to(device)
+            batch_labels = batch_labels.to(device)
+            batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True)
+            loss = model.loss(batch_scores, batch_labels)
             epoch_test_loss += loss.detach().item()
             evaluator = Evaluator(name='ogbg-molhiv')
             epoch_test_ROC += evaluator.eval({'y_pred': scores, 'y_true': labels})
