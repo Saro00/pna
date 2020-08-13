@@ -51,7 +51,7 @@ class HIVDGL(torch.utils.data.Dataset):
 
 
     def get_eig(self):
-        self.graph_lists = [positional_encoding(g, 5) for g in self.graph_lists]
+        self.graph_lists = [positional_encoding(g, 4) for g in self.graph_lists]
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
