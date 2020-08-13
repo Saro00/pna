@@ -92,7 +92,7 @@ class EIGNet(nn.Module):
         return self.MLP_layer(hg)
 
     def loss(self, scores, labels):
-        loss = torch.nn.BCEWithLogitsLoss()(scores, labels.type(torch.FloatTensor).unsqueeze(-1))
+        loss = torch.nn.BCEWithLogitsLoss()(scores, labels.type(torch.FloatTensor).to('cuda').unsqueeze(-1))
 
 
         return loss
