@@ -44,9 +44,8 @@ class HIVDGL(torch.utils.data.Dataset):
     def __init__(self, data, split):
         self.split = split
         self.data = [g for g in data[self.split]]
-        self.graph_lists = [g[0] for g in self.data]
-
-        self.graph_labels = [g[1] for g in self.data]
+        self.graph_lists = [g[0] if g[0].number_of_nodes() > 5 for g in self.data]
+        self.graph_labels = [g[1] if g[0].number_of_nodes() > 5 for g in self.data]
         self.n_samples = len(self.data)
         self.get_eig()
 
