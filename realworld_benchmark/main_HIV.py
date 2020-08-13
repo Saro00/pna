@@ -135,8 +135,8 @@ def train_val_pipeline(dataset, params, net_params, dirs):
 
                 epoch_train_losses.append(epoch_train_loss)
                 epoch_val_losses.append(epoch_val_loss)
-                epoch_train_ROCs.append(epoch_train_roc.detach().cpu().item())
-                epoch_val_ROCs.append(epoch_val_roc.detach().cpu().item())
+                epoch_train_ROCs.append(epoch_train_roc)
+                epoch_val_ROCs.append(epoch_val_roc)
 
                 writer.add_scalar('train/_loss', epoch_train_loss, epoch)
                 writer.add_scalar('val/_loss', epoch_val_loss, epoch)
@@ -148,8 +148,8 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                 _, epoch_test_roc = evaluate_network(model, device, test_loader, epoch)
                 t.set_postfix(time=time.time() - start, lr=optimizer.param_groups[0]['lr'],
                               train_loss=epoch_train_loss, val_loss=epoch_val_loss,
-                              train_ROC=epoch_train_roc.item(), val_ROC=epoch_val_roc.item(),
-                              test_ROC=epoch_test_roc.item(), refresh=False)
+                              train_ROC=epoch_train_roc, val_ROC=epoch_val_roc,
+                              test_ROC=epoch_test_roc, refresh=False)
 
                 per_epoch_time.append(time.time() - start)
 
@@ -178,9 +178,9 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     _, val_roc = evaluate_network(model, device, val_loader, epoch)
     _, train_roc = evaluate_network(model, device, train_loader, epoch)
 
-    test_roc = test_roc.item()
-    val_roc = val_roc.item()
-    train_roc = train_roc.item()
+    test_roc = test_roc
+    val_roc = val_roc
+    train_roc = train_roc
 
     print("Train ROC: {:.4f}".format(train_roc))
     print("Val ROC: {:.4f}".format(val_roc))
