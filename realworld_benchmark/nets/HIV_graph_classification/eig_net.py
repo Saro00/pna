@@ -4,6 +4,9 @@ from nets.gru import GRU
 from nets.eig_layer import EIGLayer
 from nets.mlp_readout_layer import MLPReadout
 import torch
+from ogb.graphproppred.mol_encoder import AtomEncoder, BondEncoder
+
+
 
 
 
@@ -11,8 +14,6 @@ import torch
 class EIGNet(nn.Module):
     def __init__(self, net_params):
         super().__init__()
-        num_atom_type = net_params['num_atom_type']
-        num_bond_type = net_params['num_bond_type']
         hidden_dim = net_params['hidden_dim']
         out_dim = net_params['out_dim']
         in_feat_dropout = net_params['in_feat_dropout']
@@ -39,10 +40,10 @@ class EIGNet(nn.Module):
 
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
 
-        self.embedding_h = nn.Embedding(num_atom_type, hidden_dim)
+        self.embedding_h = AtomEncoder(emb_dim=hidden_dim)
 
         if self.edge_feat:
-            self.embedding_e = nn.Embedding(num_bond_type, edge_dim)
+            self.embedding_e = BondEncoder(emb_dim=edge_dim)
 
         self.layers = nn.ModuleList([EIGLayer(in_dim=hidden_dim, out_dim=hidden_dim, dropout=dropout,
                                               graph_norm=self.graph_norm, batch_norm=self.batch_norm,

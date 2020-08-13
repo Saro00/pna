@@ -383,9 +383,6 @@ def main():
     if args.not_pre is not None:
         net_params['not_pre'] = args.not_pre
 
-    # ZINC
-    net_params['num_atom_type'] = dataset.num_atom_type
-    net_params['num_bond_type'] = dataset.num_bond_type
 
     D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
                        dataset.train.graph_lists])

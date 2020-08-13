@@ -6,6 +6,11 @@ from nets.mlp_readout_layer import MLPReadout
 
 
 
+atom_emb = atom_encoder(x) # x is input atom feature
+edge_emb = bond_encoder(edge_attr) # edge_attr is input edge feature
+
+
+
 
 class EIGNet(nn.Module):
     def __init__(self, net_params):
