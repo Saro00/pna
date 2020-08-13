@@ -49,7 +49,7 @@ class HIVDGL(torch.utils.data.Dataset):
             if g[0].number_of_nodes() > 5:
                 self.graph_lists.append(g[0])
                 self.graph_labels.append(g[1])
-        self.n_samples = len(self.data)
+        self.n_samples = len(self.graph_lists)
         self.get_eig()
 
 
