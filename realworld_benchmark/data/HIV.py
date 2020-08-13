@@ -99,15 +99,16 @@ class HIVDataset(Dataset):
     def collate(self, samples):
         # The input samples is a list of pairs (graph, label).
         graphs, labels = map(list, zip(*samples))
-        labels = torch.tensor(np.array(labels)).unsqueeze(1)
-        tab_sizes_n = [graphs[i].number_of_nodes() for i in range(len(graphs))]
-        tab_snorm_n = [torch.FloatTensor(size, 1).fill_(1. / float(size)) for size in tab_sizes_n]
-        snorm_n = torch.cat(tab_snorm_n).sqrt()
-        tab_sizes_e = [graphs[i].number_of_edges() for i in range(len(graphs))]
-        tab_snorm_e = [torch.FloatTensor(size, 1).fill_(1. / float(size)) for size in tab_sizes_e]
-        snorm_e = torch.cat(tab_snorm_e).sqrt()
+        labels = torch.cat(labels).long()
+        #tab_sizes_n = [ graphs[i].number_of_nodes() for i in range(len(graphs))]
+        #tab_snorm_n = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_n ]
+        #snorm_n = torch.cat(tab_snorm_n).sqrt()
+        #tab_sizes_e = [ graphs[i].number_of_edges() for i in range(len(graphs))]
+        #tab_snorm_e = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_e ]
+        #snorm_e = torch.cat(tab_snorm_e).sqrt()
         batched_graph = dgl.batch(graphs)
-        return batched_graph, labels, snorm_n, snorm_e
+
+        return batched_graph, labels
 
     def _add_self_loops(self):
         # function for adding self loops
