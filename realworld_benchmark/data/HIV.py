@@ -45,13 +45,14 @@ class HIVDGL(torch.utils.data.Dataset):
         self.split = split
         self.data = [g for g in data[self.split]]
         self.graph_lists = [g[0] for g in self.data]
+
         self.graph_labels = [g[1] for g in self.data]
         self.n_samples = len(self.data)
         self.get_eig()
 
 
     def get_eig(self):
-        self.graph_lists = [positional_encoding(g, 4) for g in self.graph_lists]
+        self.graph_lists = [positional_encoding(g, 3) for g in self.graph_lists]
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
