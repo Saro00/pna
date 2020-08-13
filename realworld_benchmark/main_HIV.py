@@ -28,7 +28,7 @@ class DotDict(dict):
 """
 from nets.HIV_graph_classification.eig_net import EIGNet
 from data.HIV import HIVDataset  # import dataset
-from train.train_HIV_graph_classificationimport import train_epoch_sparse as train_epoch, evaluate_network_sparse as evaluate_network
+from train.train_HIV_graph_classification import train_epoch_sparse as train_epoch, evaluate_network_sparse as evaluate_network
 
 """
     GPU Setup
