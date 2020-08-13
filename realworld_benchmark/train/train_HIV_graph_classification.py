@@ -36,7 +36,7 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
 
     epoch_loss /= (iter + 1)
     evaluator = Evaluator(name='ogbg-molhiv')
-    epoch_train_ROC += evaluator.eval({'y_pred': torch.cat(list_scores),
+    epoch_train_ROC = evaluator.eval({'y_pred': torch.cat(list_scores),
                                        'y_true': torch.cat(list_labels)})['rocauc']
 
     return epoch_loss, epoch_train_ROC, optimizer
@@ -61,7 +61,7 @@ def evaluate_network_sparse(model, device, data_loader, epoch):
 
         epoch_test_loss /= (iter + 1)
         evaluator = Evaluator(name='ogbg-molhiv')
-        epoch_train_ROC += evaluator.eval({'y_pred': torch.cat(list_scores),
+        epoch_test_ROC = evaluator.eval({'y_pred': torch.cat(list_scores),
                                            'y_true': torch.cat(list_labels)})['rocauc']
 
     return epoch_test_loss, epoch_test_ROC
