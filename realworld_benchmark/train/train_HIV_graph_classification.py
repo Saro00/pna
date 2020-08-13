@@ -31,11 +31,6 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
         optimizer.step()
         epoch_loss += loss.detach().item()
         evaluator = Evaluator(name='ogbg-molhiv')
-        print(batch_scores.shape)
-        print(batch_labels.shape)
-        print(batch_scores)
-        print(batch_labels)
-        print(torch.sigmoid(batch_scores))
         epoch_train_ROC += evaluator.eval({'y_pred': torch.sigmoid(batch_scores), 'y_true': batch_labels.type(torch.FloatTensor).to('cuda').unsqueeze(-1)})['rocauc']
     epoch_loss /= (iter + 1)
     epoch_train_ROC /= (iter + 1)
