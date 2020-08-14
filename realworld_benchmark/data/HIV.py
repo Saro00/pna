@@ -77,16 +77,21 @@ class HIVDGL(torch.utils.data.Dataset):
 
 
 class HIVDataset(Dataset):
-    def __init__(self, name, verbose=True):
+    def __init__(self, name, re_split=False, verbose=True):
         start = time.time()
         if verbose:
             print("[I] Loading dataset %s..." % (name))
         self.name = name
         self.dataset = DglGraphPropPredDataset(name = 'ogbg-molhiv')
         self.split_idx = self.dataset.get_idx_split()
-        self.train = HIVDGL(self.dataset, self.split_idx['train'])
-        self.val = HIVDGL(self.dataset, self.split_idx['valid'])
-        self.test = HIVDGL(self.dataset, self.split_idx['test'])
+        if re_split:
+            self.train = HIVDGL(self.dataset, [i for i in range(32000)])
+            self.val = HIVDGL(self.dataset, [i for i in range(32000, 36564)])
+            self.test = HIVDGL(self.dataset, [i for i in range(36564, 41127)])
+        else:
+            self.train = HIVDGL(self.dataset, self.split_idx['train'])
+            self.val = HIVDGL(self.dataset, self.split_idx['valid'])
+            self.test = HIVDGL(self.dataset, self.split_idx['test'])
 
         self.evaluator = Evaluator(name='ogbg-molhiv')
 

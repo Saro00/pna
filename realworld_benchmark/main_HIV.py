@@ -251,6 +251,7 @@ def main():
     parser.add_argument('--self_loop', help="Please give a value for self_loop")
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--expid', help='Experiment id.')
+    parser.add_argument('--re_split', action='store_true', help='Resplitting the dataset')
 
     # eig params
     parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
@@ -283,7 +284,7 @@ def main():
         DATASET_NAME = config['dataset']
     print('ok')
     print(DATASET_NAME)
-    dataset = HIVDataset(DATASET_NAME)
+    dataset = HIVDataset(DATASET_NAME, args.re_split)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
