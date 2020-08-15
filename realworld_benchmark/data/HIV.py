@@ -85,13 +85,15 @@ class HIVDataset(Dataset):
         self.dataset = DglGraphPropPredDataset(name = 'ogbg-molhiv')
         self.split_idx = self.dataset.get_idx_split()
         if re_split:
-            self.train = HIVDGL(self.dataset, [i for i in range(32000)])
-            self.val = HIVDGL(self.dataset, [i for i in range(32000, 36564)])
-            self.test = HIVDGL(self.dataset, [i for i in range(36564, 41127)])
-        else:
-            self.train = HIVDGL(self.dataset, self.split_idx['train'])
-            self.val = HIVDGL(self.dataset, self.split_idx['valid'])
-            self.test = HIVDGL(self.dataset, self.split_idx['test'])
+            ind = [i for i in range(41127)]
+            rd.shuffle(ind)
+            self.split_idx = {'test': tensor([ind[i] for i in range(36564, 41127)]),
+             'train': tensor([ind[i] for i in range(32000)]),
+             'valid': tensor([ind[i] for i in range(32000, 36564)])}
+
+        self.train = HIVDGL(self.dataset, self.split_idx['train'])
+        self.val = HIVDGL(self.dataset, self.split_idx['valid'])
+        self.test = HIVDGL(self.dataset, self.split_idx['test'])
 
         self.evaluator = Evaluator(name='ogbg-molhiv')
 
