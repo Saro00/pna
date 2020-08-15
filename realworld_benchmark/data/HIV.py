@@ -87,9 +87,9 @@ class HIVDataset(Dataset):
         if re_split:
             ind = [i for i in range(41127)]
             rd.shuffle(ind)
-            self.split_idx = {'test': tensor([ind[i] for i in range(36564, 41127)]),
-             'train': tensor([ind[i] for i in range(32000)]),
-             'valid': tensor([ind[i] for i in range(32000, 36564)])}
+            self.split_idx = {'test': torch.tensor([ind[i] for i in range(36564, 41127)]),
+             'train': torch.tensor([ind[i] for i in range(32000)]),
+             'valid': torch.tensor([ind[i] for i in range(32000, 36564)])}
 
         self.train = HIVDGL(self.dataset, self.split_idx['train'])
         self.val = HIVDGL(self.dataset, self.split_idx['valid'])
