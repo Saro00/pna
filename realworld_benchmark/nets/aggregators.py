@@ -86,8 +86,6 @@ def aggregate_eig_dx(self, h, eig_s, eig_d, h_in, eig_idx):
 
 def aggregate_lap(self, h, eig_s, eig_d, h_in):
     deg = h.shape[1]
-    print(h.shape)
-    print(h_in.shape)
     return torch.sum(h, dim=1) - h_in * deg
 
 
