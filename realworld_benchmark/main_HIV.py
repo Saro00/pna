@@ -153,7 +153,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
 
                 per_epoch_time.append(time.time() - start)
 
-                scheduler.step(epoch_val_loss)
+                scheduler.step(epoch_val_roc.item())
 
                 if optimizer.param_groups[0]['lr'] < params['min_lr']:
                     print("\n!! LR EQUAL TO MIN LR SET.")
