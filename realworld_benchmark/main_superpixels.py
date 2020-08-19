@@ -251,6 +251,7 @@ def main():
     parser.add_argument('--expid', help='Experiment id.')
 
     # eig params
+    parser.add_argument('--coord_eig', action='store_true', default=False, help='Having the coord. weights')
     parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
     parser.add_argument('--scalers', type=str, help='Scalers to use.')
     parser.add_argument('--NN_eig', action='store_true', default=False, help='NN eig aggr.')
@@ -282,7 +283,7 @@ def main():
         DATASET_NAME = args.dataset
     else:
         DATASET_NAME = config['dataset']
-    dataset = SuperPixDataset(DATASET_NAME)
+    dataset = SuperPixDataset(DATASET_NAME, args.coord_eig)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:

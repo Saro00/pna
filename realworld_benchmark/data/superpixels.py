@@ -82,7 +82,7 @@ class SuperPixDGL(torch.utils.data.Dataset):
                  dataset,
                  split,
                  use_mean_px=True,
-                 use_coord=True):
+                 use_coord=True,):
 
         self.split = split
         
@@ -156,9 +156,13 @@ class SuperPixDGL(torch.utils.data.Dataset):
 
             self.graph_lists.append(g)
 
-    def get_eig(self):
-        self.graph_lists = [positional_encoding(g, 7) for g in self.graph_lists]
-        self.graph_lists = sort_list_eig(self.graph_lists)
+    def get_eig(self, coord_eig):
+        if coord_eig:
+            self.graph_lists = [coord_encoding(g) for g in self.graph_lists]
+        else:
+            self.graph_lists = [positional_encoding(g, 7) for g in self.graph_lists]
+            self.graph_lists = sort_list_eig(self.graph_lists)
+
 
         #for g in self.graph_lists:
             #A = g.adjacency_matrix().to_dense()
@@ -195,10 +199,12 @@ class DGLFormDataset(torch.utils.data.Dataset):
         self.graph_lists = lists[0]
         self.graph_labels = lists[1]
 
-    def get_eig(self):
-        self.graph_lists = [positional_encoding(g, 7) for g in self.graph_lists]
-        self.graph_lists = sort_list_eig(self.graph_lists)
-
+    def get_eig(self, coord_eig):
+        if coord_eig:
+            self.graph_lists = [coord_encoding(g) for g in self.graph_lists]
+        else:
+            self.graph_lists = [positional_encoding(g, 7) for g in self.graph_lists]
+            self.graph_lists = sort_list_eig(self.graph_lists)
         #for g in self.graph_lists:
             #A = g.adjacency_matrix().to_dense()
             #g.ndata['eig'] = get_k_lowest_eig(A, 7)
@@ -281,7 +287,7 @@ def self_loop(g):
 
 class SuperPixDataset(torch.utils.data.Dataset):
 
-    def __init__(self, name, verbose=True):
+    def __init__(self, name, coord_eig=False, verbose=True):
         """
             Loading Superpixels datasets
         """
@@ -292,11 +298,11 @@ class SuperPixDataset(torch.utils.data.Dataset):
         data_dir = 'data/'
         with open(data_dir+name+'.pkl',"rb") as f:
             f = pickle.load(f)
-            f[0].get_eig()
+            f[0].get_eig(coord_eig)
             self.train = f[0]
-            f[1].get_eig()
+            f[1].get_eig(coord_eig)
             self.val = f[1]
-            f[2].get_eig()
+            f[2].get_eig(coord_eig)
             self.test = f[2]
         if verbose:
             print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
@@ -552,3 +558,10 @@ def sort_eig(graph):
 def sort_list_eig(list):
     list_new = [sort_eig(graph) for graph in list]
     return list_new
+
+def coord_encoding(graph):
+    x = graph.ndata['feat'][:, 3]
+    y = graph.ndata['feat'][:, 4]
+    null = torch.zeros(x.shape)
+    graph.ndata['eig'] = torch.cat([null, x, y], dim=-1)
+    return graph

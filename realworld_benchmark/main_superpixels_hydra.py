@@ -293,6 +293,7 @@ def main():
                         help='Update progress hydra every (seconds).')
 
     # eig params
+    parser.add_argument('--coord_eig', action='store_true', default=False, help='Having the coord. weights')
     parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
     parser.add_argument('--scalers', type=str, help='Scalers to use.')
     parser.add_argument('--NN_eig', action='store_true', default=False, help='NN eig aggr.')
@@ -331,7 +332,7 @@ def main():
         DATASET_NAME = args.dataset
     else:
         DATASET_NAME = config['dataset']
-    dataset = SuperPixDataset(DATASET_NAME, verbose=hydra.is_first_execution())
+    dataset = SuperPixDataset(DATASET_NAME, coord_eig=args.coord_eig, verbose=hydra.is_first_execution())
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
