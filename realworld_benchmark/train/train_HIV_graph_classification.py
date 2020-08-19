@@ -31,7 +31,7 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
         loss.backward()
         optimizer.step()
         epoch_loss += loss.detach().item()
-        list_scores.append(torch.sigmoid(batch_scores))
+        list_scores.append(batch_scores)
         list_labels.append(batch_labels.unsqueeze(-1))
 
     epoch_loss /= (iter + 1)
@@ -56,7 +56,7 @@ def evaluate_network_sparse(model, device, data_loader, epoch):
             batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True)
             loss = model.loss(batch_scores, batch_labels)
             epoch_test_loss += loss.detach().item()
-            list_scores.append(torch.sigmoid(batch_scores))
+            list_scores.append(batch_scores)
             list_labels.append(batch_labels.unsqueeze(-1))
 
         epoch_test_loss /= (iter + 1)
