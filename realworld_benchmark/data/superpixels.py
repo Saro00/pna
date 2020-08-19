@@ -562,6 +562,9 @@ def sort_list_eig(list):
 def coord_encoding(graph):
     x = graph.ndata['feat'][:, 3]
     y = graph.ndata['feat'][:, 4]
-    null = torch.zeros(x.shape)
+    null = torch.zeros(x.shape, dtype=torch.FloatTensor)
+    print(type(x))
+    print(type(y))
+    print(type(null))
     graph.ndata['eig'] = torch.cat([null, x, y], dim=-1)
     return graph
