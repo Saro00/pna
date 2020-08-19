@@ -107,6 +107,7 @@ class PCBADataset(Dataset):
     def collate(self, samples):
         # The input samples is a list of pairs (graph, label).
         graphs, labels = map(list, zip(*samples))
+        print(labels[0].shape)
         labels = torch.cat([label.unsqueeze(-1) for label in labels]).long()
         print(labels.shape)
         #tab_sizes_n = [ graphs[i].number_of_nodes() for i in range(len(graphs))]
