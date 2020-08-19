@@ -108,7 +108,8 @@ class PCBADataset(Dataset):
         # The input samples is a list of pairs (graph, label).
         graphs, labels = map(list, zip(*samples))
         print(labels[0].shape)
-        labels = torch.cat([label.unsqueeze(-1) for label in labels]).long()
+
+        labels = torch.cat([label.unsqueeze(-1) for label in labels], dim=-1).long()
         print(labels.shape)
         #tab_sizes_n = [ graphs[i].number_of_nodes() for i in range(len(graphs))]
         #tab_snorm_n = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_n ]
