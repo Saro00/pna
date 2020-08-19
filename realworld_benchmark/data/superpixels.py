@@ -563,8 +563,5 @@ def coord_encoding(graph):
     x = graph.ndata['feat'][:, 3:4].type(torch.FloatTensor)
     y = graph.ndata['feat'][:, 4:5].type(torch.FloatTensor)
     null = torch.zeros(x.shape).type(torch.FloatTensor)
-    print(x.shape)
-    print(y.shape)
-    print(null.shape)
     graph.ndata['eig'] = torch.cat([null, x, y], dim=-1)
     return graph
