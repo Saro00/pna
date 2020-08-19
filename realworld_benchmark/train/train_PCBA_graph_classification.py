@@ -39,7 +39,7 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
     print(torch.cat(list_scores).shape)
     print(torch.cat(list_labels).shape)
     epoch_train_AP = evaluator.eval({'y_pred': torch.cat(list_scores),
-                                       'y_true': torch.cat(list_labels)})['prcauc']
+                                       'y_true': torch.cat(list_labels)})['ap']
 
     return epoch_loss, epoch_train_AP, optimizer
 
