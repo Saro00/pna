@@ -84,10 +84,17 @@ class PCBADataset(Dataset):
         self.name = name
         self.dataset = DglGraphPropPredDataset(name = 'ogbg-molpcba')
         self.split_idx = self.dataset.get_idx_split()
-
-        self.train = PCBADGL(self.dataset, self.split_idx['train'])
-        self.val = PCBADGL(self.dataset, self.split_idx['valid'])
-        self.test = PCBADGL(self.dataset, self.split_idx['test'])
+        if True:
+            split = {'test': torch.tensor([i for i in range(1, 3)]),
+             'train': torch.tensor([i for i in range(3, 5)]),
+             'valid': torch.tensor([i for i in range(5, 7)])}
+            self.train = PCBADGL(self.dataset, split['train'])
+            self.val = PCBADGL(self.dataset, split['valid'])
+            self.test = PCBADGL(self.dataset, split['test'])
+        else:
+            self.train = PCBADGL(self.dataset, self.split_idx['train'])
+            self.val = PCBADGL(self.dataset, self.split_idx['valid'])
+            self.test = PCBADGL(self.dataset, self.split_idx['test'])
 
         self.evaluator = Evaluator(name='ogbg-molpcba')
 
@@ -101,6 +108,7 @@ class PCBADataset(Dataset):
         # The input samples is a list of pairs (graph, label).
         graphs, labels = map(list, zip(*samples))
         labels = torch.cat([label.unsqueeze(-1) for label in labels]).long()
+        print(labels)
         #tab_sizes_n = [ graphs[i].number_of_nodes() for i in range(len(graphs))]
         #tab_snorm_n = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_n ]
         #snorm_n = torch.cat(tab_snorm_n).sqrt()
