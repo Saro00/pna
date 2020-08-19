@@ -64,4 +64,4 @@ def evaluate_network_sparse(model, device, data_loader, epoch):
         epoch_test_AP = evaluator.eval({'y_pred': torch.cat(list_scores),
                                            'y_true': torch.cat(list_labels)})['ap']
 
-    return epoch_test_loss, epoch_test_ROC
+    return epoch_test_loss, epoch_test_AP

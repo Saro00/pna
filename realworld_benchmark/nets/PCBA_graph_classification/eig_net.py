@@ -63,7 +63,7 @@ class EIGNet(nn.Module):
         if self.gru_enable:
             self.gru = GRU(hidden_dim, hidden_dim, device)
 
-        self.MLP_layer = MLPReadout(out_dim, 128)  # 1 out dim since regression problem
+        self.MLP_layer = MLPReadout(out_dim, 128)
 
 
     def forward(self, g, h, e, snorm_n, snorm_e):
@@ -92,6 +92,6 @@ class EIGNet(nn.Module):
         return self.MLP_layer(hg)
 
     def loss(self, scores, labels):
-        loss = torch.nn.BCEWithLogitsLoss()(scores, labels.type(torch.FloatTensor).to('cuda').unsqueeze(-1))
+        loss = torch.nn.BCEWithLogitsLoss()(scores, labels.type(torch.FloatTensor).to('cuda'))
 
         return loss
