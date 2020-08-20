@@ -111,7 +111,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                                                      verbose=True)
 
     epoch_train_losses, epoch_val_losses = [], []
-    epoch_train_ROCs, epoch_val_ROCs = [], []
+    epoch_train_ROCs, epoch_val_ROCs, epoch_test_ROCs = [], [], []
 
     train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, collate_fn=dataset.collate)
     val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
@@ -146,6 +146,9 @@ def train_val_pipeline(dataset, params, net_params, dirs):
 
 
                 _, epoch_test_roc = evaluate_network(model, device, test_loader, epoch)
+
+                epoch_test_ROCs.append(epoch_test_roc.item())
+
                 t.set_postfix(time=time.time() - start, lr=optimizer.param_groups[0]['lr'],
                               train_loss=epoch_train_loss, val_loss=epoch_val_loss,
                               train_ROC=epoch_train_roc.item(), val_ROC=epoch_val_roc.item(),
@@ -174,23 +177,20 @@ def train_val_pipeline(dataset, params, net_params, dirs):
         print('-' * 89)
         print('Exiting from training early because of KeyboardInterrupt')
 
-    _, test_roc = evaluate_network(model, device, test_loader, epoch)
-    _, val_roc = evaluate_network(model, device, val_loader, epoch)
-    _, train_roc = evaluate_network(model, device, train_loader, epoch)
 
-    test_roc = test_roc.item()
-    val_roc = val_roc.item()
-    train_roc = train_roc.item()
+    best_val_epoch = np.argmax(np.array(epoch_val_ROCs))
+    best_train_epoch = np.argmax(np.array(epoch_train_ROCs))
+    best_val_roc = epoch_val_ROCs[best_val_epoch]
+    best_val_test_roc = epoch_test_ROCs[best_val_epoch]
+    best_val_train_roc = epoch_train_ROCs[best_val_epoch]
+    best_train_roc = epoch_train_ROCs[best_train_epoch]
 
-    print("Train ROC: {:.4f}".format(train_roc))
-    print("Val ROC: {:.4f}".format(val_roc))
-    print("Test ROC: {:.4f}".format(test_roc))
+    print("Best Train ROC: {:.4f}".format(best_train_roc))
+    print("Best Val ROC: {:.4f}".format(best_val_roc))
+    print("Test ROC of Best Val: {:.4f}".format(best_val_test_roc))
+    print("Train ROC of Best Val: {:.4f}".format(best_val_train_roc))
     print("TOTAL TIME TAKEN: {:.4f}s".format(time.time() - t0))
     print("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
-    #for i, layer in enumerate(model.layers):
-        #for j, tower in enumerate(layer.towers):
-            #print('For layer ', i, ' tower ', j, ' the weights are ', tower.bias)
-            #print('For layer ', i, ' tower ', j, ' the bias are ', tower.bias)
 
 
     writer.close()
@@ -200,10 +200,10 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     """
     with open(write_file_name + '.txt', 'w') as f:
         f.write("""Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n{}\n\nTotal Parameters: {}\n\n
-    FINAL RESULTS\nTEST ROC: {:.4f}\nTRAIN ROC: {:.4f}\n\n
+    FINAL RESULTS\nTEST ROC of Best Val: {:.4f}\nBest TRAIN ROC: {:.4f}\nTRAIN ROC of Best Val: {:.4f}\nBest VAL ROC: {:.4f}\n\n
     Total Time Taken: {:.4f} hrs\nAverage Time Per Epoch: {:.4f} s\n\n\n""" \
                 .format(DATASET_NAME, MODEL_NAME, params, net_params, model, net_params['total_param'],
-                        np.mean(np.array(test_roc)), np.array(train_roc), (time.time() - t0) / 3600,
+                        best_val_test_roc, best_train_roc, best_val_train_roc, best_val_roc, (time.time() - t0) / 3600,
                         np.mean(per_epoch_time)))
 
 
