@@ -40,7 +40,8 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
     evaluator = Evaluator(name='ogbg-molpcba')
     print(torch.cat(list_scores).shape)
     print(torch.cat(list_labels).shape)
-    print(torch.cat(list_labels).type)
+    print(torch.cat(list_labels))
+    print(torch.cat(list_scores))
     epoch_train_AP = evaluator.eval({'y_pred': torch.cat(list_scores),
                                        'y_true': torch.cat(list_labels)})['ap']
 
