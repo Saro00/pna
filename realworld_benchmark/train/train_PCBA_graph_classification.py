@@ -28,8 +28,7 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
         optimizer.zero_grad()
         batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True)
         is_labeled = batch_labels == batch_labels
-        batch_labels_loss = batch_labels.clone().to(torch.float32)
-        loss = model.loss(batch_scores[is_labeled], batch_labels_loss[is_labeled])
+        loss = model.loss(batch_scores[is_labeled], batch_labels.to(torch.float32)[is_labeled])
         loss.backward()
         optimizer.step()
         epoch_loss += loss.detach().item()
@@ -38,10 +37,6 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
 
     epoch_loss /= (iter + 1)
     evaluator = Evaluator(name='ogbg-molpcba')
-    print(torch.cat(list_scores).shape)
-    print(torch.cat(list_labels).shape)
-    print(torch.cat(list_labels))
-    print(torch.cat(list_scores))
     epoch_train_AP = evaluator.eval({'y_pred': torch.cat(list_scores),
                                        'y_true': torch.cat(list_labels)})['ap']
 
@@ -61,8 +56,7 @@ def evaluate_network_sparse(model, device, data_loader, epoch):
             batch_labels = batch_labels.to(device)
             batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True)
             is_labeled = batch_labels == batch_labels
-            batch_labels_loss = batch_labels.clone().to(torch.float32)
-            loss = model.loss(batch_scores[is_labeled], batch_labels_loss[is_labeled])
+            loss = model.loss(batch_scores[is_labeled], batch_labels.to(torch.float32)[is_labeled])
             epoch_test_loss += loss.detach().item()
             list_scores.append(batch_scores)
             list_labels.append(batch_labels)
