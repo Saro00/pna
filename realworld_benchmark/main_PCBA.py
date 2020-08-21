@@ -123,6 +123,8 @@ def train_val_pipeline(dataset, params, net_params, dirs):
             for epoch in t:
                 if epoch == -1:
                     model.reset_params()
+                if epoch % 10 == 0:
+                    print("That's epoch number ", epoch)
 
 
                 t.set_description('Epoch %d' % epoch)
