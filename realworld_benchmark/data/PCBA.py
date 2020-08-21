@@ -119,7 +119,7 @@ class DownloadPCBA(object):
 
     def get_idx_split(self, split_type=None):
         if split_type is None:
-            split_type = self.meta_info[self.name]["split"]
+            split_type = 'scaffold'
 
         path = osp.join(self.root, "split", split_type)
 
