@@ -203,18 +203,9 @@ class PCBADataset(Dataset):
         self.name = name
         self.dataset = DownloadPCBA(name = 'ogbg-molpcba')
         self.split_idx = self.dataset.get_idx_split()
-        if True:
-            split = {'test': torch.tensor([i for i in range(1, 300)]),
-             'train': torch.tensor([i for i in range(300, 600)]),
-             'valid': torch.tensor([i for i in range(600, 900)])}
-            self.train = PCBADGL(self.dataset, split['train'])
-            self.val = PCBADGL(self.dataset, split['valid'])
-            self.test = PCBADGL(self.dataset, split['test'])
-
-        else:
-            self.train = PCBADGL(self.dataset, self.split_idx['train'])
-            self.val = PCBADGL(self.dataset, self.split_idx['valid'])
-            self.test = PCBADGL(self.dataset, self.split_idx['test'])
+        self.train = PCBADGL(self.dataset, self.split_idx['train'])
+        self.val = PCBADGL(self.dataset, self.split_idx['valid'])
+        self.test = PCBADGL(self.dataset, self.split_idx['test'])
 
         self.evaluator = Evaluator(name='ogbg-molpcba')
 
