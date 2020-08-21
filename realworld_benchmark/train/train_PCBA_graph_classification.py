@@ -28,7 +28,7 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
         optimizer.zero_grad()
         batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True)
         is_labeled = batch_labels == batch_labels
-        batch_labels_loss = batch_labels.to(torch.float32)
+        batch_labels_loss = batch_labels.clone().to(torch.float32)
         loss = model.loss(batch_scores[is_labeled], batch_labels_loss[is_labeled])
         loss.backward()
         optimizer.step()
@@ -61,7 +61,7 @@ def evaluate_network_sparse(model, device, data_loader, epoch):
             batch_labels = batch_labels.to(device)
             batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True)
             is_labeled = batch_labels == batch_labels
-            batch_labels_loss = batch_labels.to(torch.float32)
+            batch_labels_loss = batch_labels.clone().to(torch.float32)
             loss = model.loss(batch_scores[is_labeled], batch_labels_loss[is_labeled])
             epoch_test_loss += loss.detach().item()
             list_scores.append(batch_scores)
