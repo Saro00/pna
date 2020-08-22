@@ -42,7 +42,7 @@ def positional_encoding(g, pos_enc_dim):
     #EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim, which='SR', tol=1e-2)
     #EigVec = EigVec[:, EigVal.argsort()]  # increasing order
     #g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).half()
-    g.ndata['eig'] = torch.from_numpy(np.random.rand(g.number_of_nodes(), pos_enc_dim)).half()
+    g.ndata['eig'] = torch.from_numpy(np.random.rand(g.number_of_nodes(), pos_enc_dim)).float()
 
     return g
 
