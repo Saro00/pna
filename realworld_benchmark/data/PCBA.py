@@ -25,9 +25,9 @@ def positional_encoding(g, pos_enc_dim):
     """
 
     # Laplacian
-    #A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-    #N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-    #L = sp.eye(g.number_of_nodes()) - N * A * N
+    A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+    N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+    L = sp.eye(g.number_of_nodes()) - N * A * N
 
 
     # # Eigenvectors with numpy
@@ -37,11 +37,11 @@ def positional_encoding(g, pos_enc_dim):
     # g.ndata['pos_enc'] = torch.from_numpy(np.abs(EigVec[:,1:pos_enc_dim+1])).float()
 
     # Eigenvectors with scipy
-    # EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
+    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
     #EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim, which='SR', tol=1e-2)
-    #EigVec = EigVec[:, EigVal.argsort()]  # increasing order
-    #g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
-    g.ndata['eig'] = torch.from_numpy(np.random.rand(g.number_of_nodes(), pos_enc_dim)).float()
+    EigVec = EigVec[:, EigVal.argsort()]  # increasing order
+    g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
+    #g.ndata['eig'] = torch.from_numpy(np.random.rand(g.number_of_nodes(), pos_enc_dim)).float()
 
     return g
 
