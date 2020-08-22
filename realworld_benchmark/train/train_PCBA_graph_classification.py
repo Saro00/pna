@@ -60,8 +60,8 @@ def evaluate_network_sparse(model, device, data_loader, epoch):
             is_labeled = batch_labels == batch_labels
             loss = model.loss(batch_scores[is_labeled], batch_labels.to(torch.float32)[is_labeled])
             epoch_test_loss += loss.detach().item()
-            list_scores.append(batch_scores)
-            list_labels.append(batch_labels)
+            list_scores.append(batch_scores.detach())
+            list_labels.append(batch_labels.detach())
 
         epoch_test_loss /= (iter + 1)
         evaluator = Evaluator(name='ogbg-molpcba')
