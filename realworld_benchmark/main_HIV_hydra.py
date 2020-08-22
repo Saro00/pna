@@ -116,7 +116,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                                                      verbose=True)
 
     epoch_train_losses, epoch_val_losses = [], []
-    epoch_train_ROCs, epoch_val_ROCs = [], []
+    epoch_train_ROCs, epoch_val_ROCs, epoch_test_ROCs = [], []
 
     train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, collate_fn=dataset.collate)
     val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
@@ -164,6 +164,9 @@ def train_val_pipeline(dataset, params, net_params, dirs):
 
 
                 _, epoch_test_roc = evaluate_network(model, device, test_loader, epoch)
+
+                epoch_test_ROCs.append(epoch_test_roc.item())
+
                 t.set_postfix(time=time.time() - start, lr=optimizer.param_groups[0]['lr'],
                               train_loss=epoch_train_loss, val_loss=epoch_val_loss,
                               train_ROC=epoch_train_roc.item(), val_ROC=epoch_val_roc.item(),
