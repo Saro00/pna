@@ -16,6 +16,7 @@ import os.path as osp
 from dgl.data.utils import load_graphs, save_graphs, Subset
 from ogb.utils.url import decide_download, download_url, extract_zip
 from ogb.io.read_graph_dgl import read_csv_graph_dgl
+import gc
 
 
 
@@ -42,6 +43,7 @@ def positional_encoding(g, pos_enc_dim):
     EigVec = EigVec[:, EigVal.argsort()]  # increasing order
     g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
     #g.ndata['eig'] = torch.from_numpy(np.random.rand(g.number_of_nodes(), pos_enc_dim)).float()
+    gc.collect()
 
     return g
 
