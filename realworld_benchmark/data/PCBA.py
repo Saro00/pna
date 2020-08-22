@@ -26,9 +26,9 @@ def positional_encoding(g, pos_enc_dim):
     """
 
     # Laplacian
-    A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-    N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-    L = sp.eye(g.number_of_nodes()) - N * A * N
+    #A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+    #N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+    #L = sp.eye(g.number_of_nodes()) - N * A * N
 
 
     # # Eigenvectors with numpy
