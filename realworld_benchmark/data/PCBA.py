@@ -41,9 +41,8 @@ def positional_encoding(g, pos_enc_dim):
     #EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
     EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim, which='SR', tol=1e-2)
     EigVec = EigVec[:, EigVal.argsort()]  # increasing order
-    g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
+    g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).half()
     #g.ndata['eig'] = torch.from_numpy(np.random.rand(g.number_of_nodes(), pos_enc_dim)).float()
-    gc.collect()
 
     return g
 
@@ -108,11 +107,11 @@ class DownloadPCBA(object):
 
         if "classification" in self.task_type:
             if has_nan:
-                labels = torch.from_numpy(labels).to(torch.float32)
+                labels = torch.from_numpy(labels).to(torch.half)
             else:
                 labels = torch.from_numpy(labels).to(torch.long)
         else:
-            labels = torch.from_numpy(labels).to(torch.float32)
+            labels = torch.from_numpy(labels).to(torch.half)
 
         print('Not Saving...')
         # save_graphs(pre_processed_file_path, graphs, labels={'labels': labels})

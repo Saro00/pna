@@ -22,18 +22,18 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
     list_scores = []
     list_labels = []
     for iter, (batch_graphs, batch_labels) in enumerate(data_loader):
-        batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
-        batch_e = batch_graphs.edata['feat'].to(device)
-        batch_labels = batch_labels.to(device)
+        batch_x = batch_graphs.ndata['feat'].to(device, torch.float16)  # num x feat
+        batch_e = batch_graphs.edata['feat'].to(device, torch.float16)
+        batch_labels = batch_labels.to(device, torch.float16)
         optimizer.zero_grad()
         batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True)
         is_labeled = batch_labels == batch_labels
-        loss = model.loss(batch_scores[is_labeled], batch_labels.to(torch.float32)[is_labeled])
+        loss = model.loss(batch_scores[is_labeled], batch_labels.to(torch.float16)[is_labeled])
         loss.backward()
         optimizer.step()
         epoch_loss += loss.detach().item()
-        list_scores.append(batch_scores.detach().cpu())
-        list_labels.append(batch_labels.detach().cpu())
+        list_scores.append(batch_scores.detach().half())
+        list_labels.append(batch_labels.detach().half())
 
     epoch_loss /= (iter + 1)
     evaluator = Evaluator(name='ogbg-molpcba')
@@ -51,15 +51,15 @@ def evaluate_network_sparse(model, device, data_loader, epoch):
         list_scores = []
         list_labels = []
         for iter, (batch_graphs, batch_labels) in enumerate(data_loader):
-            batch_x = batch_graphs.ndata['feat'].to(device)
-            batch_e = batch_graphs.edata['feat'].to(device)
-            batch_labels = batch_labels.to(device)
+            batch_x = batch_graphs.ndata['feat'].to(device, torch.float16)
+            batch_e = batch_graphs.edata['feat'].to(device, torch.float16)
+            batch_labels = batch_labels.to(device, torch.float16)
             batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True)
             is_labeled = batch_labels == batch_labels
-            loss = model.loss(batch_scores[is_labeled], batch_labels.to(torch.float32)[is_labeled])
+            loss = model.loss(batch_scores[is_labeled], batch_labels.to(torch.float16)[is_labeled])
             epoch_test_loss += loss.detach().item()
-            list_scores.append(batch_scores.detach().cpu())
-            list_labels.append(batch_labels.detach().cpu())
+            list_scores.append(batch_scores.detach().half())
+            list_labels.append(batch_labels.detach().half())
 
         epoch_test_loss /= (iter + 1)
         evaluator = Evaluator(name='ogbg-molpcba')
