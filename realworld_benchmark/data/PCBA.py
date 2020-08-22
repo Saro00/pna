@@ -107,11 +107,11 @@ class DownloadPCBA(object):
 
         if "classification" in self.task_type:
             if has_nan:
-                labels = torch.from_numpy(labels).to(torch.half)
+                labels = torch.from_numpy(labels)
             else:
                 labels = torch.from_numpy(labels).to(torch.long)
         else:
-            labels = torch.from_numpy(labels).to(torch.half)
+            labels = torch.from_numpy(labels)
 
         print('Not Saving...')
         # save_graphs(pre_processed_file_path, graphs, labels={'labels': labels})
