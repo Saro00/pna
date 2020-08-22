@@ -32,13 +32,13 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
         loss.backward()
         optimizer.step()
         epoch_loss += loss.detach().item()
-        list_scores.append(batch_scores.detach())
-        list_labels.append(batch_labels.detach())
+        list_scores.append(batch_scores.detach().cpu())
+        list_labels.append(batch_labels.detach().cpu())
 
     epoch_loss /= (iter + 1)
     evaluator = Evaluator(name='ogbg-molpcba')
-    epoch_train_AP = evaluator.eval({'y_pred': torch.cat(list_scores),
-                                       'y_true': torch.cat(list_labels)})['ap']
+    epoch_train_AP = evaluator.eval({'y_pred': torch.cat(list_scores).numpy(),
+                                       'y_true': torch.cat(list_labels).numpy()})['ap']
 
     return epoch_loss, epoch_train_AP, optimizer
 
@@ -58,12 +58,12 @@ def evaluate_network_sparse(model, device, data_loader, epoch):
             is_labeled = batch_labels == batch_labels
             loss = model.loss(batch_scores[is_labeled], batch_labels.to(torch.float32)[is_labeled])
             epoch_test_loss += loss.detach().item()
-            list_scores.append(batch_scores.detach())
-            list_labels.append(batch_labels.detach())
+            list_scores.append(batch_scores.detach().cpu())
+            list_labels.append(batch_labels.detach().cpu())
 
         epoch_test_loss /= (iter + 1)
         evaluator = Evaluator(name='ogbg-molpcba')
-        epoch_test_AP = evaluator.eval({'y_pred': torch.cat(list_scores),
-                                           'y_true': torch.cat(list_labels)})['ap']
+        epoch_test_AP = evaluator.eval({'y_pred': torch.cat(list_scores).numpy(),
+                                           'y_true': torch.cat(list_labels).numpy()})['ap']
 
     return epoch_test_loss, epoch_test_AP
