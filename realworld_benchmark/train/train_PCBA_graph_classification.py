@@ -18,9 +18,9 @@ from tqdm import tqdm
 def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
     model.train()
     epoch_loss = 0
-    epoch_train_AP = 0
-    list_scores = []
-    list_labels = []
+    #epoch_train_AP = 0
+    #list_scores = []
+    #list_labels = []
     for iter, (batch_graphs, batch_labels) in enumerate(data_loader):
         batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
         batch_e = batch_graphs.edata['feat'].to(device)
@@ -32,16 +32,15 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
         loss.backward()
         optimizer.step()
         epoch_loss += loss.detach().item()
-        list_scores.append(batch_scores.detach())
-        list_labels.append(batch_labels.detach())
+        #list_scores.append(batch_scores.detach().cpu())
+        #list_labels.append(batch_labels.detach().cpu())
 
     epoch_loss /= (iter + 1)
-    evaluator = Evaluator(name='ogbg-molpcba')
-    epoch_train_AP = evaluator.eval({'y_pred': torch.cat(list_scores),
-                                       'y_true': torch.cat(list_labels)})['ap']
+    #evaluator = Evaluator(name='ogbg-molpcba')
+    #epoch_train_AP = evaluator.eval({'y_pred': torch.cat(list_scores), 'y_true': torch.cat(list_labels)})['ap']
 
-    return epoch_loss, epoch_train_AP, optimizer
-
+    #return epoch_loss, epoch_train_AP, optimizer
+    return epoch_loss, 0, optimizer
 
 def evaluate_network_sparse(model, device, data_loader, epoch):
     model.eval()
@@ -58,12 +57,11 @@ def evaluate_network_sparse(model, device, data_loader, epoch):
             is_labeled = batch_labels == batch_labels
             loss = model.loss(batch_scores[is_labeled], batch_labels[is_labeled])
             epoch_test_loss += loss.detach().item()
-            list_scores.append(batch_scores.detach())
-            list_labels.append(batch_labels.detach())
+            list_scores.append(batch_scores.detach().cpu())
+            list_labels.append(batch_labels.detach().cpu())
 
         epoch_test_loss /= (iter + 1)
         evaluator = Evaluator(name='ogbg-molpcba')
-        epoch_test_AP = evaluator.eval({'y_pred': torch.cat(list_scores),
-                                           'y_true': torch.cat(list_labels)})['ap']
+        epoch_test_AP = evaluator.eval({'y_pred': torch.cat(list_scores), 'y_true': torch.cat(list_labels)})['ap']
 
     return epoch_test_loss, epoch_test_AP
