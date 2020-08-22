@@ -34,8 +34,8 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
         loss.backward()
         optimizer.step()
         epoch_loss += loss.detach().item()
-        list_scores.append(batch_scores)
-        list_labels.append(batch_labels)
+        list_scores.append(batch_scores.detach())
+        list_labels.append(batch_labels.detach())
 
     epoch_loss /= (iter + 1)
     evaluator = Evaluator(name='ogbg-molpcba')
