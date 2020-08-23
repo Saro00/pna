@@ -22,8 +22,6 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
     list_scores = []
     list_labels = []
     for iter, (batch_graphs, batch_labels) in enumerate(data_loader):
-        if iter % 10 == 0:
-            print('Iter number ', iter)
         batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
         batch_e = batch_graphs.edata['feat'].to(device)
         batch_labels = batch_labels.to(device)
