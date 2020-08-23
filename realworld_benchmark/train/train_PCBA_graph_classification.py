@@ -22,13 +22,15 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
     #list_scores = []
     #list_labels = []
     for iter, (batch_graphs, batch_labels) in enumerate(data_loader):
+        if iter % 10 == 0:
+            print('Iter number ', iter)
         batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
         batch_e = batch_graphs.edata['feat'].to(device)
-        batch_labels = batch_labels.to(device, torch.float16)
+        batch_labels = batch_labels.to(device)
         optimizer.zero_grad()
-        batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True).to(torch.float16)
+        batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True)
         is_labeled = batch_labels == batch_labels
-        loss = model.loss(batch_scores[is_labeled], batch_labels[is_labeled])
+        loss = model.loss(batch_scores[is_labeled], batch_labels.float()[is_labeled])
         loss.backward()
         optimizer.step()
         epoch_loss += loss.detach().item()
@@ -40,6 +42,7 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
     #epoch_train_AP = evaluator.eval({'y_pred': torch.cat(list_scores), 'y_true': torch.cat(list_labels)})['ap']
 
     #return epoch_loss, epoch_train_AP, optimizer
+    print('Finish training')
     return epoch_loss, 0, optimizer
 
 def evaluate_network_sparse(model, device, data_loader, epoch):
@@ -52,10 +55,10 @@ def evaluate_network_sparse(model, device, data_loader, epoch):
         for iter, (batch_graphs, batch_labels) in enumerate(data_loader):
             batch_x = batch_graphs.ndata['feat'].to(device)
             batch_e = batch_graphs.edata['feat'].to(device)
-            batch_labels = batch_labels.to(device, torch.float16)
-            batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True).to(torch.float16)
+            batch_labels = batch_labels.to(device)
+            batch_scores = model.forward(batch_graphs, batch_x, batch_e, True, True)
             is_labeled = batch_labels == batch_labels
-            loss = model.loss(batch_scores[is_labeled], batch_labels[is_labeled])
+            loss = model.loss(batch_scores[is_labeled], batch_labels.float()[is_labeled])
             epoch_test_loss += loss.detach().item()
             list_scores.append(batch_scores.detach().cpu())
             list_labels.append(batch_labels.detach().cpu())
