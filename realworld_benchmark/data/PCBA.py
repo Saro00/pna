@@ -168,7 +168,7 @@ class PCBADGL(torch.utils.data.Dataset):
         self.graph_lists = []
         self.graph_labels = []
         for i, g in enumerate(self.data):
-            if g[0].number_of_nodes() > 5 and i < 100000:
+            if g[0].number_of_nodes() > 5 and i < 10000:
                 self.graph_lists.append(g[0])
                 self.graph_labels.append(g[1])
         self.n_samples = len(self.graph_lists)
@@ -209,6 +209,7 @@ class PCBADataset(Dataset):
         self.train = PCBADGL(self.dataset, self.split_idx['train'])
         self.val = PCBADGL(self.dataset, self.split_idx['valid'])
         self.test = PCBADGL(self.dataset, self.split_idx['test'])
+        delattr(self, self.dataset)
 
         self.evaluator = Evaluator(name='ogbg-molpcba')
 
