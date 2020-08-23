@@ -135,7 +135,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
 
                 epoch_train_losses.append(epoch_train_loss)
                 epoch_val_losses.append(epoch_val_loss)
-                epoch_train_APs.append(epoch_train_ap.item())
+                epoch_train_APs.append(epoch_train_ap)
                 epoch_val_APs.append(epoch_val_ap.item())
 
                 writer.add_scalar('train/_loss', epoch_train_loss, epoch)
@@ -148,7 +148,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                 _, epoch_test_ap = evaluate_network(model, device, test_loader, epoch)
                 t.set_postfix(time=time.time() - start, lr=optimizer.param_groups[0]['lr'],
                               train_loss=epoch_train_loss, val_loss=epoch_val_loss,
-                              train_AP=epoch_train_ap.item(), val_AP=epoch_val_ap.item(),
+                              train_AP=epoch_train_ap, val_AP=epoch_val_ap.item(),
                               test_AP=epoch_test_ap.item(), refresh=False)
 
                 per_epoch_time.append(time.time() - start)
