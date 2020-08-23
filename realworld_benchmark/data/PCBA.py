@@ -209,7 +209,6 @@ class PCBADataset(Dataset):
         self.train = PCBADGL(self.dataset, self.split_idx['train'])
         self.val = PCBADGL(self.dataset, self.split_idx['valid'])
         self.test = PCBADGL(self.dataset, self.split_idx['test'])
-        self.dataset = 0
 
         self.evaluator = Evaluator(name='ogbg-molpcba')
 
@@ -223,14 +222,14 @@ class PCBADataset(Dataset):
         # The input samples is a list of pairs (graph, label).
         graphs, labels = map(list, zip(*samples))
 
-        labels = torch.cat([label.unsqueeze(0) for label in labels]).to('cpu')
+        labels = torch.cat([label.unsqueeze(0) for label in labels])
         #tab_sizes_n = [ graphs[i].number_of_nodes() for i in range(len(graphs))]
         #tab_snorm_n = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_n ]
         #snorm_n = torch.cat(tab_snorm_n).sqrt()
         #tab_sizes_e = [ graphs[i].number_of_edges() for i in range(len(graphs))]
         #tab_snorm_e = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_e ]
         #snorm_e = torch.cat(tab_snorm_e).sqrt()
-        batched_graph = dgl.batch(graphs).to('cpu')
+        batched_graph = dgl.batch(graphs)
 
         return batched_graph, labels
 
