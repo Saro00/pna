@@ -172,6 +172,7 @@ class PCBADGL(torch.utils.data.Dataset):
                 self.graph_lists.append(g[0])
                 self.graph_labels.append(g[1])
         self.n_samples = len(self.graph_lists)
+        del self.data
         self.get_eig()
 
 
