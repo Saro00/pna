@@ -209,7 +209,7 @@ class PCBADataset(Dataset):
         self.train = PCBADGL(self.dataset, self.split_idx['train'])
         self.val = PCBADGL(self.dataset, self.split_idx['valid'])
         self.test = PCBADGL(self.dataset, self.split_idx['test'])
-        delattr(self, self.dataset)
+        del self.dataset
 
         self.evaluator = Evaluator(name='ogbg-molpcba')
 
