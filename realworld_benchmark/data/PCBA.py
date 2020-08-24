@@ -43,7 +43,11 @@ def positional_encoding(g, pos_enc_dim):
     EigVec = EigVec[:, EigVal.argsort()]  # increasing order
     g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
     #g.ndata['eig'] = torch.from_numpy(np.random.rand(g.number_of_nodes(), pos_enc_dim)).float()
-
+    del A
+    del N
+    del L
+    del EigVec
+    del EigVal
     return g
 
 
@@ -168,7 +172,7 @@ class PCBADGL(torch.utils.data.Dataset):
         self.graph_lists = []
         self.graph_labels = []
         for i, g in enumerate(self.data):
-            if g[0].number_of_nodes() > 5 and rd.random() < 0.2:
+            if g[0].number_of_nodes() > 5: #and rd.random() < 0.2:
                 self.graph_lists.append(g[0])
                 self.graph_labels.append(g[1])
         self.n_samples = len(self.graph_lists)
