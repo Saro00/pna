@@ -171,7 +171,7 @@ class PCBADGL(torch.utils.data.Dataset):
         self.data = [g for g in data[self.split]]
         self.graph_lists = []
         self.graph_labels = []
-        for i, g in enumerate(self.data):
+        for i, g in enumerate(self.data) and rd.random() < 0.7:
             if g[0].number_of_nodes() > 5: #and rd.random() < 0.2:
                 self.graph_lists.append(g[0])
                 self.graph_labels.append(g[1])
