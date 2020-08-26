@@ -88,7 +88,7 @@ def aggregate_eig_dx(self, h, eig_s, eig_d, h_in, eig_idx):
 def aggregate_eig_dx_split(self, h, eig_s, eig_d, h_in, eig_idx):
     eig_front = (torch.relu(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]) /
      (torch.sum(torch.abs(torch.relu(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])), keepdim=True, dim=1) + EPS)).unsqueeze(-1)
-    eig_back = (torch.relu(eig_d[:, :, eig_idx] - eig_s[:, :, eig_idx] + ) /
+    eig_back = (torch.relu(eig_d[:, :, eig_idx] - eig_s[:, :, eig_idx]) /
      (torch.sum(torch.abs(-torch.relu(eig_d[:, :, eig_idx] - eig_s[:, :, eig_idx])), keepdim=True, dim=1) + EPS)).unsqueeze(-1)
     eig_w = (eig_front + eig_back) / 2
     h_mod = torch.mul(h, eig_w)
