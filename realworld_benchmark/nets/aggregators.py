@@ -1,4 +1,5 @@
 import torch
+from torch import nn
 from functools import partial
 
 
@@ -84,6 +85,16 @@ def aggregate_eig_dx(self, h, eig_s, eig_d, h_in, eig_idx):
     h_mod = torch.mul(h, eig_w)
     return torch.abs(torch.sum(h_mod, dim=1) - torch.sum(eig_w, dim=1) * h_in)
 
+def aggregate_eig_dx_split(self, h, eig_s, eig_d, h_in, eig_idx):
+    eig_front = (torch.relu(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]) /
+     (torch.sum(torch.abs(torch.relu(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])), keepdim=True, dim=1) + EPS)).unsqueeze(-1)
+    eig_back = (torch.relu(eig_d[:, :, eig_idx] - eig_s[:, :, eig_idx] + ) /
+     (torch.sum(torch.abs(-torch.relu(eig_d[:, :, eig_idx] - eig_s[:, :, eig_idx])), keepdim=True, dim=1) + EPS)).unsqueeze(-1)
+    eig_w = (eig_front + eig_back) / 2
+    h_mod = torch.mul(h, eig_w)
+    return torch.abs(torch.sum(h_mod, dim=1) - torch.sum(eig_w, dim=1) * h_in)
+
+
 def aggregate_lap(self, h, eig_s, eig_d, h_in):
     deg = h.shape[1]
     return torch.sum(h, dim=1) - h_in * deg
@@ -119,4 +130,5 @@ AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_ma
                 'eig3-smooth-new' : partial(aggregate_eig_new, eig_idx=3), 'eig4-smooth-new' : partial(aggregate_eig_new, eig_idx=4),
                 'eig1-new-abs' : partial(aggregate_eig_new_abs, eig_idx=1), 'eig2-new-abs' : partial(aggregate_eig_new_abs, eig_idx=2),
                 'eig1-dx' : partial(aggregate_eig_dx, eig_idx=1), 'eig2-dx' : partial(aggregate_eig_dx, eig_idx=2),
-                'eig3-dx' : partial(aggregate_eig_dx, eig_idx=3), 'aggregate_NN': aggregate_NN}
+                'eig3-dx' : partial(aggregate_eig_dx, eig_idx=3), 'eig1-dx-new' : partial(aggregate_eig_dx_split, eig_idx=1), 'eig2-dx-new' : partial(aggregate_eig_dx_split, eig_idx=2),
+                'eig3-dx-new' : partial(aggregate_eig_dx_split, eig_idx=3), 'aggregate_NN': aggregate_NN}
