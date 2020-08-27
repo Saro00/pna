@@ -36,7 +36,7 @@ class EIGNet(nn.Module):
         self.divide_input_first = net_params['divide_input_first']
         self.divide_input_last = net_params['divide_input_last']
         self.residual = net_params['residual']
-
+        self.JK = net_params['JK']
         pretrans_layers = net_params['pretrans_layers']
         posttrans_layers = net_params['posttrans_layers']
         self.gru_enable = net_params['gru']
@@ -71,6 +71,7 @@ class EIGNet(nn.Module):
 
     def forward(self, g, h, e, snorm_n, snorm_e):
         h = self.embedding_h(h)
+        h_list = [h]
         h = self.in_feat_dropout(h)
 
         for i, conv in enumerate(self.layers):
@@ -78,6 +79,15 @@ class EIGNet(nn.Module):
             if self.gru_enable and i != len(self.layers) - 1:
                 h_t = self.gru(h, h_t)
             h = h_t
+            h_list.append(h)
+
+        if self.JK == 'last':
+            pass
+
+        elif self.JK == 'sum':
+            h = 0
+            for layer in h_list:
+                h += layer
 
         h_out = self.MLP_layer(h)
 

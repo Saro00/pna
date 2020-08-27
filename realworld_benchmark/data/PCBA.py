@@ -229,15 +229,15 @@ class PCBADataset(Dataset):
         graphs, labels = map(list, zip(*samples))
 
         labels = torch.cat([label.unsqueeze(0) for label in labels])
-        #tab_sizes_n = [ graphs[i].number_of_nodes() for i in range(len(graphs))]
-        #tab_snorm_n = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_n ]
-        #snorm_n = torch.cat(tab_snorm_n).sqrt()
-        #tab_sizes_e = [ graphs[i].number_of_edges() for i in range(len(graphs))]
-        #tab_snorm_e = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_e ]
-        #snorm_e = torch.cat(tab_snorm_e).sqrt()
+        tab_sizes_n = [ graphs[i].number_of_nodes() for i in range(len(graphs))]
+        tab_snorm_n = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_n ]
+        snorm_n = torch.cat(tab_snorm_n).sqrt()
+        tab_sizes_e = [ graphs[i].number_of_edges() for i in range(len(graphs))]
+        tab_snorm_e = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_e ]
+        snorm_e = torch.cat(tab_snorm_e).sqrt()
         batched_graph = dgl.batch(graphs)
 
-        return batched_graph, labels
+        return batched_graph, labels, snorm_n, snorm_e
 
     def _add_self_loops(self):
         # function for adding self loops

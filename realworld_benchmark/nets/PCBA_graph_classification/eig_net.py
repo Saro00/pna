@@ -31,6 +31,7 @@ class EIGNet(nn.Module):
         self.divide_input_first = net_params['divide_input_first']
         self.divide_input_last = net_params['divide_input_last']
         self.residual = net_params['residual']
+        self.JK = net_params['JK']
         self.edge_feat = net_params['edge_feat']
         edge_dim = net_params['edge_dim']
         pretrans_layers = net_params['pretrans_layers']
@@ -68,6 +69,7 @@ class EIGNet(nn.Module):
 
     def forward(self, g, h, e, snorm_n, snorm_e):
         h = self.embedding_h(h)
+        h_list = [h]
         h = self.in_feat_dropout(h)
         if self.edge_feat:
             e = self.embedding_e(e)
@@ -77,8 +79,18 @@ class EIGNet(nn.Module):
             if self.gru_enable and i != len(self.layers) - 1:
                 h_t = self.gru(h, h_t)
             h = h_t
+            h_list.append(h)
 
         g.ndata['h'] = h
+
+        if self.JK == 'last':
+            g.ndata['h'] = h
+
+        elif self.JK == 'sum':
+            h = 0
+            for layer in h_list:
+                h += layer
+            g.ndata['h'] = h
 
         if self.readout == "sum":
             hg = dgl.sum_nodes(g, 'h')

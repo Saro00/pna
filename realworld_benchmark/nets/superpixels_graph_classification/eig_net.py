@@ -28,6 +28,7 @@ class EIGNet(nn.Module):
         self.graph_norm = net_params['graph_norm']
         self.batch_norm = net_params['batch_norm']
         self.residual = net_params['residual']
+        self.JK = net_params['JK']
         self.aggregators = net_params['aggregators']
         self.scalers = net_params['scalers']
         self.NN_eig = net_params['NN_eig']
@@ -70,6 +71,7 @@ class EIGNet(nn.Module):
 
     def forward(self, g, h, e, snorm_n, snorm_e):
         h = self.embedding_h(h)
+        h_list = [h]
         if self.edge_feat:
             e = self.embedding_e(e)
 
@@ -78,8 +80,18 @@ class EIGNet(nn.Module):
             if self.gru_enable and i != len(self.layers) - 1:
                 h_t = self.gru(h, h_t)
             h = h_t
+            h_list.append(h)
 
         g.ndata['h'] = h
+
+        if self.JK == 'last':
+            g.ndata['h'] = h
+
+        elif self.JK == 'sum':
+            h = 0
+            for layer in h_list:
+                h += layer
+            g.ndata['h'] = h
 
         if self.readout == "sum":
             hg = dgl.sum_nodes(g, 'h')
