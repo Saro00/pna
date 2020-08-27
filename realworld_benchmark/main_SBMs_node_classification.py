@@ -263,7 +263,7 @@ def main():
     parser.add_argument('--hidden_dim', help="Please give a value for hidden_dim")
     parser.add_argument('--out_dim', help="Please give a value for out_dim")
     parser.add_argument('--residual', help="Please give a value for residual")
-    parser.add_argument('--JK', defaul='last', help='Jumping Knowledge')
+    parser.add_argument('--JK', default='last', help='Jumping Knowledge')
     parser.add_argument('--edge_feat', help="Please give a value for edge_feat")
     parser.add_argument('--readout', help="Please give a value for readout")
     parser.add_argument('--kernel', help="Please give a value for kernel")
