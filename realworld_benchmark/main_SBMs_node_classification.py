@@ -429,10 +429,11 @@ def main():
     net_params['n_classes'] = torch.unique(dataset.train[0][1],dim=0).size(0)
 
 
-    D = torch.cat([torch.FloatTensor(dataset.train[i][0].number_of_nodes()) for i in range(len(dataset.train))])
+    D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
+                       dataset.train.graph_lists])
     net_params['avg_d'] = dict(lin=torch.mean(D),
-                               exp=torch.mean(torch.exp(torch.div(1, D)) - 1),
-                               log=torch.mean(torch.log(D + 1)))
+                                   exp=torch.mean(torch.exp(torch.div(1, D)) - 1),
+                                   log=torch.mean(torch.log(D + 1)))
 
     root_log_dir = out_dir + 'logs/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
     root_ckpt_dir = out_dir + 'checkpoints/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
