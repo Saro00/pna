@@ -483,7 +483,8 @@ def main():
     net_params['in_dim'] = torch.unique(dataset.train[0][0].ndata['feat'], dim=0).size(0)  # node_dim (feat is an integer)
     net_params['n_classes'] = torch.unique(dataset.train[0][1], dim=0).size(0)
 
-    D = torch.cat([torch.FloatTensor(dataset.train[i][0].number_of_nodes()) for i in range(len(dataset.train))])
+    D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
+                   dataset.train.graph_lists])
     net_params['avg_d'] = dict(lin=torch.mean(D),
                                exp=torch.mean(torch.exp(torch.div(1, D)) - 1),
                                log=torch.mean(torch.log(D + 1)))
