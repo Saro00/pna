@@ -448,11 +448,10 @@ def main():
     num_classes = len(np.unique(np.array(dataset.train[:][1])))
     net_params['n_classes'] = num_classes
 
-    D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
-                       dataset.train.graph_lists])
+    D = torch.cat([dataset.train[i][0].number_of_nodes() for i in range(len(dataset.train))])
     net_params['avg_d'] = dict(lin=torch.mean(D),
-                                   exp=torch.mean(torch.exp(torch.div(1, D)) - 1),
-                                   log=torch.mean(torch.log(D + 1)))
+                               exp=torch.mean(torch.exp(torch.div(1, D)) - 1),
+                               log=torch.mean(torch.log(D + 1)))
 
     root_log_dir = out_dir + 'logs/' + MODEL_NAME + "_" + DATASET_NAME + "_GPU" + str(
         config['gpu']['id']) + "_" + time.strftime('%Hh%Mm%Ss_on_%b_%d_%Y')
