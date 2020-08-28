@@ -383,7 +383,7 @@ def main():
     net_params['num_atom_type'] = dataset.num_atom_type
     net_params['num_bond_type'] = dataset.num_bond_type
 
-    D = torch.cat([dataset.train[i][0].number_of_nodes() for i in range(len(dataset.train))])
+    D = torch.cat([torch.FloatTensor(dataset.train[i][0].number_of_nodes()) for i in range(len(dataset.train))])
     net_params['avg_d'] = dict(lin=torch.mean(D),
                                exp=torch.mean(torch.exp(torch.div(1, D)) - 1),
                                log=torch.mean(torch.log(D + 1)))
