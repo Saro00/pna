@@ -35,7 +35,7 @@ class EIGTower(nn.Module):
         else:
             self.posttrans = MLP(in_size=(len(aggregators) * len(scalers) + 1) * in_dim,
                              hidden_size=out_dim,
-                             out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation='none')
+                             out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation='relu')
         self.avg_d = avg_d
         if self.NN_eig:
             self.eigfilt = MLP(in_size=4, hidden_size=3, out_size=1, layers=3, mid_activation='relu', last_activation='none')
