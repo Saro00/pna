@@ -11,7 +11,7 @@ from .scalers import SCALERS
 
 
 class EIGLayerComplex(nn.Module):
-    def __init__(self, in_dim, out_dim, dropout, graph_norm, batch_norm, aggregators, scalers, avg_d,
+    def __init__(self, in_dim, out_dim, dropout, graph_norm, batch_norm, aggregators, scalers, avg_d, residual,
                  edge_features, edge_dim, pretrans_layers=1, posttrans_layers=1):
         super().__init__()
         # retrieve the aggregators and scalers functions
@@ -22,6 +22,7 @@ class EIGLayerComplex(nn.Module):
         self.graph_norm = graph_norm
         self.batch_norm = batch_norm
         self.edge_features = edge_features
+        self.residual = residual
 
         self.aggregators = aggregators
         self.scalers = scalers
@@ -103,7 +104,7 @@ class EIGLayerComplex(nn.Module):
 
 
 class EIGLayerSimple(nn.Module):
-    def __init__(self, in_dim, out_dim, dropout, graph_norm, batch_norm, aggregators, scalers, avg_d,
+    def __init__(self, in_dim, out_dim, dropout, graph_norm, batch_norm, aggregators, scalers, residual, avg_d,
                  posttrans_layers=1):
         super().__init__()
         # retrieve the aggregators and scalers functions
@@ -113,6 +114,7 @@ class EIGLayerSimple(nn.Module):
         self.dropout = dropout
         self.graph_norm = graph_norm
         self.batch_norm = batch_norm
+        self.residual = residual
 
         self.aggregators = aggregators
         self.scalers = scalers
@@ -186,15 +188,15 @@ class EIGLayerSimple(nn.Module):
 
 
 class EIGLayer(nn.Module):
-    def __init__(self, in_dim, out_dim, dropout, graph_norm, batch_norm, aggregators, scalers, avg_d, type_net,
+    def __init__(self, in_dim, out_dim, dropout, graph_norm, batch_norm, aggregators, scalers, avg_d, type_net, residual,
                  edge_features=None, edge_dim=None, pretrans_layers=1, posttrans_layers=1,):
         super().__init__()
 
         if type_net == 'simple':
-            self.model = EIGLayerSimple(in_dim=in_dim, out_dim=out_dim, dropout=dropout, graph_norm=graph_norm, batch_norm=batch_norm,
+            self.model = EIGLayerSimple(in_dim=in_dim, out_dim=out_dim, dropout=dropout, graph_norm=graph_norm, batch_norm=batch_norm, residual=residual,
                                    aggregators=aggregators, scalers=scalers, avg_d=avg_d, posttrans_layers=posttrans_layers)
         elif type_net == 'complex':
-            self.model = EIGLayerComplex(in_dim=in_dim, out_dim=out_dim, dropout=dropout, graph_norm=graph_norm, batch_norm=batch_norm, aggregators=aggregators,
+            self.model = EIGLayerComplex(in_dim=in_dim, out_dim=out_dim, dropout=dropout, graph_norm=graph_norm, batch_norm=batch_norm, aggregators=aggregators, residual=residual,
                                     scalers=scalers, avg_d=avg_d, edge_features=edge_features, edge_dim=edge_dim, pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers)
 
 
