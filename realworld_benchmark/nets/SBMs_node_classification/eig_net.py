@@ -49,9 +49,9 @@ class EIGNet(nn.Module):
         self.layers.append(EIGLayer(in_dim=hidden_dim, out_dim=out_dim, dropout=dropout,
                                     graph_norm=self.graph_norm, batch_norm=self.batch_norm,
                                     residual=self.residual, aggregators=self.aggregators, scalers=self.scalers,
-                                    avg_d=self.avg_d, edge_features=self.edge_feat, edge_dim=edge_dim,
+                                    avg_d=self.avg_d, type_net=self.type_net, edge_features=self.edge_feat,
+                                    edge_dim=edge_dim,
                                     pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers).model)
-
         if self.gru_enable:
             self.gru = GRU(hidden_dim, hidden_dim, device)
             
