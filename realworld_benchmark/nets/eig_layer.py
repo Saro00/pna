@@ -162,9 +162,6 @@ class EIGLayerSimple(nn.Module):
         h_in = h
         g.ndata['h'] = h
 
-        if self.edge_features:  # add the edges information only if edge_features = True
-            g.edata['ef'] = e
-
         g.apply_edges(self.pretrans_edges)
 
         # aggregation
