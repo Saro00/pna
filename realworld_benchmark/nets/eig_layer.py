@@ -166,7 +166,7 @@ class EIGLayerSimple(nn.Module):
 
         # aggregation
         g.update_all(self.message_func, self.reduce_func)
-        h = torch.cat([h, g.ndata['h']], dim=1)
+        h = g.ndata['h']
 
         # posttransformation
         h = self.posttrans(h)
