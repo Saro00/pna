@@ -18,6 +18,7 @@ class EIGNet(nn.Module):
         in_feat_dropout = net_params['in_feat_dropout']
         dropout = net_params['dropout']
         n_layers = net_params['L']
+        self.type_net = net_params['type_net']
         self.readout = net_params['readout']
         self.batch_norm = net_params['batch_norm']
         self.residual = net_params['residual']
