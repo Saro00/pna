@@ -71,10 +71,10 @@ class MoleculeDGL(torch.utils.data.Dataset):
             self.graph_lists.append(g)
             self.graph_labels.append(molecule['logP_SA_cycle_normalized'])
 
-    def get_eig(self):
+    def get_eig(self, norm='none'):
         for g in self.graph_lists:
             A = g.adjacency_matrix().to_dense()
-            g.ndata['eig'] = get_k_lowest_eig(A, 7)
+            g.ndata['eig'] = get_k_lowest_eig(A, 7, norm)
 
 
     def __len__(self):
@@ -141,7 +141,7 @@ def self_loop(g):
 
 class MoleculeDataset(torch.utils.data.Dataset):
 
-    def __init__(self, name, verbose=True):
+    def __init__(self, name, norm='none', verbose=True):
         """
             Loading SBM datasets
         """
@@ -152,11 +152,11 @@ class MoleculeDataset(torch.utils.data.Dataset):
         data_dir = 'data/'
         with open(data_dir + name + '.pkl', "rb") as f:
             f = pickle.load(f)
-            f[0].get_eig()
+            f[0].get_eig(norm)
             self.train = f[0]
-            f[1].get_eig()
+            f[1].get_eig(norm)
             self.val = f[1]
-            f[2].get_eig()
+            f[2].get_eig(norm)
             self.test = f[2]
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
@@ -192,7 +192,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
 
 
 
-def get_laplacian_matrix(adj, normalize_L):
+def get_laplacian_matrix(adj, norm):
     r"""
     Get the Laplacian/normalized Laplacian matrices from a batch of adjacency matrices
     Parameters
@@ -200,10 +200,11 @@ def get_laplacian_matrix(adj, normalize_L):
         adj: tensor(..., N, N)
             Batches of symmetric adjacency matrices
 
-        normalize_L: bool
+        norm: string
             Whether to normalize the Laplacian matrix
-            If `False`, then `L = D - A`
-            If `True`, then `L = D^-1 (D - A)`
+            If `none`, then `L = D - A`
+            If `walk`, then `L = D^-1 (D - A)`
+            If 'sym' then 'L = D^-1/2 (D - A) D^-1/2
     Returns
     -------------
         L: tensor(..., N, N)
@@ -218,14 +219,22 @@ def get_laplacian_matrix(adj, normalize_L):
     L[..., arr, arr] = D
 
     # Normalize by the degree : L = D^-1 (D - A)
-    if normalize_L:
+    if norm == 'none':
+        pass
+    elif norm == 'walk':
         Dinv = torch.zeros_like(L)
         Dinv[..., arr, arr] = D ** -1
         L = torch.matmul(Dinv, L)
+    elif norm == 'sym':
+        Dinv = torch.zeros_like(L)
+        Dinv[..., arr, arr] = D ** (-1/2)
+        L = torch.matmul(torch.matmul(Dinv, L), Dinv)
+    else:
+        raise Exception
 
     return L
 
-def get_k_lowest_eig(adj, k):
+def get_k_lowest_eig(adj, k, norm='none'):
     r"""
     Compute the k-lowest eigenvectors of the Laplacian matrix
     for each connected components of the graph. If there are disconnected
@@ -263,7 +272,7 @@ def get_k_lowest_eig(adj, k):
     elif adj.ndim > 3:
         adj = adj.view(-1, shape[-2], shape[-1])
 
-    L = get_laplacian_matrix(adj, normalize_L=False)
+    L = get_laplacian_matrix(adj, norm)
 
     # Compute and sort the eigenvectors
 
