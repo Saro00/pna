@@ -253,6 +253,7 @@ def main():
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--expid', help='Experiment id.')
     parser.add_argument('--re_split', action='store_true', help='Resplitting the dataset')
+    parser.add_argument('--type_net', default='simple', help='Type of net')
 
     # eig params
     parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
@@ -386,6 +387,8 @@ def main():
         net_params['posttrans_layers'] = args.posttrans_layers
     if args.not_pre is not None:
         net_params['not_pre'] = args.not_pre
+    if args.type_net is not None:
+        net_params['type_net'] = args.type_net
 
     D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
                        dataset.train.graph_lists])

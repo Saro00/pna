@@ -319,6 +319,7 @@ def main():
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
+    parser.add_argument('--type_net', default='simple', help='Type of net')
 
     # hydra params
     parser.add_argument('--hydra', action='store_true', default=False, help='Run in Hydra environment.')
@@ -477,6 +478,8 @@ def main():
         net_params['posttrans_layers'] = args.posttrans_layers
     if args.not_pre is not None:
         net_params['not_pre'] = args.not_pre
+    if args.type_net is not None:
+        net_params['type_net'] = args.type_net
 
     # SBM
 

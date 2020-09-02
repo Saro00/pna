@@ -296,6 +296,7 @@ def main():
     parser.add_argument('--self_loop', help="Please give a value for self_loop")
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--expid', help='Experiment id.')
+    parser.add_argument('--type_net', default='simple', help='Type of net')
 
     # hydra params
     parser.add_argument('--hydra', action='store_true', default=False, help='Run in Hydra environment.')
@@ -451,6 +452,8 @@ def main():
         net_params['posttrans_layers'] = args.posttrans_layers
     if args.not_pre is not None:
         net_params['not_pre'] = args.not_pre
+    if args.type_net is not None:
+        net_params['type_net'] = args.type_net
 
     # ZINC
     net_params['num_atom_type'] = dataset.num_atom_type

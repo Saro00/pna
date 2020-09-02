@@ -22,12 +22,7 @@ class EIGNet(nn.Module):
         self.batch_norm = net_params['batch_norm']
         self.aggregators = net_params['aggregators']
         self.scalers = net_params['scalers']
-        self.NN_eig = net_params['NN_eig']
         self.avg_d = net_params['avg_d']
-        self.not_pre = net_params['not_pre']
-        self.towers = net_params['towers']
-        self.divide_input_first = net_params['divide_input_first']
-        self.divide_input_last = net_params['divide_input_last']
         self.residual = net_params['residual']
         self.JK = net_params['JK']
         self.edge_feat = net_params['edge_feat']
@@ -44,20 +39,17 @@ class EIGNet(nn.Module):
         if self.edge_feat:
             self.embedding_e = nn.Embedding(num_bond_type, edge_dim)
 
-        self.layers = nn.ModuleList([EIGLayer(in_dim=hidden_dim, out_dim=hidden_dim, dropout=dropout,
-                                              graph_norm=self.graph_norm, batch_norm=self.batch_norm,
-                                              residual=self.residual, aggregators=self.aggregators, scalers=self.scalers,
-                                              avg_d=self.avg_d, not_pre=self.not_pre, towers=self.towers, edge_features=self.edge_feat, NN_eig = self.NN_eig,
-                                              edge_dim=edge_dim, divide_input=self.divide_input_first,
-                                              pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers) for _
-                                     in range(n_layers - 1)])
+        self.layers = nn.ModuleList([EIGLayer(in_dim=hidden_dim, out_dim=hidden_dim, dropout=dropout, graph_norm=self.graph_norm,
+                      batch_norm=self.batch_norm, residual=self.residual, aggregators=self.aggregators,
+                      scalers=self.scalers, avg_d=self.avg_d, type_net=self.type_net, edge_features=self.edge_feat,
+                      edge_dim=edge_dim, pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers).model for _
+             in range(n_layers - 1)])
         self.layers.append(EIGLayer(in_dim=hidden_dim, out_dim=out_dim, dropout=dropout,
                                     graph_norm=self.graph_norm, batch_norm=self.batch_norm,
                                     residual=self.residual, aggregators=self.aggregators, scalers=self.scalers,
-                                    avg_d=self.avg_d, not_pre=self.not_pre, towers=self.towers, edge_features=self.edge_feat,
-                                    NN_eig=self.NN_eig,
-                                    edge_dim=edge_dim, divide_input=self.divide_input_last,
-                                    pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers))
+                                    avg_d=self.avg_d, edge_features=self.edge_feat, edge_dim=edge_dim,
+                                    pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers).model)
+
 
         if self.gru_enable:
             self.gru = GRU(hidden_dim, hidden_dim, device)
@@ -67,8 +59,9 @@ class EIGNet(nn.Module):
 
     def forward(self, g, h, e, snorm_n, snorm_e):
         h = self.embedding_h(h)
-        h_list = [h]
         h = self.in_feat_dropout(h)
+        if self.JK == 'sum':
+            h_list = [h]
         if self.edge_feat:
             e = self.embedding_e(e)
 
@@ -77,7 +70,8 @@ class EIGNet(nn.Module):
             if self.gru_enable and i != len(self.layers) - 1:
                 h_t = self.gru(h, h_t)
             h = h_t
-            h_list.append(h)
+            if self.JK == 'sum':
+                h_list.append(h)
 
         g.ndata['h'] = h
 
