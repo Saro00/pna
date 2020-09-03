@@ -129,7 +129,7 @@ class EIGLayerSimple(nn.Module):
             self.residual = False
 
     def pretrans_edges(self, edges):
-        return {'e': edges.dst['h'], 'eig_s': edges.src['eig'], 'eig_d': edges.dst['eig']}
+        return {'e': edges.src['h'], 'eig_s': edges.src['eig'], 'eig_d': edges.dst['eig']}
 
     def message_func(self, edges):
         return {'e': edges.data['e'], 'eig_s': edges.data['eig_s'].to('cuda' if torch.cuda.is_available() else 'cpu'),
