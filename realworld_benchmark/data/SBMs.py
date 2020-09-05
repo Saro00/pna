@@ -119,15 +119,22 @@ def self_loop(g):
 
 
 
-def positional_encoding(g, pos_enc_dim):
+def positional_encoding(g, pos_enc_dim, norm):
     """
         Graph positional encoding v/ Laplacian eigenvectors
     """
 
     # Laplacian
     A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-    N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-    L = sp.eye(g.number_of_nodes()) - N * A * N
+    if norm == 'none':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1), dtype=float)
+        L = N * sp.eye(g.number_of_nodes()) - A
+    elif norm == 'sym':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(g.number_of_nodes()) - N * A * N
+    elif norm == 'walk':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1, dtype=float)
+        L = sp.eye(g.number_of_nodes()) - N * A
 
     # # Eigenvectors with numpy
     # EigVal, EigVec = np.linalg.eig(L.toarray())
@@ -147,7 +154,7 @@ def positional_encoding(g, pos_enc_dim):
     
 class SBMsDataset(torch.utils.data.Dataset):
 
-    def __init__(self, name, verbose=True):
+    def __init__(self, name, norm='none', verbose=True):
         """
             Loading SBM datasets
         """
@@ -161,7 +168,7 @@ class SBMsDataset(torch.utils.data.Dataset):
             self.train = f[0]
             self.val = f[1]
             self.test = f[2]
-        self._add_positional_encodings(5)
+        self._add_positional_encodings(5, norm=norm)
         if verbose:
             print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
             print("[I] Finished loading.")
@@ -240,9 +247,9 @@ class SBMsDataset(torch.utils.data.Dataset):
         self.test.graph_lists = [self_loop(g) for g in self.test.graph_lists]
 
 
-    def _add_positional_encodings(self, pos_enc_dim):
+    def _add_positional_encodings(self, pos_enc_dim, norm):
         
         # Graph positional encoding v/ Laplacian eigenvectors
-        self.train.graph_lists = [positional_encoding(g, pos_enc_dim) for g in self.train.graph_lists]
-        self.val.graph_lists = [positional_encoding(g, pos_enc_dim) for g in self.val.graph_lists]
-        self.test.graph_lists = [positional_encoding(g, pos_enc_dim) for g in self.test.graph_lists]
+        self.train.graph_lists = [positional_encoding(g, pos_enc_dim, norm) for g in self.train.graph_lists]
+        self.val.graph_lists = [positional_encoding(g, pos_enc_dim, norm) for g in self.val.graph_lists]
+        self.test.graph_lists = [positional_encoding(g, pos_enc_dim, norm) for g in self.test.graph_lists]

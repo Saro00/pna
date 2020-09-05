@@ -14,15 +14,22 @@ import torch.utils.data
 
 
 
-def positional_encoding(g, pos_enc_dim):
+def positional_encoding(g, pos_enc_dim, norm):
     """
         Graph positional encoding v/ Laplacian eigenvectors
     """
 
     # Laplacian
     A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-    N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-    L = sp.eye(g.number_of_nodes()) - N * A * N
+    if norm == 'none':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1), dtype=float)
+        L = N * sp.eye(g.number_of_nodes()) - A
+    elif norm == 'sym':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(g.number_of_nodes()) - N * A * N
+    elif norm == 'walk':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1, dtype=float)
+        L = sp.eye(g.number_of_nodes()) - N * A
 
     # # Eigenvectors with numpy
     # EigVal, EigVec = np.linalg.eig(L.toarray())
@@ -40,7 +47,7 @@ def positional_encoding(g, pos_enc_dim):
 
 
 class HIVDGL(torch.utils.data.Dataset):
-    def __init__(self, data, split):
+    def __init__(self, data, split, norm='norm'):
         self.split = split
         self.data = [g for g in data[self.split]]
         self.graph_lists = []
@@ -50,11 +57,11 @@ class HIVDGL(torch.utils.data.Dataset):
                 self.graph_lists.append(g[0])
                 self.graph_labels.append(g[1])
         self.n_samples = len(self.graph_lists)
-        self.get_eig()
+        self.get_eig(norm=norm)
 
 
-    def get_eig(self):
-        self.graph_lists = [positional_encoding(g, 4) for g in self.graph_lists]
+    def get_eig(self, norm):
+        self.graph_lists = [positional_encoding(g, 4, norm=norm) for g in self.graph_lists]
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
@@ -77,7 +84,7 @@ class HIVDGL(torch.utils.data.Dataset):
 
 
 class HIVDataset(Dataset):
-    def __init__(self, name, re_split=False, verbose=True):
+    def __init__(self, name, re_split=False, norm=norm, verbose=True):
         start = time.time()
         if verbose:
             print("[I] Loading dataset %s..." % (name))
@@ -91,9 +98,9 @@ class HIVDataset(Dataset):
              'train': torch.tensor([ind[i] for i in range(32000)]),
              'valid': torch.tensor([ind[i] for i in range(32000, 36564)])}
 
-        self.train = HIVDGL(self.dataset, self.split_idx['train'])
-        self.val = HIVDGL(self.dataset, self.split_idx['valid'])
-        self.test = HIVDGL(self.dataset, self.split_idx['test'])
+        self.train = HIVDGL(self.dataset, self.split_idx['train'], norm=norm)
+        self.val = HIVDGL(self.dataset, self.split_idx['valid'], norm=norm)
+        self.test = HIVDGL(self.dataset, self.split_idx['test'], norm=norm)
 
         self.evaluator = Evaluator(name='ogbg-molhiv')
 

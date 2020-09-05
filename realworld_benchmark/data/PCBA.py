@@ -20,15 +20,22 @@ import gc
 
 
 
-def positional_encoding(g, pos_enc_dim):
+def positional_encoding(g, pos_enc_dim, norm):
     """
         Graph positional encoding v/ Laplacian eigenvectors
     """
 
     # Laplacian
     A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-    N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-    L = sp.eye(g.number_of_nodes()) - N * A * N
+    if norm == 'none':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1), dtype=float)
+        L = N * sp.eye(g.number_of_nodes()) - A
+    elif norm == 'sym':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(g.number_of_nodes()) - N * A * N
+    elif norm == 'walk':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1, dtype=float)
+        L = sp.eye(g.number_of_nodes()) - N * A
 
 
     # # Eigenvectors with numpy
@@ -166,7 +173,7 @@ class DownloadPCBA(object):
 
 
 class PCBADGL(torch.utils.data.Dataset):
-    def __init__(self, data, split):
+    def __init__(self, data, split, norm='none'):
         self.split = split
         self.data = [g for g in data[self.split]]
         self.graph_lists = []
@@ -177,11 +184,11 @@ class PCBADGL(torch.utils.data.Dataset):
                 self.graph_labels.append(g[1])
         self.n_samples = len(self.graph_lists)
         del self.data
-        self.get_eig()
+        self.get_eig(norm)
 
 
-    def get_eig(self):
-        self.graph_lists = [positional_encoding(g, 4) for g in self.graph_lists]
+    def get_eig(self, norm):
+        self.graph_lists = [positional_encoding(g, 4, norm=norm) for g in self.graph_lists]
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
@@ -204,16 +211,16 @@ class PCBADGL(torch.utils.data.Dataset):
 
 
 class PCBADataset(Dataset):
-    def __init__(self, name, verbose=True):
+    def __init__(self, name, norm='none', verbose=True):
         start = time.time()
         if verbose:
             print("[I] Loading dataset %s..." % (name))
         self.name = name
         self.dataset = DownloadPCBA(name = 'ogbg-molpcba')
         self.split_idx = self.dataset.get_idx_split()
-        self.train = PCBADGL(self.dataset, self.split_idx['train'])
-        self.val = PCBADGL(self.dataset, self.split_idx['valid'])
-        self.test = PCBADGL(self.dataset, self.split_idx['test'])
+        self.train = PCBADGL(self.dataset, self.split_idx['train'], norm=norm)
+        self.val = PCBADGL(self.dataset, self.split_idx['valid'], norm=norm)
+        self.test = PCBADGL(self.dataset, self.split_idx['test'], norm=norm)
         del self.dataset
 
         self.evaluator = Evaluator(name='ogbg-molpcba')

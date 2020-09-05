@@ -254,6 +254,7 @@ def main():
     parser.add_argument('--expid', help='Experiment id.')
     parser.add_argument('--re_split', action='store_true', help='Resplitting the dataset')
     parser.add_argument('--type_net', default='simple', help='Type of net')
+    parser.add_argument('--lap_norm', default='none', help='Laplacian normalisation')
 
     # eig params
     parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
@@ -286,7 +287,7 @@ def main():
         DATASET_NAME = config['dataset']
     print('ok')
     print(DATASET_NAME)
-    dataset = HIVDataset(DATASET_NAME, args.re_split)
+    dataset = HIVDataset(DATASET_NAME, args.re_split, norm=args.lap_norm)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
