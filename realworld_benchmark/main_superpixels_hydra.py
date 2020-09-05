@@ -286,11 +286,12 @@ def main():
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--expid', help='Experiment id.')
     parser.add_argument('--type_net', default='simple', help='Type of net')
+    parser.add_argument('--lap_norm', default='none', help='Laplacian normalisation')
 
     # hydra params
     parser.add_argument('--hydra', action='store_true', default=False, help='Run in Hydra environment.')
-    parser.add_argument('--hydra_checkpoint_every', type=int, default=100, help='Save checkpoints to hydra every.')
-    parser.add_argument('--hydra_eta_every', type=int, default=100, help='Update ETA to hydra every.')
+    parser.add_argument('--hydra_checkpoint_every', type=int, default=3000, help='Save checkpoints to hydra every.')
+    parser.add_argument('--hydra_eta_every', type=int, default=3000, help='Update ETA to hydra every.')
     parser.add_argument('--hydra_progress_bar_every', type=float, default=1,
                         help='Update progress hydra every (seconds).')
 
