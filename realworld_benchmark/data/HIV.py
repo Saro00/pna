@@ -84,7 +84,7 @@ class HIVDGL(torch.utils.data.Dataset):
 
 
 class HIVDataset(Dataset):
-    def __init__(self, name, re_split=False, norm=norm, verbose=True):
+    def __init__(self, name, re_split=False, norm='none', verbose=True):
         start = time.time()
         if verbose:
             print("[I] Loading dataset %s..." % (name))
