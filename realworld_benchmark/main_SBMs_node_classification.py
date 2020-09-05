@@ -271,6 +271,7 @@ def main():
     parser.add_argument('--gated', help="Please give a value for gated")
     parser.add_argument('--in_feat_dropout', help="Please give a value for in_feat_dropout")
     parser.add_argument('--dropout', help="Please give a value for dropout")
+    parser.add_argument('--graph_norm', help="Please give a value for graph_norm")
     parser.add_argument('--layer_norm', help="Please give a value for layer_norm")
     parser.add_argument('--batch_norm', help="Please give a value for batch_norm")
     parser.add_argument('--sage_aggregator', help="Please give a value for sage_aggregator")
@@ -375,6 +376,8 @@ def main():
         net_params['in_feat_dropout'] = float(args.in_feat_dropout)
     if args.dropout is not None:
         net_params['dropout'] = float(args.dropout)
+    if args.graph_norm is not None:
+        net_params['graph_norm'] = True if args.graph_norm == 'True' else False
     if args.layer_norm is not None:
         net_params['layer_norm'] = True if args.layer_norm=='True' else False
     if args.batch_norm is not None:
