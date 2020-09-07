@@ -18,6 +18,9 @@ class EIGNet(nn.Module):
         dropout = net_params['dropout']
         n_layers = net_params['L']
         self.type_net = net_params['type_net']
+        self.pos_enc_dim = net_params['pos_enc_dim']
+        if self.pos_enc_dim > 0:
+            self.embedding_pos_enc = nn.Linear(self.pos_enc_dim, hidden_dim)
         self.readout = net_params['readout']
         self.graph_norm = net_params['graph_norm']
         self.batch_norm = net_params['batch_norm']
@@ -61,6 +64,9 @@ class EIGNet(nn.Module):
     def forward(self, g, h, e, snorm_n, snorm_e):
         h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
+        if self.pos_enc_dim > 0:
+            h_pos_enc = self.embedding_pos_enc(g.ndata['pos_enc'].float())
+            h = h + h_pos_enc
         if self.JK == 'sum':
             h_list = [h]
         if self.edge_feat:

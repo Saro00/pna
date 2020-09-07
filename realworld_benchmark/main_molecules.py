@@ -260,6 +260,7 @@ def main():
     parser.add_argument('--pretrans_layers', type=int, help='pretrans_layers.')
     parser.add_argument('--posttrans_layers', type=int, help='posttrans_layers.')
     parser.add_argument('--not_pre', action='store_true', default=False, help='Not applying pre-transformation')
+    parser.add_argument('--pos_enc_dim', default=0, help='Positional encoding dimension')
 
     args = parser.parse_args()
     print(args.config)
@@ -279,7 +280,7 @@ def main():
         DATASET_NAME = config['dataset']
     print('ok')
     print(DATASET_NAME)
-    dataset = MoleculeDataset(DATASET_NAME, norm=args.lap_norm)
+    dataset = MoleculeDataset(DATASET_NAME, pos_enc_dim=args.pos_enc_dim, norm=args.lap_norm)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
@@ -382,6 +383,10 @@ def main():
         net_params['not_pre'] = args.not_pre
     if args.type_net is not None:
         net_params['type_net'] = args.type_net
+    if args.pos_enc_dim is not None:
+        net_params['pos_enc_dim'] = args.pos_enc_dim
+    if args.lap_norm is not None:
+        net_params['lap_norm'] = args.lap_norm
 
     # ZINC
     net_params['num_atom_type'] = dataset.num_atom_type
