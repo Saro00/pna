@@ -191,7 +191,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
             self.val = f[1]
             f[2].get_eig(norm)
             if pos_enc_dim > 0:
-                f[1]._add_positional_encodings(pos_enc_dim)
+                f[2]._add_positional_encodings(pos_enc_dim)
             self.test = f[2]
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
