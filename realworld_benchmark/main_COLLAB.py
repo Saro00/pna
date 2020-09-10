@@ -385,8 +385,6 @@ def main():
         net_params['in_feat_dropout'] = float(args.in_feat_dropout)
     if args.dropout is not None:
         net_params['dropout'] = float(args.dropout)
-    if args.layer_norm is not None:
-        net_params['layer_norm'] = True if args.layer_norm == 'True' else False
     if args.batch_norm is not None:
         net_params['batch_norm'] = True if args.batch_norm == 'True' else False
     if args.sage_aggregator is not None:
