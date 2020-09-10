@@ -67,9 +67,6 @@ class COLLABDataset(Dataset):
         self.test_edges_neg = self.split_edge['test']['edge_neg']  # negative test edges
 
         self.evaluator = Evaluator(name='ogbl-collab')
-        for i in range(10):
-            a = rd.randint(1, 235868)
-            print('Eig for ', a, ' is: ', self.graph.ndata['eig'][a, :])
         if verbose:
             print("[I] Finished loading.")
             print("[I] Data load time: {:.4f}s".format(time.time() - start))
