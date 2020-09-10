@@ -329,7 +329,7 @@ def main():
         DATASET_NAME = args.dataset
     else:
         DATASET_NAME = config['dataset']
-    dataset = COLLABDataset(DATASET_NAME)
+    dataset = COLLABDataset(DATASET_NAME, norm=args.lap_norm)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
@@ -371,6 +371,8 @@ def main():
         net_params['residual'] = True if args.residual == 'True' else False
     if args.edge_feat is not None:
         net_params['edge_feat'] = True if args.edge_feat == 'True' else False
+    if args.graph_norm is not None:
+        net_params['graph_norm'] = True if args.graph_norm == 'True' else False
     if args.readout is not None:
         net_params['readout'] = args.readout
     if args.kernel is not None:
