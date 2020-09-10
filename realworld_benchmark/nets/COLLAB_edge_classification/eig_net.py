@@ -29,6 +29,7 @@ class EIGNet(nn.Module):
         self.scalers = net_params['scalers']
         self.avg_d = net_params['avg_d']
         self.residual = net_params['residual']
+        self.type_net = net_params['type_net']
 
         pretrans_layers = net_params['pretrans_layers']
         posttrans_layers = net_params['posttrans_layers']
