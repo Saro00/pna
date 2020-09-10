@@ -234,7 +234,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
 
     if hydra.is_available():
         hydra.save_output({'loss': {'train': epoch_train_losses, 'val': epoch_val_losses},
-                           'MAE': {'train': epoch_train_acc, 'val': epoch_val_acc}}, 'history')
+                           'MAE': {'train': epoch_train_MAEs, 'val': epoch_val_MAEsFix}}, 'history')
         hydra.save_output(
             {'test_acc': test_acc, 'train_acc': train_acc, 'val_acc': val_acc, 'total_time': time.time() - t0,
              'avg_epoch_time': np.mean(per_epoch_time)}, 'summary')
