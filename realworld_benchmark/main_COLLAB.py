@@ -272,6 +272,7 @@ def main():
     parser.add_argument('--hidden_dim', help="Please give a value for hidden_dim")
     parser.add_argument('--out_dim', help="Please give a value for out_dim")
     parser.add_argument('--residual', help="Please give a value for residual")
+    parser.add_argument('--JK', default='last', help='Jumping Knowledge')
     parser.add_argument('--edge_feat', help="Please give a value for edge_feat")
     parser.add_argument('--readout', help="Please give a value for readout")
     parser.add_argument('--kernel', help="Please give a value for kernel")
@@ -279,7 +280,7 @@ def main():
     parser.add_argument('--gated', help="Please give a value for gated")
     parser.add_argument('--in_feat_dropout', help="Please give a value for in_feat_dropout")
     parser.add_argument('--dropout', help="Please give a value for dropout")
-    parser.add_argument('--layer_norm', help="Please give a value for layer_norm")
+    parser.add_argument('--graph_norm', help="Please give a value for graph_norm")
     parser.add_argument('--batch_norm', help="Please give a value for batch_norm")
     parser.add_argument('--sage_aggregator', help="Please give a value for sage_aggregator")
     parser.add_argument('--data_mode', help="Please give a value for data_mode")
@@ -291,9 +292,10 @@ def main():
     parser.add_argument('--cat', help="Please give a value for cat")
     parser.add_argument('--self_loop', help="Please give a value for self_loop")
     parser.add_argument('--max_time', help="Please give a value for max_time")
-    parser.add_argument('--layer_type', help="Please give a value for layer_type (for GAT and GatedGCN only)")
-    parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
-    parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
+    parser.add_argument('--expid', help='Experiment id.')
+    parser.add_argument('--re_split', action='store_true', help='Resplitting the dataset')
+    parser.add_argument('--type_net', default='simple', help='Type of net')
+    parser.add_argument('--lap_norm', default='none', help='Laplacian normalisation')
 
 
     # eig params
@@ -431,6 +433,8 @@ def main():
         net_params['posttrans_layers'] = args.posttrans_layers
     if args.not_pre is not None:
         net_params['not_pre'] = args.not_pre
+    if args.type_net is not None:
+        net_params['type_net'] = args.type_net
 
     # COLLAB
     net_params['in_dim'] = dataset.graph.ndata['feat'].shape[-1]
