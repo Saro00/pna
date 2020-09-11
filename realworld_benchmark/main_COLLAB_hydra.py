@@ -168,11 +168,11 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 start = time.time()
 
                 epoch_train_loss, optimizer = train_epoch(model, optimizer, device, graph, train_edges,
-                                                          params['batch_size'], epoch, monet_pseudo)
+                                                          params['batch_size'], epoch)
 
                 epoch_train_hit, epoch_val_hit, epoch_test_hit = evaluate_network(
                     model, device, graph, train_edges, val_edges, val_edges_neg, test_edges, test_edges_neg, evaluator,
-                    params['batch_size'], epoch, monet_pseudo)
+                    params['batch_size'], epoch)
 
                 epoch_train_losses.append(epoch_train_loss)
                 epoch_train_hits.append(epoch_train_hit)
@@ -240,7 +240,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
 
     train_hit, val_hit, test_hit = evaluate_network(
         model, device, graph, train_edges, val_edges, val_edges_neg, test_edges, test_edges_neg, evaluator,
-        params['batch_size'], epoch, monet_pseudo)
+        params['batch_size'], epoch)
 
     print(
         f"Test:\nHits@10: {test_hit[0] * 100:.4f}% \nHits@50: {test_hit[1] * 100:.4f}% \nHits@100: {test_hit[2] * 100:.4f}% \n")
