@@ -202,7 +202,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 per_epoch_time.append(time.time() - start)
 
 
-                scheduler.step(epoch_val_hits[1])
+                scheduler.step(epoch_val_hit[1])
 
                 if optimizer.param_groups[0]['lr'] < params['min_lr']:
                     print("\n!! LR EQUAL TO MIN LR SET.")
@@ -254,7 +254,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
 
 
     if hydra.is_available():
-        hydra.save_output({'loss': {'train': epoch_train_losses, 'val': epoch_val_losses},
+        hydra.save_output({'loss': {'train': epoch_train_losses},
                            'Hits': {'train': epoch_train_hits, 'val': epoch_val_hits}}, 'history')
         hydra.save_output(
             {'test_hits': test_hit[1], 'train_hits': train_hit[1], 'val_hits': val_hit[1], 'total_time': time.time() - t0,
