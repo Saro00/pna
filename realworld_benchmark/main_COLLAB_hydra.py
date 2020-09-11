@@ -141,7 +141,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                                                      verbose=True)
 
     epoch_train_losses = []
-    epoch_train_hits, epoch_val_hits, epoch_test_hits = [], []
+    epoch_train_hits, epoch_val_hits, epoch_test_hits = [], [], []
 
     if hydra.is_first_execution():
         start_epoch = 0
