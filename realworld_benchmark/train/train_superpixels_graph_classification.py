@@ -7,12 +7,13 @@
     and evaluating one epoch
 """
 import torch
+import random as rd
 import torch.nn as nn
 import math
 
 from .metrics import accuracy_MNIST_CIFAR as accuracy
 
-def train_epoch(model, optimizer, device, data_loader, epoch):
+def train_epoch(model, optimizer, device, data_loader, epoch, augmentation):
     model.train()
     epoch_loss = 0
     epoch_train_acc = 0
@@ -23,10 +24,19 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
         batch_e = batch_graphs.edata['feat'].to(device)
         batch_snorm_e = batch_snorm_e.to(device)
         batch_labels = batch_labels.to(device)
-        batch_snorm_n = batch_snorm_n.to(device)         # num x 1
+        batch_snorm_n = batch_snorm_n.to(device) # num x 1
+        if augmentation:
+            batch_graphs_aug = batch_graphs
+            angle = (torch.random(batch_graphs_aug['eig'][:, 1].shape) - 0.5) / 4
+            batch_graphs_aug['eig'][:, 1], batch_graphs_aug['eig'][:, 2] = (1 - angle)**(0.5) * batch_graphs_aug['eig'][:, 1] \
+                                                                           + angle * batch_graphs_aug['eig'][:, 2], \
+                                                                           (1 - angle)**(0.5) * batch_graphs_aug['eig'][:, 2] -  \
+                                                                           angle * batch_graphs_aug['eig'][:, 1]
         optimizer.zero_grad()
-        
-        batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
+        if augmentation:
+            batch_scores = model.forward(batch_graphs_aug, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
+        else:
+            batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
         loss = model.loss(batch_scores, batch_labels)
         loss.backward()
         optimizer.step()

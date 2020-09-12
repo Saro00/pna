@@ -151,7 +151,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 start = time.time()
 
                 epoch_train_loss, epoch_train_acc, optimizer = train_epoch(model, optimizer, device, train_loader,
-                                                                           epoch)
+                                                                           epoch, params['augmentation'])
                 epoch_val_loss, epoch_val_acc = evaluate_network(model, device, val_loader, epoch)
 
                 epoch_train_losses.append(epoch_train_loss)
@@ -287,6 +287,7 @@ def main():
     parser.add_argument('--expid', help='Experiment id.')
     parser.add_argument('--type_net', default='simple', help='Type of net')
     parser.add_argument('--lap_norm', default='none', help='Laplacian normalisation')
+    parser.add_argument('--augmentation', default=False, action='store_true', help='Dynamically augmenting with rotations')
 
     # hydra params
     parser.add_argument('--hydra', action='store_true', default=False, help='Run in Hydra environment.')
@@ -445,6 +446,8 @@ def main():
         net_params['not_pre'] = args.not_pre
     if args.type_net is not None:
         net_params['type_net'] = args.type_net
+    if args.augmentation is not None:
+        net_params['augmentation'] = args.augmentation
 
     # Superpixels
     net_params['in_dim'] = dataset.train[0][0].ndata['feat'][0].size(0)
