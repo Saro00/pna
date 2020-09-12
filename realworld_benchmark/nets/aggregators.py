@@ -111,6 +111,8 @@ AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_ma
                'moment5': aggregate_moment_5,  'lap': aggregate_lap, 'eig1-smooth': partial(aggregate_eig, eig_idx=1),
                'eig2-smooth': partial(aggregate_eig, eig_idx=2), 'eig3-smooth': partial(aggregate_eig, eig_idx=3),
                 'eig4-smooth': partial(aggregate_eig, eig_idx=4),'eig5-smooth': partial(aggregate_eig, eig_idx=5),
+                'eig6-smooth': partial(aggregate_eig, eig_idx=6),'eig7-smooth': partial(aggregate_eig, eig_idx=7), 'eig8-smooth': partial(aggregate_eig, eig_idx=8),
+                'eig9-smooth': partial(aggregate_eig, eig_idx=9),'eig10-smooth': partial(aggregate_eig, eig_idx=10),
                 'eig1-dir' : partial(aggregate_eig_dir, eig_idx=1), 'eig2-dir' : partial(aggregate_eig_dir, eig_idx=2),
                 'eig3-dir' : partial(aggregate_eig_dir, eig_idx=3), 'eig1-1' : partial(aggregate_eig_softmax, eig_idx=1, alpha=1),
                 'eig1-0.5' : partial(aggregate_eig_softmax, eig_idx=1, alpha=0.5), 'eig1-0.1' : partial(aggregate_eig_softmax, eig_idx=1, alpha=0.1),
@@ -130,5 +132,7 @@ AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_ma
                 'eig3-smooth-new' : partial(aggregate_eig_new, eig_idx=3), 'eig4-smooth-new' : partial(aggregate_eig_new, eig_idx=4),
                 'eig1-new-abs' : partial(aggregate_eig_new_abs, eig_idx=1), 'eig2-new-abs' : partial(aggregate_eig_new_abs, eig_idx=2),
                 'eig1-dx' : partial(aggregate_eig_dx, eig_idx=1), 'eig2-dx' : partial(aggregate_eig_dx, eig_idx=2),
-                'eig3-dx' : partial(aggregate_eig_dx, eig_idx=3), 'eig1-dx-new' : partial(aggregate_eig_dx_split, eig_idx=1), 'eig2-dx-new' : partial(aggregate_eig_dx_split, eig_idx=2),
+                'eig3-dx' : partial(aggregate_eig_dx, eig_idx=3),'eig4-dx' : partial(aggregate_eig_dx, eig_idx=4),
+               'eig5-dx' : partial(aggregate_eig_dx, eig_idx=5), 'eig6-dx' : partial(aggregate_eig_dx, eig_idx=6),
+               'eig1-dx-new' : partial(aggregate_eig_dx_split, eig_idx=1), 'eig2-dx-new' : partial(aggregate_eig_dx_split, eig_idx=2),
                 'eig3-dx-new' : partial(aggregate_eig_dx_split, eig_idx=3), 'aggregate_NN': aggregate_NN}
