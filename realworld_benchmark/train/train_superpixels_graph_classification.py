@@ -32,8 +32,8 @@ def train_epoch(model, optimizer, device, data_loader, epoch, augmentation):
             print(batch_graphs.ndata['eig'][:, 1])
             batch_graphs_aug.ndata['eig'][:, 1] = torch.mul((1 - angle**2)**(0.5), batch_graphs.ndata['eig'][:, 1])  + torch.mul(angle, batch_graphs.ndata['eig'][:, 2])
             batch_graphs_aug.ndata['eig'][:, 2] = torch.mul((1 - angle**2) ** (0.5), batch_graphs.ndata['eig'][:, 2]) - torch.mul(angle, batch_graphs.ndata['eig'][:, 1])
-            print(batch_graphs_aug['eig'][0, 1])
-            print(batch_graphs['eig'][0, 1])
+            print(batch_graphs_aug.ndata['eig'][0, 1])
+            print(batch_graphs.ndata['eig'][0, 1])
 
         optimizer.zero_grad()
         if augmentation:
