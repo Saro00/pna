@@ -323,8 +323,8 @@ def main():
 
     # hydra params
     parser.add_argument('--hydra', action='store_true', default=False, help='Run in Hydra environment.')
-    parser.add_argument('--hydra_checkpoint_every', type=int, default=100, help='Save checkpoints to hydra every.')
-    parser.add_argument('--hydra_eta_every', type=int, default=100, help='Update ETA to hydra every.')
+    parser.add_argument('--hydra_checkpoint_every', type=int, default=2000, help='Save checkpoints to hydra every.')
+    parser.add_argument('--hydra_eta_every', type=int, default=2000, help='Update ETA to hydra every.')
     parser.add_argument('--hydra_progress_bar_every', type=float, default=1,
                         help='Update progress hydra every (seconds).')
 
