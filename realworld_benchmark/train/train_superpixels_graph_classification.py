@@ -27,6 +27,11 @@ def train_epoch(model, optimizer, device, data_loader, epoch, augmentation):
         batch_snorm_n = batch_snorm_n.to(device) # num x 1
         if augmentation:
             batch_graphs_aug = batch_graphs
+            try:
+                print(batch_graphs_aug.batch_size)
+            try:
+                print(batch_graphs_aug.batch_num_nodes())
+            print(batch_graphs_aug)
             angle = (torch.random(batch_graphs_aug.batch_size) - 0.5) / 4
             batch_graphs_aug['eig'][:, 1], batch_graphs_aug['eig'][:, 2] = (1 - angle)**(0.5) * batch_graphs_aug['eig'][:, 1] \
                                                                            + angle * batch_graphs_aug['eig'][:, 2], \
