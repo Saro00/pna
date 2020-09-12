@@ -29,9 +29,6 @@ def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size,
         x = graph.ndata['feat'].to(device)
         e = graph.edata['feat'].to(device).float()
 
-        if monet_pseudo is not None:
-            # Assign e as pre-computed pesudo edges for MoNet
-            e = monet_pseudo.to(device)
 
         # Compute node embeddings
         try:
@@ -42,7 +39,7 @@ def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size,
             x_pos_enc = x_pos_enc * sign_flip.unsqueeze(0)
             h = model(graph, x, e, x_pos_enc)
         except:
-            h = model(graph, x, e, True, True)
+            h = model(graph, x, e, None, None)
 
         # Positive samples
         edge = train_edges[perm].t()
@@ -75,16 +72,12 @@ def evaluate_network_sparse(model, device, graph, pos_train_edges,
         x = graph.ndata['feat'].to(device)
         e = graph.edata['feat'].to(device).float()
 
-        if monet_pseudo is not None:
-            # Assign e as pre-computed pesudo edges for MoNet
-            e = monet_pseudo.to(device)
-
         # Compute node embeddings
         try:
             x_pos_enc = graph.ndata['pos_enc'].to(device)
             h = model(graph, x, e, x_pos_enc)
         except:
-            h = model(graph, x, e, True, True)
+            h = model(graph, x, e, None, None)
 
         pos_train_edges = pos_train_edges.to(device)
         pos_valid_edges = pos_valid_edges.to(device)
