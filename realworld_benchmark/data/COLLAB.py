@@ -51,7 +51,7 @@ class COLLABDataset(Dataset):
         self.dataset = DglLinkPropPredDataset(name='ogbl-collab')
 
         self.graph = self.dataset[0]  # single DGL graph
-        self._add_positional_encodings(5, norm)
+        self._add_positional_encodings(10, norm)
 
         # Create edge feat by concatenating weight and year
         self.graph.edata['feat'] = torch.cat(
