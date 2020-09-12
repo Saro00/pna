@@ -26,26 +26,22 @@ def train_epoch(model, optimizer, device, data_loader, epoch, augmentation):
         batch_labels = batch_labels.to(device)
         batch_snorm_n = batch_snorm_n.to(device) # num x 1
         if augmentation:
-            batch_graphs_aug = batch_graphs
+            batch_graphs_eig = batch_graphs.ndata['eig'].clone()
             angle = (torch.rand(batch_x[:, 0].shape) - 0.5) / 4
-            print(angle.shape)
-            print(batch_graphs.ndata['eig'][:, 1])
-            batch_graphs_aug.ndata['eig'][:, 1] = torch.mul((1 - angle**2)**(0.5), batch_graphs.ndata['eig'][:, 1])  + torch.mul(angle, batch_graphs.ndata['eig'][:, 2])
-            batch_graphs_aug.ndata['eig'][:, 2] = torch.mul((1 - angle**2) ** (0.5), batch_graphs.ndata['eig'][:, 2]) - torch.mul(angle, batch_graphs.ndata['eig'][:, 1])
-            print(batch_graphs_aug.ndata['eig'][0, 1])
-            print(batch_graphs.ndata['eig'][0, 1])
+
+            batch_graphs.ndata['eig'][:, 1] = torch.mul((1 - angle**2)**(0.5), batch_graphs_eig[:, 1])  + torch.mul(angle, batch_graphs_eig[:, 2])
+            batch_graphs.ndata['eig'][:, 2] = torch.mul((1 - angle**2) ** (0.5), batch_graphs_eig[:, 2]) - torch.mul(angle, batch_graphs_eig[:, 1])
+
 
         optimizer.zero_grad()
-        if augmentation:
-            batch_scores = model.forward(batch_graphs_aug, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
-        else:
-            batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
+        batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
         loss = model.loss(batch_scores, batch_labels)
         loss.backward()
         optimizer.step()
         epoch_loss += loss.detach().item()
         epoch_train_acc += accuracy(batch_scores, batch_labels)
         nb_data += batch_labels.size(0)
+        batch_graphs.ndata['eig'] = batch_graphs_eig.detach()
     epoch_loss /= (iter + 1)
     epoch_train_acc /= nb_data
     
