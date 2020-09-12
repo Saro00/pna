@@ -26,12 +26,15 @@ def train_epoch(model, optimizer, device, data_loader, epoch, augmentation):
         batch_labels = batch_labels.to(device)
         batch_snorm_n = batch_snorm_n.to(device) # num x 1
         if augmentation:
-            batch_graphs_aug = batch_graphs.clone()
+            batch_graphs_aug = batch_graphs
             angle = (torch.random(batch_graphs_aug['eig'][:, 1].shape) - 0.5) / 4
             batch_graphs_aug['eig'][:, 1], batch_graphs_aug['eig'][:, 2] = (1 - angle)**(0.5) * batch_graphs_aug['eig'][:, 1] \
                                                                            + angle * batch_graphs_aug['eig'][:, 2], \
                                                                            (1 - angle)**(0.5) * batch_graphs_aug['eig'][:, 2] -  \
                                                                            angle * batch_graphs_aug['eig'][:, 1]
+            print(batch_graphs_aug['eig'][0, 1])
+            print(batch_graphs['eig'][0, 1])
+
         optimizer.zero_grad()
         if augmentation:
             batch_scores = model.forward(batch_graphs_aug, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
