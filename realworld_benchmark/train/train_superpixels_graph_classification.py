@@ -29,7 +29,7 @@ def train_epoch(model, optimizer, device, data_loader, epoch, augmentation):
             batch_graphs_aug = batch_graphs
             angle = (torch.rand(batch_x[:, 0].shape) - 0.5) / 4
             print(angle.shape)
-            print(batch_graphs['eig'][:, 1].shape)
+            print(batch_graphs['eig'][:, 1].to(device))
             batch_graphs_aug['eig'][:, 1] = torch.mul((1 - angle**2)**(0.5), batch_graphs['eig'][:, 1])  + torch.mul(angle, batch_graphs['eig'][:, 2])
             batch_graphs_aug['eig'][:, 2] = torch.mul((1 - angle**2) ** (0.5), batch_graphs['eig'][:, 2]) - torch.mul(angle, batch_graphs['eig'][:, 1])
             print(batch_graphs_aug['eig'][0, 1])
