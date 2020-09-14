@@ -304,6 +304,7 @@ class SuperPixDataset(torch.utils.data.Dataset):
 
             if proportion < 1. - 1e-5:
                 l = int(len(f[0].graph_lists)*proportion)
+                f[0].lists = f[0].lists[:l]
                 f[0].graph_lists = f[0].graph_lists[:l]
                 f[0].graph_labels = f[0].graph_labels[:l]
 
