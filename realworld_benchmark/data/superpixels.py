@@ -301,12 +301,16 @@ class SuperPixDataset(torch.utils.data.Dataset):
         data_dir = 'data/'
         with open(data_dir+name+'.pkl',"rb") as f:
             f = pickle.load(f)
+            print("Len before ", len(f[0]))
 
             if proportion < 1. - 1e-5:
-                l = int(len(f[0].graph_lists)*proportion)
-                f[0].lists = f[0].lists[:l]
-                f[0].graph_lists = f[0].graph_lists[:l]
-                f[0].graph_labels = f[0].graph_labels[:l]
+                l = int(len(f[0])*proportion)
+                #f[0].lists = f[0].lists[:l]
+                #f[0].graph_lists = f[0].graph_lists[:l]
+                #f[0].graph_labels = f[0].graph_labels[:l]
+                f[0] = f[0][:l]
+
+            print("Len after ", len(f[0]))
 
             f[0].get_eig(coord_eig)
             self.train = f[0]
