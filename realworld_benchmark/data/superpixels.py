@@ -308,7 +308,7 @@ class SuperPixDataset(torch.utils.data.Dataset):
                 #f[0].lists = f[0].lists[:l]
                 #f[0].graph_lists = f[0].graph_lists[:l]
                 #f[0].graph_labels = f[0].graph_labels[:l]
-                f[0] = f[0][:l]
+                f[0] = DGLFormDataset(f[0].graph_lists[:l], f[0].graph_labels[:l])
 
             print("Len after ", len(f[0]))
 
