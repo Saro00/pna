@@ -82,7 +82,8 @@ class SuperPixDGL(torch.utils.data.Dataset):
                  dataset,
                  split,
                  use_mean_px=True,
-                 use_coord=True,):
+                 use_coord=True,
+                 proportion=1.):
 
         self.split = split
         
@@ -98,10 +99,12 @@ class SuperPixDGL(torch.utils.data.Dataset):
             with open(os.path.join(data_dir, 'cifar10_150sp_%s.pkl' % split), 'rb') as f:
                 self.labels, self.sp_data = pickle.load(f)
                 self.graph_labels = torch.LongTensor(self.labels)
+                print()
                 
         self.use_mean_px = use_mean_px
         self.use_coord = use_coord
         self.n_samples = len(self.labels)
+        self.proportion = proportion
         
         self._prepare()
     
@@ -287,7 +290,7 @@ def self_loop(g):
 
 class SuperPixDataset(torch.utils.data.Dataset):
 
-    def __init__(self, name, coord_eig=False, verbose=True):
+    def __init__(self, name, coord_eig=False, proportion=1., verbose=True):
         """
             Loading Superpixels datasets
         """
@@ -298,6 +301,12 @@ class SuperPixDataset(torch.utils.data.Dataset):
         data_dir = 'data/'
         with open(data_dir+name+'.pkl',"rb") as f:
             f = pickle.load(f)
+
+            if proportion < 1. - 1e-5:
+                l = int(len(f[0].graph_lists)*proportion)
+                f[0].graph_lists = f[0].graph_lists[:l]
+                f[0].graph_labels = f[0].graph_labels[:l]
+
             f[0].get_eig(coord_eig)
             self.train = f[0]
             f[1].get_eig(coord_eig)

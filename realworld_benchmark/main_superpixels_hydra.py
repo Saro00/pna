@@ -288,6 +288,7 @@ def main():
     parser.add_argument('--type_net', default='simple', help='Type of net')
     parser.add_argument('--lap_norm', default='none', help='Laplacian normalisation')
     parser.add_argument('--augmentation', default=False, action='store_true', help='Dynamically augmenting with rotations')
+    parser.add_argument('--proportion', type=float, default=1., help='Proportion of the dataset to use')
 
     # hydra params
     parser.add_argument('--hydra', action='store_true', default=False, help='Run in Hydra environment.')
@@ -336,7 +337,8 @@ def main():
         DATASET_NAME = args.dataset
     else:
         DATASET_NAME = config['dataset']
-    dataset = SuperPixDataset(DATASET_NAME, coord_eig=args.coord_eig, verbose=hydra.is_first_execution())
+    dataset = SuperPixDataset(DATASET_NAME, coord_eig=args.coord_eig,
+                              proportion=args.proportion, verbose=hydra.is_first_execution())
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
