@@ -287,7 +287,7 @@ def main():
     parser.add_argument('--expid', help='Experiment id.')
     parser.add_argument('--type_net', default='simple', help='Type of net')
     parser.add_argument('--lap_norm', default='none', help='Laplacian normalisation')
-    parser.add_argument('--augmentation', default=False, action='store_true', help='Dynamically augmenting with rotations')
+    parser.add_argument('--augmentation', type=float, default=0., action='store_true', help='Dynamically augmenting with rotations, angle in degrees')
     parser.add_argument('--proportion', type=float, default=1., help='Proportion of the dataset to use')
 
     # hydra params

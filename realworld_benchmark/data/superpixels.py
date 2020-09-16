@@ -301,7 +301,7 @@ class SuperPixDataset(torch.utils.data.Dataset):
         data_dir = 'data/'
         with open(data_dir+name+'.pkl',"rb") as f:
             f = pickle.load(f)
-            print("Len before ", len(f[0]))
+            print("Total graphs training set ", len(f[0]))
 
             if proportion < 1. - 1e-5:
                 l = int(len(f[0])*proportion)
@@ -310,7 +310,7 @@ class SuperPixDataset(torch.utils.data.Dataset):
                 #f[0].graph_labels = f[0].graph_labels[:l]
                 f[0] = DGLFormDataset(f[0].graph_lists[:l], f[0].graph_labels[:l])
 
-            print("Len after ", len(f[0]))
+            print("Number of graphs used for training ", len(f[0]))
 
             f[0].get_eig(coord_eig)
             self.train = f[0]
