@@ -13,7 +13,7 @@ import math
 
 from .metrics import accuracy_MNIST_CIFAR as accuracy
 
-def train_epoch(model, optimizer, device, data_loader, epoch, augmentation):
+def train_epoch(model, optimizer, device, data_loader, epoch, augmentation, flip):
     model.train()
     epoch_loss = 0
     epoch_train_acc = 0
@@ -35,6 +35,11 @@ def train_epoch(model, optimizer, device, data_loader, epoch, augmentation):
                                               + torch.mul(sine, batch_graphs_eig[:, 2])
             batch_graphs.ndata['eig'][:, 2] = torch.mul((1 - sine**2) ** (0.5), batch_graphs_eig[:, 2]) \
                                               - torch.mul(sine, batch_graphs_eig[:, 1])
+        if flip:
+            batch_graphs_eig = batch_graphs_eig[:, 1]  #check 1 is x-axis
+            sign_flip = torch.rand(batch_graphs_eig.size()).to(device)
+            sign_flip[sign_flip >= 0.5] = 1.0; sign_flip[sign_flip < 0.5] = -1.0
+            batch_graphs.ndata['eig'][:, 1] = torch.mul(sign_flip, batch_graphs.ndata['eig'][:, 1])
 
         optimizer.zero_grad()
         batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
