@@ -91,6 +91,16 @@ def aggregate_eig_dx_no_abs(self, h, eig_s, eig_d, h_in, eig_idx):
     h_mod = torch.mul(h, eig_w)
     return torch.sum(h_mod, dim=1) - torch.sum(eig_w, dim=1) * h_in
 
+def aggregate_eig_dx_in(self, h, eig_s, eig_d, h_in, eig_idx):
+    eig_w = ((eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]) /
+     (torch.sum(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]), keepdim=True, dim=1) + EPS)).unsqueeze(-1)
+    h_mod = torch.mul(h, eig_w)
+    if self.type == 'complex'
+        return torch.abs(torch.sum(h_mod, dim=1) - torch.sum(eig_w, dim=1) * self.model.pretrans(torch.cat([h_in, h_in], dim=1)))
+    else:
+        return torch.abs(torch.sum(h_mod, dim=1) - torch.sum(eig_w, dim=1) * h_in)
+
+
 def aggregate_eig_dx_split(self, h, eig_s, eig_d, h_in, eig_idx):
     eig_front = (torch.relu(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]) /
      (torch.sum(torch.abs(torch.relu(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx])), keepdim=True, dim=1) + EPS)).unsqueeze(-1)
@@ -143,5 +153,8 @@ AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_ma
                'eig1-dx-no-abs': partial(aggregate_eig_dx_no_abs, eig_idx=1), 'eig2-dx-no-abs': partial(aggregate_eig_dx_no_abs, eig_idx=2),
                'eig3-dx-no-abs': partial(aggregate_eig_dx_no_abs, eig_idx=3), 'eig4-dx-no-abs': partial(aggregate_eig_dx_no_abs, eig_idx=4),
                'eig5-dx-no-abs': partial(aggregate_eig_dx_no_abs, eig_idx=5),
+               'eig1-dx-in': partial(aggregate_eig_dx_in, eig_idx=1), 'eig2-dx-in': partial(aggregate_eig_dx_in, eig_idx=2),
+               'eig3-dx-in': partial(aggregate_eig_dx_in, eig_idx=3), 'eig4-dx-in': partial(aggregate_eig_dx_in, eig_idx=4),
+               'eig5-dx-in': partial(aggregate_eig_dx_in, eig_idx=5),
                'eig1-dx-new' : partial(aggregate_eig_dx_split, eig_idx=1), 'eig2-dx-new' : partial(aggregate_eig_dx_split, eig_idx=2),
                 'eig3-dx-new' : partial(aggregate_eig_dx_split, eig_idx=3), 'aggregate_NN': aggregate_NN}
