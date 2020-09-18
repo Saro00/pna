@@ -190,6 +190,7 @@ class EIGLayer(nn.Module):
     def __init__(self, in_dim, out_dim, dropout, graph_norm, batch_norm, aggregators, scalers, avg_d, type_net, residual,
                  edge_features=None, edge_dim=None, pretrans_layers=1, posttrans_layers=1,):
         super().__init__()
+        self.type_net = type_net
 
         if type_net == 'simple':
             self.model = EIGLayerSimple(in_dim=in_dim, out_dim=out_dim, dropout=dropout, graph_norm=graph_norm, batch_norm=batch_norm, residual=residual,
