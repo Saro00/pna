@@ -142,6 +142,6 @@ AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_ma
                'eig5-dx' : partial(aggregate_eig_dx, eig_idx=5), 'eig6-dx' : partial(aggregate_eig_dx, eig_idx=6),
                'eig1-dx-no-abs': partial(aggregate_eig_dx_no_abs, eig_idx=1), 'eig2-dx-no-abs': partial(aggregate_eig_dx_no_abs, eig_idx=2),
                'eig3-dx-no-abs': partial(aggregate_eig_dx_no_abs, eig_idx=3), 'eig4-dx-no-abs': partial(aggregate_eig_dx_no_abs, eig_idx=4),
-               'eig5-dx-no-abs': partial(aggregate_eig_dx_no_abs, eig_idx=5)
+               'eig5-dx-no-abs': partial(aggregate_eig_dx_no_abs, eig_idx=5),
                'eig1-dx-new' : partial(aggregate_eig_dx_split, eig_idx=1), 'eig2-dx-new' : partial(aggregate_eig_dx_split, eig_idx=2),
                 'eig3-dx-new' : partial(aggregate_eig_dx_split, eig_idx=3), 'aggregate_NN': aggregate_NN}
