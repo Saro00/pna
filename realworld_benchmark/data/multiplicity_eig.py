@@ -3,6 +3,7 @@ from data.superpixels import SuperPixDataset
 from data.SBMs import SBMsDataset
 from data.COLLAB import COLLABDataset
 from scipy import sparse as sp
+import argparse
 
 
 def get_eig_val(g, pos_enc_dim=7, norm='none', tol=1e-3):
