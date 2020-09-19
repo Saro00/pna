@@ -47,7 +47,7 @@ def get_multiplicity(DATASET_NAME, tol, dim, norm, tol_scipy):
         for eig in eigs:
             if abs(eig[1] - eig[2]) > tol:
                 i += 1
-        return i / n
+        return i / n, i, n
 
 
 
