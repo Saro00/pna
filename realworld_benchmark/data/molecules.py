@@ -112,7 +112,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
                 N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1., dtype=float)
                 L = sp.eye(g.number_of_nodes()) - N * A
 
-            EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=1e-2)  # for 40 PEs
+            EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=1e-2)
             EigVec = EigVec[:, EigVal.argsort()]  # increasing order
             g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
 
@@ -197,15 +197,15 @@ class MoleculeDataset(torch.utils.data.Dataset):
         data_dir = 'data/'
         with open(data_dir + name + '.pkl', "rb") as f:
             f = pickle.load(f)
-            f[0].get_eig(7, norm)
+            f[0].get_eig(6, norm)
             if pos_enc_dim > 0:
                 f[0]._add_positional_encodings(pos_enc_dim)
             self.train = f[0]
-            f[1].get_eig(7, norm)
+            f[1].get_eig(6, norm)
             if pos_enc_dim > 0:
                 f[1]._add_positional_encodings(pos_enc_dim)
             self.val = f[1]
-            f[2].get_eig(7, norm)
+            f[2].get_eig(6, norm)
             if pos_enc_dim > 0:
                 f[2]._add_positional_encodings(pos_enc_dim)
             self.test = f[2]
