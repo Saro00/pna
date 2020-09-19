@@ -95,10 +95,24 @@ class MoleculeDGL(torch.utils.data.Dataset):
             self.graph_lists.append(g)
             self.graph_labels.append(molecule['logP_SA_cycle_normalized'])
 
-    def get_eig(self, norm='none'):
+    def get_eig(self, pos_enc_dim=7, norm='none'):
+
         for g in self.graph_lists:
-            A = g.adjacency_matrix().to_dense()
-            g.ndata['eig'] = get_k_lowest_eig(A, 7, norm)
+            # Laplacian
+            A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+            if norm == 'none':
+                N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1), dtype=float)
+                L = N * sp.eye(g.number_of_nodes()) - A
+            elif norm == 'sym':
+                N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+                L = sp.eye(g.number_of_nodes()) - N * A * N
+            elif norm == 'walk':
+                N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1., dtype=float)
+                L = sp.eye(g.number_of_nodes()) - N * A
+
+            EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=1e-2)  # for 40 PEs
+            EigVec = EigVec[:, EigVal.argsort()]  # increasing order
+            g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
 
     def _add_positional_encodings(self, pos_enc_dim):
 
@@ -181,15 +195,15 @@ class MoleculeDataset(torch.utils.data.Dataset):
         data_dir = 'data/'
         with open(data_dir + name + '.pkl', "rb") as f:
             f = pickle.load(f)
-            f[0].get_eig(norm)
+            f[0].get_eig(7, norm)
             if pos_enc_dim > 0:
                 f[0]._add_positional_encodings(pos_enc_dim)
             self.train = f[0]
-            f[1].get_eig(norm)
+            f[1].get_eig(7, norm)
             if pos_enc_dim > 0:
                 f[1]._add_positional_encodings(pos_enc_dim)
             self.val = f[1]
-            f[2].get_eig(norm)
+            f[2].get_eig(7, norm)
             if pos_enc_dim > 0:
                 f[2]._add_positional_encodings(pos_enc_dim)
             self.test = f[2]
