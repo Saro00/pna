@@ -22,7 +22,7 @@ def get_eig_val(g, pos_enc_dim=7, norm='none', tol=1e-3):
     return EigVal
 
 
-def get_multiplicity(DATASET_NAME, tol, dim, norm, tol_scipy):
+def get_multiplicity(DATASET_NAME, first, second, tol, dim, norm, tol_scipy):
     if DATASET_NAME == 'ZINC':
         dataset = MoleculeDataset(DATASET_NAME)
     elif DATASET_NAME == 'SBM_PATTERN':
@@ -45,7 +45,7 @@ def get_multiplicity(DATASET_NAME, tol, dim, norm, tol_scipy):
         i = 0
         n = len(eigs)
         for eig in eigs:
-            if abs(eig[1] - eig[2]) > tol:
+            if abs(eig[first] - eig[second]) > tol:
                 i += 1
         return i / n, i, n
 
@@ -55,12 +55,14 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--DATASET_NAME', help='Name of the Dataset')
+    parser.add_argument('--first', default=1, help='1st index to check')
+    parser.add_argument('--second', default=2, help='2st index to check')
     parser.add_argument('--tol', default=1e-3, help='Tolerance for multiplicity')
     parser.add_argument('--tol_scipy', default=1e-3, help='Tolerance of scipy to compute eigs')
     parser.add_argument('--lap_norm', default='none', help='Normalisation for the Laplacian matrix')
     parser.add_argument('--dim', help='Number of eigs to compute')
     args = parser.parse_args()
-    multiplicity_prop = get_multiplicity(args.DATASET_NAME, float(args.tol), int(args.dim), args.lap_norm, float(args.tol_scipy))
+    multiplicity_prop = get_multiplicity(args.DATASET_NAME, int(args.first), int(args.second), float(args.tol), int(args.dim), args.lap_norm, float(args.tol_scipy))
     print(multiplicity_prop)
 
     return multiplicity_prop
