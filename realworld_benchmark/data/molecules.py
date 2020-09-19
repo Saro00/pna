@@ -111,7 +111,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
             elif norm == 'walk':
                 N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1., dtype=float)
                 L = sp.eye(g.number_of_nodes()) - N * A
-            EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=3e-1)
+            EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=5e-1)
             EigVec = EigVec[:, EigVal.argsort()]  # increasing order
             g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
 
