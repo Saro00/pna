@@ -114,6 +114,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
             EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=2e-1)
             EigVec = EigVec[:, EigVal.argsort()]  # increasing order
             g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
+        print(self.graph_lists[0].ndata['eig'])
 
     def _add_positional_encodings(self, pos_enc_dim):
 
