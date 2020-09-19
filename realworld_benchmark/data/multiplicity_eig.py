@@ -1,7 +1,7 @@
-from molecules import MoleculeDataset
-from superpixels import SuperPixDataset
-from SBMs import SBMsDataset
-from COLLAB import COLLABDataset
+from data.molecules import MoleculeDataset
+from data.superpixels import SuperPixDataset
+from data.SBMs import SBMsDataset
+from data.COLLAB import COLLABDataset
 from scipy import sparse as sp
 
 
