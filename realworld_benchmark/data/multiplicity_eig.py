@@ -60,7 +60,7 @@ def main():
     parser.add_argument('--lap_norm', default='none', help='Normalisation for the Laplacian matrix')
     parser.add_argument('--dim', help='Number of eigs to compute')
     args = parser.parse_args()
-    multiplicity_prop = get_multiplicity(args.DATASET_NAME, args.tol, args.dim, args.lap_norm, args.tol_scipy)
+    multiplicity_prop = get_multiplicity(args.DATASET_NAME, float(args.tol), int(args.dim), args.lap_norm, float(args.tol_scipy))
     print(multiplicity_prop)
 
     return multiplicity_prop
