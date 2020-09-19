@@ -51,7 +51,7 @@ def get_multiplicity(DATASET_NAME, tol, dim, norm):
 
 def main():
 
-    parser = argparse.ArgumentParser()ù
+    parser = argparse.ArgumentParser()
     parser.add_argument('--DATASET_NAME', help='Name of the Dataset')
     parser.add_argument('--tol', default=1e-3, help='Tolerance for multiplicity')
     parser.add_argument('--lap_norm', default='none', help='Normalisation for the Laplacian matrix')
