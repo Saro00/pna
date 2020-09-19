@@ -36,7 +36,7 @@ def train_epoch(model, optimizer, device, data_loader, epoch, augmentation, flip
             batch_graphs.ndata['eig'][:, 2] = torch.mul((1 - sine**2) ** (0.5), batch_graphs_eig[:, 2]) \
                                               - torch.mul(sine, batch_graphs_eig[:, 1])
         if flip:
-            batch_graphs_eig = batch_graphs_eig[:, 1].to(device)  #check 1 is x-axis
+            batch_graphs_eig = batch_graphs.ndata['eig'][:, 1].to(device)  #check 1 is x-axis
             sign_flip = torch.rand(batch_graphs_eig.size()).to(device)
             sign_flip[sign_flip >= 0.5] = 1.0; sign_flip[sign_flip < 0.5] = -1.0
             batch_graphs.ndata['eig'][:, 1] = torch.mul(sign_flip, batch_graphs_eig)
