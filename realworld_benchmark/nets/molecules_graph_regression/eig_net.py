@@ -100,8 +100,10 @@ class EIGNet(nn.Module):
         elif self.readout == "mean":
             hg = dgl.mean_nodes(g, 'h')
         elif self.readout == "directional":
-            g.ndata['h'] = h * g.ndata['eig'][:, 1:2].to(self.device) / torch.sum(torch.abs(g.ndata['eig'][:, 1:2].to(self.device)), dim=1, keepdim=True)
-            hg = torch.abs(dgl.mean_nodes(g, 'h'))
+            mean = dgl.mean_nodes(g, 'h')
+            g.ndata['dir'] = h * g.ndata['eig'][:, 1:2].to(self.device) / torch.sum(torch.abs(g.ndata['eig'][:, 1:2].to(self.device)), dim=1, keepdim=True)
+            dir = torch.abs(dgl.mean_nodes(g, 'dir'))
+            hg = torch.cat([dir, mean], dim=1)
         else:
             hg = dgl.mean_nodes(g, 'h')  # default readout is mean nodes
 
