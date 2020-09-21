@@ -36,6 +36,7 @@ class EIGNet(nn.Module):
         posttrans_layers = net_params['posttrans_layers']
         self.gru_enable = net_params['gru']
         device = net_params['device']
+        self.device = device
 
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
 
@@ -99,7 +100,7 @@ class EIGNet(nn.Module):
         elif self.readout == "mean":
             hg = dgl.mean_nodes(g, 'h')
         elif self.readout == "directional":
-            hg = torch.abs(torch.mean(torch.mul(g.ndata['h'], g.ndata['eig'][:, 1].unsqueeze(-1)), dim=1))
+            hg = torch.abs(torch.mean(torch.mul(g.ndata['h'].to(self.device), g.ndata['eig'][:, 1].to(self.device).unsqueeze(-1)), dim=1))
         else:
             hg = dgl.mean_nodes(g, 'h')  # default readout is mean nodes
 
