@@ -59,7 +59,7 @@ class EIGNet(nn.Module):
 
         if self.gru_enable:
             self.gru = GRU(hidden_dim, hidden_dim, device)
-        if self.readout == "directional":
+        if self.readout == "directional" or self.readout == "directional_abs":
             self.MLP_layer = MLPReadout(2 * out_dim, 1)
         else:
             self.MLP_layer = MLPReadout(out_dim, 1)  # 1 out dim since regression problem
@@ -101,9 +101,12 @@ class EIGNet(nn.Module):
             hg = dgl.max_nodes(g, 'h')
         elif self.readout == "mean":
             hg = dgl.mean_nodes(g, 'h')
-        elif self.readout == "directional":
+        elif self.readout == "directional_abs":
             g.ndata['dir'] = h * torch.abs(g.ndata['eig'][:, 1:2].to(self.device)) / torch.sum(torch.abs(g.ndata['eig'][:, 1:2].to(self.device)), dim=1, keepdim=True)
             hg = torch.cat([dgl.mean_nodes(g, 'dir'), dgl.mean_nodes(g, 'h')], dim=1)
+        elif self.readout == "directional":
+            g.ndata['dir'] = h * g.ndata['eig'][:, 1:2].to(self.device) / torch.sum(torch.abs(g.ndata['eig'][:, 1:2].to(self.device)), dim=1, keepdim=True)
+            hg = torch.cat([torch.abs(dgl.mean_nodes(g, 'dir')), dgl.mean_nodes(g, 'h')], dim=1)
         else:
             hg = dgl.mean_nodes(g, 'h')  # default readout is mean nodes
 
