@@ -106,6 +106,10 @@ class EIGNet(nn.Module):
         else:
             hg = dgl.mean_nodes(g, 'h')  # default readout is mean nodes
 
+        print(self.MLP_layer(hg).shape)
+        print(hg.shape)
+        print(dgl.mean_nodes(g, 'h').shape)
+        print(self.MLP_layer(dgl.mean_nodes(g, 'h')).shape)
         return self.MLP_layer(hg)
 
     def loss(self, scores, targets):
