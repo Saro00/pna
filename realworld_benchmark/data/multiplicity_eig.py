@@ -6,6 +6,11 @@ from scipy import sparse as sp
 import argparse
 import dgl
 
+class DotDict(dict):
+    def __init__(self, **kwds):
+        self.update(kwds)
+        self.__dict__ = self
+
 def get_eig_val(g, pos_enc_dim=7, norm='none', tol=1e-3):
     # Laplacian
     A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
