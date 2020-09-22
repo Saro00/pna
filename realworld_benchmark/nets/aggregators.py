@@ -120,6 +120,9 @@ def aggregate_NN(h, eig_filt):
     h_mod = torch.mul(h, eig_filt)
     return torch.sum(h_mod, dim=1)
 
+def aggregate_mean_abs(self, h, eig_s, eig_d):
+  return torch.abs(torch.mean(h, dim=1))
+
 
 
 AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_max, 'min': aggregate_min,
@@ -157,4 +160,4 @@ AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_ma
                'eig3-dx-in': partial(aggregate_eig_dx_in, eig_idx=3), 'eig4-dx-in': partial(aggregate_eig_dx_in, eig_idx=4),
                'eig5-dx-in': partial(aggregate_eig_dx_in, eig_idx=5),
                'eig1-dx-new' : partial(aggregate_eig_dx_split, eig_idx=1), 'eig2-dx-new' : partial(aggregate_eig_dx_split, eig_idx=2),
-                'eig3-dx-new' : partial(aggregate_eig_dx_split, eig_idx=3), 'aggregate_NN': aggregate_NN}
+                'eig3-dx-new' : partial(aggregate_eig_dx_split, eig_idx=3), 'aggregate_NN': aggregate_NN, 'mean_abs': aggregate_mean_abs}
