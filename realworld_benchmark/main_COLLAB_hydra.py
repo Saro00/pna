@@ -245,6 +245,8 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     print(
         f"Test:\nHits@10: {test_hit[0] * 100:.4f}% \nHits@50: {test_hit[1] * 100:.4f}% \nHits@100: {test_hit[2] * 100:.4f}% \n")
     print(
+        f"Val:\nHits@10: {val_hit[0] * 100:.4f}% \nHits@50: {val_hit[1] * 100:.4f}% \nHits@100: {val_hit[2] * 100:.4f}% \n")
+    print(
         f"Train:\nHits@10: {train_hit[0] * 100:.4f}% \nHits@50: {train_hit[1] * 100:.4f}% \nHits@100: {train_hit[2] * 100:.4f}% \n")
     print("Convergence Time (Epochs): {:.4f}".format(epoch))
     print("TOTAL TIME TAKEN: {:.4f}s".format(time.time() - t0))
