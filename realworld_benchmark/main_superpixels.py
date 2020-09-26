@@ -251,7 +251,7 @@ def main():
     parser.add_argument('--max_time', help="Please give a value for max_time")
     parser.add_argument('--expid', help='Experiment id.')
     parser.add_argument('--type_net', default='simple', help='Type of net')
-    parser.add_argument('--augmentation', default=False, action='store_true', help='Dynamically augmenting with rotations')
+    parser.add_argument('--augmentation', type=float, default=0., help='Dynamically augmenting with rotations, angle in degrees')
     parser.add_argument('--flip', action='store_true', default=False, help='Flip x-axis')
 
     # eig params
