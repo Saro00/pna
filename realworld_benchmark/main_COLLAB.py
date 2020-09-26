@@ -160,7 +160,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 start = time.time()
 
                 epoch_train_loss, optimizer = train_epoch(model, optimizer, device, graph, train_edges,
-                                                          params['batch_size'], epoch, monet_pseudo)
+                                                          params['batch_size'], epoch, net_params['augmentation'], monet_pseudo)
 
                 epoch_train_hits, epoch_val_hits, epoch_test_hits = evaluate_network(
                     model, device, graph, train_edges, val_edges, val_edges_neg, test_edges, test_edges_neg, evaluator,
@@ -298,6 +298,7 @@ def main():
     parser.add_argument('--re_split', action='store_true', help='Resplitting the dataset')
     parser.add_argument('--type_net', default='simple', help='Type of net')
     parser.add_argument('--lap_norm', default='none', help='Laplacian normalisation')
+    parser.add_argument('--augmentation', type=float, default=0., help='Dynamically augmenting with rotations, angle in degrees')
 
 
     # eig params
@@ -431,6 +432,8 @@ def main():
         net_params['not_pre'] = args.not_pre
     if args.type_net is not None:
         net_params['type_net'] = args.type_net
+    if args.augmentation is not None:
+        net_params['augmentation'] = args.augmentation
 
     # COLLAB
     net_params['in_dim'] = dataset.graph.ndata['feat'].shape[-1]

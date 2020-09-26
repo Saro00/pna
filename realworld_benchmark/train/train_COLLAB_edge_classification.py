@@ -5,6 +5,7 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
+import math
 import dgl
 import numpy as np
 
@@ -15,7 +16,7 @@ from tqdm import tqdm
 """
 
 
-def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size, epoch, monet_pseudo=None):
+def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size, epoch, augmentation=0, monet_pseudo=None):
     model.train()
 
     train_edges = train_edges.to(device)
@@ -23,12 +24,24 @@ def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size,
     total_loss = total_examples = 0
     for perm in DataLoader(range(train_edges.size(0)), batch_size, shuffle=True):
 
-        optimizer.zero_grad()
+
 
         graph = graph.to(device)
         x = graph.ndata['feat'].to(device)
         e = graph.edata['feat'].to(device).float()
 
+        if augmentation > 1e-7:
+            print(x.shape)
+            graph_eig = graph.ndata['eig'].clone()
+            print(graph_eig.shape)
+            angle = (torch.rand(x[:, 0].shape) - 0.5) * 2 * augmentation
+            sine = torch.sin(angle * math.pi / 180)
+            graph.ndata['eig'][:, 1] = torch.mul((1 - sine**2)**(0.5), graph_eig[:, 1])  \
+                                              + torch.mul(sine, graph_eig[:, 2])
+            graph.ndata['eig'][:, 2] = torch.mul((1 - sine**2) ** (0.5), graph_eig[:, 2]) \
+                                              - torch.mul(sine, graph_eig[:, 1])
+
+            optimizer.zero_grad()
 
         # Compute node embeddings
         try:
