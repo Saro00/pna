@@ -168,7 +168,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 start = time.time()
 
                 epoch_train_loss, optimizer = train_epoch(model, optimizer, device, graph, train_edges,
-                                                          params['batch_size'], epoch)
+                                                          params['batch_size'], net_params['augmentation'], epoch)
 
                 epoch_train_hit, epoch_val_hit, epoch_test_hit = evaluate_network(
                     model, device, graph, train_edges, val_edges, val_edges_neg, test_edges, test_edges_neg, evaluator,
@@ -322,6 +322,7 @@ def main():
     parser.add_argument('--re_split', action='store_true', help='Resplitting the dataset')
     parser.add_argument('--type_net', default='simple', help='Type of net')
     parser.add_argument('--lap_norm', default='none', help='Laplacian normalisation')
+    parser.add_argument('--augmentation', type=float, default=0., help='Dynamically augmenting with rotations, angle in degrees')
 
     # hydra params
     parser.add_argument('--hydra', action='store_true', default=False, help='Run in Hydra environment.')
@@ -477,6 +478,8 @@ def main():
         net_params['not_pre'] = args.not_pre
     if args.type_net is not None:
         net_params['type_net'] = args.type_net
+    if args.augmentation is not None:
+        net_params['augmentation'] = args.augmentation
 
     # COLLAB
     net_params['in_dim'] = dataset.graph.ndata['feat'].shape[-1]
