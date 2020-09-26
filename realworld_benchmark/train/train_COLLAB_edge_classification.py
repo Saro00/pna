@@ -68,6 +68,8 @@ def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size,
         num_examples = pos_out.size(0)
         total_loss += loss.detach().item() * num_examples
         total_examples += num_examples
+        if augmentation  > 1e-7:
+            graph.ndata['eig'] = graph_eig.detach()
 
     return total_loss / total_examples, optimizer
 
