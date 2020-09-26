@@ -35,7 +35,7 @@ def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size,
             graph_eig = graph.ndata['eig'].clone()
             print(graph_eig.shape)
             angle = (torch.rand(x[:, 0].shape) - 0.5) * 2 * augmentation
-            sine = torch.sin(angle * math.pi / 180)
+            sine = torch.sin(angle * math.pi / 180).to(device)
             graph.ndata['eig'][:, 1] = torch.mul((1 - sine**2)**(0.5), graph_eig[:, 1])  \
                                               + torch.mul(sine, graph_eig[:, 2])
             graph.ndata['eig'][:, 2] = torch.mul((1 - sine**2) ** (0.5), graph_eig[:, 2]) \
