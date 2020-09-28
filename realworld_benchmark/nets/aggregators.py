@@ -19,7 +19,7 @@ def aggregate_min(self, h, eig_s, eig_d):
 
 
 def aggregate_std(self, h, eig_s, eig_d):
-    return torch.sqrt(aggregate_var(h, eig_s, eig_d) + EPS)
+    return torch.sqrt(aggregate_var(self, h, eig_s, eig_d) + EPS)
 
 
 def aggregate_var(self, h, eig_s, eig_d):
