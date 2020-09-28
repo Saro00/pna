@@ -39,7 +39,7 @@ def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size,
             graph.ndata['eig'][:, 2] = torch.mul((1 - sine**2) ** (0.5), graph_eig[:, 2]) \
                                               - torch.mul(sine, graph_eig[:, 1])
 
-            optimizer.zero_grad()
+        optimizer.zero_grad()
 
         # Compute node embeddings
         try:
