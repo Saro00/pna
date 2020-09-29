@@ -252,6 +252,7 @@ def main():
     parser.add_argument('--expid', help='Experiment id.')
     parser.add_argument('--type_net', default='simple', help='Type of net')
     parser.add_argument('--augmentation', type=float, default=0., help='Dynamically augmenting with rotations, angle in degrees')
+    parser.add_argument('--proportion', type=float, default=1., help='Proportion of the dataset to use')
     parser.add_argument('--flip', action='store_true', default=False, help='Flip x-axis')
 
     # eig params
@@ -287,7 +288,7 @@ def main():
         DATASET_NAME = args.dataset
     else:
         DATASET_NAME = config['dataset']
-    dataset = SuperPixDataset(DATASET_NAME, args.coord_eig)
+    dataset = SuperPixDataset(DATASET_NAME, args.coord_eig, proportion=args.proportion)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
