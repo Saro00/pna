@@ -49,9 +49,11 @@ class COLLABDataset(Dataset):
             print("[I] Loading dataset %s..." % (name))
         self.name = name
         self.dataset = DglLinkPropPredDataset(name='ogbl-collab')
+        self.
 
         self.graph = self.dataset[0]  # single DGL graph
-        self._add_positional_encodings(10, norm)
+        #self._add_positional_encodings(10, norm)
+        self._add_eig()
 
         # Create edge feat by concatenating weight and year
         self.graph.edata['feat'] = torch.cat(
@@ -74,3 +76,50 @@ class COLLABDataset(Dataset):
     def _add_positional_encodings(self, pos_enc_dim, norm):
         # Graph positional encoding v/ Laplacian eigenvectors
         self.graph = positional_encoding(self.graph, pos_enc_dim, norm)
+
+    def _add_eig(self, norm='none', number=6):
+
+        dataset = LinkPropPredDataset(name='ogbl-collab')
+        graph = dataset[0]
+        G = nx.Graph()
+        G.add_nodes_from([i for i in range(235868)])
+
+        for nod1, nod2 in zip(graph['edge_index'][0], graph['edge_index'][1]):
+            G.add_edge(nod1, nod2)
+
+        components = list(nx.connected_components(G))
+        list_G = []
+        list_nodes = []
+
+        for component in components:
+            G_new = nx.Graph()
+            G_new.add_nodes_from(list(component))
+            list_G.append(G_new)
+            list_nodes.append(list(component))
+        for i in range(len(list_G)):
+            for nod1, nod2 in list(G.edges(list_nodes[i])):
+                list_G[i].add_edge(nod1, nod2)
+
+        EigVec_global = np.ones((235868, number))
+        for g in list_G:
+            node_list = list(g.nodes)
+            A = nx.adjacency_matrix(g, nodelist=node_list).astype(float)
+            N = sp.diags(list(map(lambda x: x[1], g.degree())))
+            if norm == 'none':
+                D = N * sp.eye(len(node_list))
+                L = D - A
+            elif norm == 'sym':
+                D = N * sp.eye(len(node_list))
+                L = D ** (-1 / 2) * (D - A) * D ** (-1 / 2)
+            elif norm == 'walk':
+                D = N * sp.eye(len(node_list))
+                L = D ** (-1) * (D - A)
+
+            if len(node_list) > 2:
+                print(len(node_list))
+                EigVal, EigVec = sp.linalg.eigs(L, k=min(len(node_list) - 2, number), which='SR', tol=1e-2)
+                EigVec = EigVec[:, EigVal.argsort()]
+                EigVec_global[node_list, : min(len(node_list) - 2, number)] = EigVec[:, :]
+            elif len(node_list) == 2:
+                EigVec_global[node_list[0], :number] = np.zeros((1, number))
+            self.graph.ndata['eig'] = EigVec_global * 10**16
