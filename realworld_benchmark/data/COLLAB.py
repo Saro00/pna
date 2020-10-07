@@ -8,6 +8,7 @@ from ogb.linkproppred import DglLinkPropPredDataset, LinkPropPredDataset, Evalua
 
 from scipy import sparse as sp
 import numpy as np
+import networkx as nx
 
 
 def positional_encoding(g, pos_enc_dim, norm):
