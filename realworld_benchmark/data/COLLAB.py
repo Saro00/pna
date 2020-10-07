@@ -3,7 +3,7 @@ import dgl
 import torch
 from torch.utils.data import Dataset
 import random as rd
-from ogb.linkproppred import DglLinkPropPredDataset, Evaluator
+from ogb.linkproppred import DglLinkPropPredDataset, LinkPropPredDataset, Evaluator
 
 
 from scipy import sparse as sp
