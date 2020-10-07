@@ -116,7 +116,6 @@ class COLLABDataset(Dataset):
                 L = D ** (-1) * (D - A)
 
             if len(node_list) > 2:
-                print(len(node_list))
                 EigVal, EigVec = sp.linalg.eigs(L, k=min(len(node_list) - 2, number), which='SR', tol=1e-2)
                 EigVec = EigVec[:, EigVal.argsort()]
                 EigVec_global[node_list, : min(len(node_list) - 2, number)] = EigVec[:, :]
