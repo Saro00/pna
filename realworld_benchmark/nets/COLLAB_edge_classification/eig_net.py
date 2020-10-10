@@ -57,12 +57,10 @@ class EIGNet(nn.Module):
 
 
     def forward(self, g, h, e, snorm_n, snorm_e):
-        print('here1')
         h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
 
         for i, conv in enumerate(self.layers):
-            print('conv', i)
             h_t = conv(g, h, e, snorm_n)
             if self.gru_enable and i != len(self.layers) - 1:
                 h_t = self.gru(h, h_t)
