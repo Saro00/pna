@@ -3,7 +3,7 @@ from torch import nn
 from functools import partial
 
 
-EPS = 1e-15
+EPS = 1e-24
 
 
 def aggregate_mean(self, h, eig_s, eig_d):
