@@ -104,16 +104,17 @@ class COLLABDataset(Dataset):
         for g in list_G:
             node_list = list(g.nodes)
             A = nx.adjacency_matrix(g, nodelist=node_list).astype(float)
-            N = sp.diags(list(map(lambda x: x[1], g.degree())))
             if norm == 'none':
-                D = N * sp.eye(len(node_list))
+                D = sp.diags(list(map(lambda x: x[1], g.degree())))
                 L = D - A
             elif norm == 'sym':
-                D = N * sp.eye(len(node_list))
-                L = D ** (-1 / 2) * (D - A) * D ** (-1 / 2)
+                D_norm = sp.diags(list(map(lambda x: x[1], g.degree()**(-0.5))))
+                D = sp.diags(list(map(lambda x: x[1], g.degree())))
+                L = D_norm * (D - A) * D_norm
             elif norm == 'walk':
-                D = N * sp.eye(len(node_list))
-                L = D ** (-1) * (D - A)
+                D_norm = sp.diags(list(map(lambda x: x[1], g.degree()**(-1))))
+                D = sp.diags(list(map(lambda x: x[1], g.degree())))
+                L = D_norm * (D - A)
 
             if len(node_list) > 2:
                 EigVal, EigVec = sp.linalg.eigs(L, k=min(len(node_list) - 2, number), which='SR', tol=1e-2)
