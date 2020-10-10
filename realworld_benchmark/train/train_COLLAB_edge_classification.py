@@ -22,7 +22,7 @@ def train_epoch_sparse(model, optimizer, device, graph, train_edges, batch_size,
     train_edges = train_edges.to(device)
 
     total_loss = total_examples = 0
-    for perm in DataLoader(range(train_edges.size(0)), batch_size, shuffle=True):
+    for perm in tqdm(DataLoader(range(train_edges.size(0)), batch_size, shuffle=True)):
 
 
 
