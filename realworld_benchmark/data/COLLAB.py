@@ -108,11 +108,11 @@ class COLLABDataset(Dataset):
                 D = sp.diags(list(map(lambda x: x[1], g.degree())))
                 L = D - A
             elif norm == 'sym':
-                D_norm = sp.diags(list(map(lambda x: x[1], g.degree()**(-0.5))))
+                D_norm = sp.diags(list(map(lambda x: x[1]**(-0.5), g.degree())))
                 D = sp.diags(list(map(lambda x: x[1], g.degree())))
                 L = D_norm * (D - A) * D_norm
             elif norm == 'walk':
-                D_norm = sp.diags(list(map(lambda x: x[1], g.degree()**(-1))))
+                D_norm = sp.diags(list(map(lambda x: x[1]**(-1), g.degree())))
                 D = sp.diags(list(map(lambda x: x[1], g.degree())))
                 L = D_norm * (D - A)
 
