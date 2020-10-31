@@ -69,7 +69,7 @@ class EIGNet(nn.Module):
         h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
         if self.pos_enc_dim > 0:
-            h_pos_enc = self.embedding_pos_enc(g.ndata['pos_enc'].float())
+            h_pos_enc = self.embedding_pos_enc(g.ndata['pos_enc'].to('cuda'))
             h = h + h_pos_enc
         if self.JK == 'sum':
             h_list = [h]
