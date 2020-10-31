@@ -119,7 +119,7 @@ def self_loop(g):
 
 
 
-def positional_encoding(g, norm, pos_enc_dim=0):
+def positional_encoding(g, dim, norm, pos_enc_dim=0):
     """
         Graph positional encoding v/ Laplacian eigenvectors
     """
@@ -146,7 +146,7 @@ def positional_encoding(g, norm, pos_enc_dim=0):
     #EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
     EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR', tol=1e-2) # for 40 PEs
     EigVec = EigVec[:, EigVal.argsort()] # increasing order
-    g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:,:pos_enc_dim])).float()
+    g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:,:dim])).float()
     if pos_enc_dim > 0:
         g.ndata['pos_enc'] = torch.from_numpy(np.real(EigVec[:,1:pos_enc_dim+1])).float()
 
@@ -250,10 +250,10 @@ class SBMsDataset(torch.utils.data.Dataset):
         self.test.graph_lists = [self_loop(g) for g in self.test.graph_lists]
 
 
-    def _add_positional_encoding(self, norm, pos_enc_dim=0):
+    def _add_positional_encoding(self, dim, norm, pos_enc_dim=0):
         
         # Graph positional encoding v/ Laplacian eigenvectors
-        self.train.graph_lists = [positional_encoding(g, pos_enc_dim, norm, pos_enc_dim) for g in self.train.graph_lists]
-        self.val.graph_lists = [positional_encoding(g, pos_enc_dim, norm, pos_enc_dim) for g in self.val.graph_lists]
-        self.test.graph_lists = [positional_encoding(g, pos_enc_dim, norm, pos_enc_dim) for g in self.test.graph_lists]
+        self.train.graph_lists = [positional_encoding(g, dim, norm, pos_enc_dim) for g in self.train.graph_lists]
+        self.val.graph_lists = [positional_encoding(g, dim, norm, pos_enc_dim) for g in self.val.graph_lists]
+        self.test.graph_lists = [positional_encoding(g, dim, norm, pos_enc_dim) for g in self.test.graph_lists]
 
