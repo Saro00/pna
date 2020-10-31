@@ -119,7 +119,7 @@ def self_loop(g):
 
 
 
-def positional_encoding(g, pos_enc_dim, norm, pos_enc_dim=0):
+def positional_encoding(g, norm, pos_enc_dim=0):
     """
         Graph positional encoding v/ Laplacian eigenvectors
     """
