@@ -3,7 +3,7 @@ from torch import nn
 from functools import partial
 
 
-EPS = 1e-24
+EPS = 1e-8
 
 
 def aggregate_mean(self, h, eig_s, eig_d):
@@ -82,7 +82,7 @@ def aggregate_eig_new_abs(self, h, eig_s, eig_d, eig_idx):
 def aggregate_eig_dx(self, h, eig_s, eig_d, h_in, eig_idx):
     eig_w = ((eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]) /
      (torch.sum(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]), keepdim=True, dim=1) + EPS)).unsqueeze(-1)
-    if torch.sum(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]), keepdim=True, dim=1)[1] < EPS * 1000:
+    if torch.sum(torch.abs(eig_s[:, :, eig_idx] - eig_d[:, :, eig_idx]), keepdim=True, dim=1)[1pn] < EPS * 1000:
         print('happened')
     h_mod = torch.mul(h, eig_w)
     return torch.abs(torch.sum(h_mod, dim=1) - torch.sum(eig_w, dim=1) * h_in)
