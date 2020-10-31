@@ -320,7 +320,7 @@ def main():
         DATASET_NAME = args.dataset
     else:
         DATASET_NAME = config['dataset']
-    dataset = SBMsDataset(DATASET_NAME, pos_enc_dim=args.pos_enc_dim, norm=args.lap_norm)
+    dataset = SBMsDataset(DATASET_NAME, pos_enc_dim=int(args.pos_enc_dim), norm=args.lap_norm)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:

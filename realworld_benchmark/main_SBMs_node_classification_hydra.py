@@ -369,7 +369,7 @@ def main():
         DATASET_NAME = args.dataset
     else:
         DATASET_NAME = config['dataset']
-    dataset = SBMsDataset(DATASET_NAME, norm=args.lap_norm, pos_enc_dim=args.pos_enc_dim, verbose=hydra.is_first_execution())
+    dataset = SBMsDataset(DATASET_NAME, norm=args.lap_norm, pos_enc_dim=int(args.pos_enc_dim), verbose=hydra.is_first_execution())
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
