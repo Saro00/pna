@@ -148,7 +148,7 @@ def positional_encoding(g, dim, norm, pos_enc_dim=0):
     EigVec = EigVec[:, EigVal.argsort()] # increasing order
     g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:,:dim])).float()
     if pos_enc_dim > 0:
-        g.ndata['pos_enc'] = torch.from_numpy(np.real(EigVec[:,1:pos_enc_dim+1])).float()
+        g.ndata['pos_enc'] = g.ndata['eig'][:,1:pos_enc_dim+1]
 
     return g
 
