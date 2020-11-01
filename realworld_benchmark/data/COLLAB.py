@@ -118,7 +118,7 @@ class COLLABDataset(Dataset):
 
             if len(node_list) > 2:
                 EigVal, EigVec = sp.linalg.eigs(L, k=min(len(node_list) - 2, number), which='SR', tol=1e-4)
-                EigVec = EigVec[:, EigVal.argsort()] / torch.max(EigVec[:, EigVal.argsort()], keepdim=True)
+                EigVec = EigVec[:, EigVal.argsort()] / np.max(EigVec[:, EigVal.argsort()], 0)
                 EigVec_global[node_list, : min(len(node_list) - 2, number)] = EigVec[:, :]
             elif len(node_list) == 2:
                 EigVec_global[node_list[0], :number] = np.zeros((1, number))
