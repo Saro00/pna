@@ -117,7 +117,7 @@ class COLLABDataset(Dataset):
                 L = D_norm * (D - A)
 
             if len(node_list) > 2:
-                EigVal, EigVec = sp.linalg.eigs(L, k=min(len(node_list) - 2, number), which='SR', tol=1e-4)
+                EigVal, EigVec = sp.linalg.eigs(L, k=min(len(node_list) - 2, number), which='SR', tol=0)
                 EigVec = EigVec[:, EigVal.argsort()] / np.max(EigVec[:, EigVal.argsort()], 0)
                 EigVec_global[node_list, : min(len(node_list) - 2, number)] = EigVec[:, :]
             elif len(node_list) == 2:
