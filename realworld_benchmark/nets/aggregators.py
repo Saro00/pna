@@ -18,10 +18,6 @@ def aggregate_min(self, h):
     return torch.min(h, dim=1)[0]
 
 
-def aggregate_std(self, h):
-    return torch.sqrt(aggregate_var(self, h, eig_s, eig_d) + EPS)
-
-
 def aggregate_var(self, h):
     h_mean_squares = torch.mean(h * h, dim=-2)
     h_mean = torch.mean(h, dim=-2)
