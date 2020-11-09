@@ -281,7 +281,7 @@ def main():
         DATASET_NAME = config['dataset']
     print('ok')
     print(DATASET_NAME)
-    dataset = MoleculeDataset(DATASET_NAME, pos_enc_dim=int(args.pos_enc_dim), norm=args.lap_norm)
+    dataset = MoleculeDataset(DATASET_NAME, norm=args.lap_norm)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
@@ -384,8 +384,6 @@ def main():
         net_params['not_pre'] = args.not_pre
     if args.type_net is not None:
         net_params['type_net'] = args.type_net
-    if args.pos_enc_dim is not None:
-        net_params['pos_enc_dim'] = args.pos_enc_dim
     if args.lap_norm is not None:
         net_params['lap_norm'] = args.lap_norm
     if args.flip is not None:
