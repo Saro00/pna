@@ -52,9 +52,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
         print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
 
         for molecule in self.data:
-            node_features = molecule['atom_type'].long()
-
-            print(type(molecule['atom_type'].long()))
+            #node_features = molecule['atom_type'].long()
 
             adj = molecule['bond_type']
             edge_list = (adj != 0).nonzero()  # converting adj matrix to edge_list
@@ -65,15 +63,18 @@ class MoleculeDGL(torch.utils.data.Dataset):
             # Create the DGL Graph
             g = dgl.DGLGraph()
             g.add_nodes(molecule['num_atom'])
-            g.ndata['feat'] = node_features
-
 
             for src, dst in edge_list:
                 g.add_edges(src.item(), dst.item())
             g.edata['feat'] = edge_features
 
+            # Set node features
+            g.ndata['feat'] = g.in_degrees(g.nodes)
+
             self.graph_lists.append(g)
-            self.graph_labels.append(molecule['logP_SA_cycle_normalized'])
+
+            # Set node labels
+            self.node_labels.append(g.in_degrees(g.nodes))
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
