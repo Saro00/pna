@@ -262,7 +262,6 @@ def main():
     parser.add_argument('--pretrans_layers', type=int, help='pretrans_layers.')
     parser.add_argument('--posttrans_layers', type=int, help='posttrans_layers.')
     parser.add_argument('--not_pre', action='store_true', default=False, help='Not applying pre-transformation')
-    parser.add_argument('--pos_enc_dim', default=0, type=int, help='Positional encoding dimension')
 
     args = parser.parse_args()
     print(args.config)
