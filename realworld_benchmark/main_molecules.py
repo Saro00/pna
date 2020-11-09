@@ -253,7 +253,6 @@ def main():
     # eig params
     parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
     parser.add_argument('--scalers', type=str, help='Scalers to use.')
-    parser.add_argument('--NN_eig', action='store_true', default=False, help='NN eig aggr.')
     parser.add_argument('--towers', type=int, default=5, help='Towers to use.')
     parser.add_argument('--divide_input_first', type=bool, help='Whether to divide the input in first layer.')
     parser.add_argument('--divide_input_last', type=bool, help='Whether to divide the input in last layers.')
@@ -370,8 +369,6 @@ def main():
         net_params['divide_input_first'] = args.divide_input_first
     if args.divide_input_last is not None:
         net_params['divide_input_last'] = args.divide_input_last
-    if args.NN_eig is not None:
-        net_params['NN_eig'] = args.NN_eig
     if args.gru is not None:
         net_params['gru'] = args.gru
     if args.edge_dim is not None:

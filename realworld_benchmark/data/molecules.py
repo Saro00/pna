@@ -15,30 +15,6 @@ import numpy as np
 EPS = 1e-5
 
 
-def positional_encoding(g, pos_enc_dim):
-    """
-        Graph positional encoding v/ Laplacian eigenvectors
-    """
-
-    # Laplacian
-    A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-    N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-    L = sp.eye(g.number_of_nodes()) - N * A * N
-
-    # Eigenvectors with numpy
-    EigVal, EigVec = np.linalg.eig(L.toarray())
-    idx = EigVal.argsort()  # increasing order
-    EigVal, EigVec = EigVal[idx], np.real(EigVec[:, idx])
-    g.ndata['pos_enc'] = torch.from_numpy(EigVec[:, 1:pos_enc_dim + 1]).float()
-
-    # # Eigenvectors with scipy
-    # EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
-    # EigVec = EigVec[:, EigVal.argsort()] # increasing order
-    # g.ndata['pos_enc'] = torch.from_numpy(np.abs(EigVec[:,1:pos_enc_dim+1])).float()
-
-    return g
-
-
 class MoleculeDGL(torch.utils.data.Dataset):
     def __init__(self, data_dir, split, num_graphs):
         self.data_dir = data_dir
@@ -96,30 +72,6 @@ class MoleculeDGL(torch.utils.data.Dataset):
 
             self.graph_lists.append(g)
             self.graph_labels.append(molecule['logP_SA_cycle_normalized'])
-
-    def get_eig(self, pos_enc_dim=7, norm='none'):
-
-        for g in self.graph_lists:
-            # Laplacian
-            A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-            if norm == 'none':
-                N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1), dtype=float)
-                L = N * sp.eye(g.number_of_nodes()) - A
-            elif norm == 'sym':
-                N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-                L = sp.eye(g.number_of_nodes()) - N * A * N
-            elif norm == 'walk':
-                N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1., dtype=float)
-                L = sp.eye(g.number_of_nodes()) - N * A
-            EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=5e-1)
-            EigVec = EigVec[:, EigVal.argsort()]  # increasing order
-            g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
-
-    def _add_positional_encodings(self, pos_enc_dim):
-
-        for g in self.graph_lists:
-            g.ndata['pos_enc'] = g.ndata['eig'][:,1:pos_enc_dim+1]
-
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
@@ -185,7 +137,7 @@ def self_loop(g):
 
 class MoleculeDataset(torch.utils.data.Dataset):
 
-    def __init__(self, name, norm='none', pos_enc_dim=0, verbose=True):
+    def __init__(self, name, norm='none', verbose=True):
         """
             Loading SBM datasets
         """
@@ -196,17 +148,8 @@ class MoleculeDataset(torch.utils.data.Dataset):
         data_dir = 'data/'
         with open(data_dir + name + '.pkl', "rb") as f:
             f = pickle.load(f)
-            f[0].get_eig(6, norm)
-            if pos_enc_dim > 0:
-                f[0]._add_positional_encodings(pos_enc_dim)
             self.train = f[0]
-            f[1].get_eig(6, norm)
-            if pos_enc_dim > 0:
-                f[1]._add_positional_encodings(pos_enc_dim)
             self.val = f[1]
-            f[2].get_eig(6, norm)
-            if pos_enc_dim > 0:
-                f[2]._add_positional_encodings(pos_enc_dim)
             self.test = f[2]
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
@@ -236,159 +179,3 @@ class MoleculeDataset(torch.utils.data.Dataset):
         self.train.graph_lists = [self_loop(g) for g in self.train.graph_lists]
         self.val.graph_lists = [self_loop(g) for g in self.val.graph_lists]
         self.test.graph_lists = [self_loop(g) for g in self.test.graph_lists]
-
-
-
-
-
-
-def get_laplacian_matrix(adj, norm):
-    r"""
-    Get the Laplacian/normalized Laplacian matrices from a batch of adjacency matrices
-    Parameters
-    --------------
-        adj: tensor(..., N, N)
-            Batches of symmetric adjacency matrices
-
-        norm: string
-            Whether to normalize the Laplacian matrix
-            If `none`, then `L = D - A`
-            If `walk`, then `L = D^-1 (D - A)`
-            If 'sym' then 'L = D^-1/2 (D - A) D^-1/2
-    Returns
-    -------------
-        L: tensor(..., N, N)
-            Resulting Laplacian matrix
-    """
-
-    # Apply the equation L = D - A
-    N = adj.shape[-1]
-    arr = torch.arange(N)
-    L = -adj
-    D = torch.sum(adj, dim=-1)
-    L[..., arr, arr] = D
-
-    # Normalize by the degree : L = D^-1 (D - A)
-    if norm == 'none':
-        pass
-    elif norm == 'walk':
-        Dinv = torch.zeros_like(L)
-        Dinv[..., arr, arr] = D ** -1
-        L = torch.matmul(Dinv, L)
-    elif norm == 'sym':
-        Dinv = torch.zeros_like(L)
-        Dinv[..., arr, arr] = D ** (-1/2)
-        L = torch.matmul(torch.matmul(Dinv, L), Dinv)
-    else:
-        raise Exception
-
-    return L
-
-def get_k_lowest_eig(adj, k, norm='none'):
-    r"""
-    Compute the k-lowest eigenvectors of the Laplacian matrix
-    for each connected components of the graph. If there are disconnected
-    graphs, then the first k eigenvectors are computed for each sub-graph
-    separately.
-    Parameters
-    --------------
-        adj: tensor(..., N, N)
-            Batches of symmetric adjacency matrices
-        k: int
-            Compute the k-th smallest eigenvectors and eigenvalues.
-
-        normalize_L: bool
-            Whether to normalize the Laplacian matrix
-            If `False`, then `L = D - A`
-            If `True`, then `L = D^-1 (D - A)`
-    Returns
-    -------------
-        eigvec: tensor(..., N, k)
-            Resulting k-lowest eigenvectors of the Laplacian matrix of each sub-graph,
-            with the same batching as the `adj` tensor.
-            The dim==-1 represents the k-th vectors.
-            The dim==-2 represents the N elements of each vector.
-            If the a given graph is disconnected, it will give the first ``k`` eigenvector
-            of each sub-graph, and will force the first eigenvector to be 0-vectors.
-            If there are ``m`` eigenvectors for a given sub-graph, with ``m < k``, it will
-            return 0-vectors for all eigenvectors ``> m``
-    """
-
-    # Reshape as a 3D tensor for easier looping along batches
-    device = adj.device
-    shape = list(adj.shape)
-    if adj.ndim == 2:
-        adj = adj.unsqueeze(0)
-    elif adj.ndim > 3:
-        adj = adj.view(-1, shape[-2], shape[-1])
-
-    L = get_laplacian_matrix(adj, norm)
-
-    # Compute and sort the eigenvectors
-
-    eigval_all, eigvec_all = torch.symeig(L, eigenvectors=True)
-    eigval_all = eigval_all.to(device)
-    eigvec_all = eigvec_all.to(device)
-    sort_idx = torch.argsort(eigval_all.abs(), dim=-1, descending=False)
-    sort_idx_vec = sort_idx.unsqueeze(-2).expand(eigvec_all.shape)
-    eigval_sort = torch.gather(eigval_all, dim=-1, index=sort_idx)
-    eigvec_sort = torch.gather(eigvec_all, dim=-1, index=sort_idx_vec)
-
-    k_lowest_eigvec = []
-
-    # Loop each graph to detect if some of them are disconnected. If they are disconnected,
-    # then modify the eigenvectors such that the lowest k eigenvectors are returned for
-    # each sub-graph
-    for ii in range(adj.shape[0]):
-        this_eigval = eigval_sort[ii]
-        num_connected = torch.sum(this_eigval.abs() < EPS)
-
-        # If there is a single connected graph, then return the k lowest eigen functions
-        if num_connected <= 1:
-            this_eigvec = eigvec_sort[ii, :, :k]
-            if k > this_eigvec.shape[-1]:
-                temp_eigvec = torch.zeros(this_eigvec.shape[0], k)
-                temp_eigvec[:, :k] = this_eigvec
-                this_eigvec = temp_eigvec
-            k_lowest_eigvec.append(this_eigvec)
-
-
-        # Otherwise, return the k lowest eigen functions for each sub-graph
-        elif num_connected > 1:
-            eigvec0 = eigvec_sort[ii, :, :num_connected]
-            unique_idx = torch.zeros(1)
-            factor = 100
-
-            # Use the eigenvectors with 0 eigenvalues to find the unique sub-graphs
-            # And loop to make sure the number of detected sub-graphs is consistent with the
-            # Number of connected sub-graphs.
-            while (max(unique_idx) + 1) != num_connected:
-                eigvec0_round = torch.round(eigvec0 / (factor * EPS))
-                _, unique_idx = torch.unique(eigvec0_round, return_inverse=True, dim=0)
-
-                if (max(unique_idx) + 1) < num_connected:
-                    factor = (factor / 2)
-                elif (max(unique_idx) + 1) > num_connected:
-                    factor = (factor * 3)
-
-            # Find the eigenvectors associated to each sub-graph
-            sub_graph_factors = torch.zeros(num_connected, len(this_eigval))
-            for sub_ii in range(num_connected):
-                sub_idx = torch.where(unique_idx == sub_ii)[0]
-                sub_graph_factors[sub_ii, :] = torch.mean(torch.abs(eigvec_sort[ii, sub_idx, :]), dim=-2)
-            max_idx = torch.argmax(sub_graph_factors, dim=0)[num_connected:]
-
-            # Concatenate the k lowest eigenvectors of each sub-graph
-            this_k_lowest_eigvec = torch.zeros(len(this_eigval), k)
-            for sub_ii in range(num_connected):
-                sub_idx = torch.where(unique_idx == sub_ii)[0]
-                k_lowest_idx = torch.where(max_idx == sub_ii)[0][:k - 1] + num_connected
-                for kk_enum, kk in enumerate(k_lowest_idx):
-                    this_k_lowest_eigvec[sub_idx, kk_enum + 1] = eigvec_sort[ii, sub_idx, kk]
-
-            k_lowest_eigvec.append(this_k_lowest_eigvec)
-
-    # Stack and Reshape to match the input batch shape
-    k_lowest_eigvec = torch.stack(k_lowest_eigvec, dim=0).view(*(shape[:-2] + [-1, k]))
-
-    return k_lowest_eigvec.to('cuda' if torch.cuda.is_available() else 'cpu')

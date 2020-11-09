@@ -42,24 +42,22 @@ class EIGLayerComplex(nn.Module):
             z2 = torch.cat([edges.src['h'], edges.dst['h'], edges.data['ef']], dim=1)
         else:
             z2 = torch.cat([edges.src['h'], edges.dst['h']], dim=1)
-        return {'e': self.pretrans(z2), 'eig_s': edges.src['eig'], 'eig_d': edges.dst['eig']}
+        return {'e': self.pretrans(z2)}
 
 
     def message_func(self, edges):
-        return {'e': edges.data['e'], 'eig_s': edges.data['eig_s'].to('cuda' if torch.cuda.is_available() else 'cpu'), 'eig_d': edges.data['eig_d'].to('cuda' if torch.cuda.is_available() else 'cpu')}
+        return {'e': edges.data['e']}
 
     def reduce_func(self, nodes):
         h_in = nodes.data['h']
         h = nodes.mailbox['e']
-        eig_s = nodes.mailbox['eig_s']
-        eig_d = nodes.mailbox['eig_d']
         D = h.shape[-2]
         to_cat = []
         for aggregate in self.aggregators:
             try:
-                to_cat.append(aggregate(self, h, eig_s, eig_d))
+                to_cat.append(aggregate(self, h))
             except:
-                to_cat.append(aggregate(self, h, eig_s, eig_d, h_in))
+                to_cat.append(aggregate(self, h, h_in))
 
         h = torch.cat(to_cat, dim=1)
 
@@ -129,24 +127,21 @@ class EIGLayerSimple(nn.Module):
             self.residual = False
 
     def pretrans_edges(self, edges):
-        return {'e': edges.src['h'], 'eig_s': edges.src['eig'], 'eig_d': edges.dst['eig']}
+        return {'e': edges.src['h']}
 
     def message_func(self, edges):
-        return {'e': edges.data['e'], 'eig_s': edges.data['eig_s'].to('cuda' if torch.cuda.is_available() else 'cpu'),
-                'eig_d': edges.data['eig_d'].to('cuda' if torch.cuda.is_available() else 'cpu')}
+        return {'e': edges.data['e']}
 
     def reduce_func(self, nodes):
         h_in = nodes.data['h']
         h = nodes.mailbox['e']
-        eig_s = nodes.mailbox['eig_s']
-        eig_d = nodes.mailbox['eig_d']
         D = h.shape[-2]
         to_cat = []
         for aggregate in self.aggregators:
             try:
-                to_cat.append(aggregate(self, h, eig_s, eig_d))
+                to_cat.append(aggregate(self, h))
             except:
-                to_cat.append(aggregate(self, h, eig_s, eig_d, h_in))
+                to_cat.append(aggregate(self, h, h_in))
 
         h = torch.cat(to_cat, dim=1)
 
@@ -219,26 +214,24 @@ class EIGTower(nn.Module):
         else:
             z2 = torch.cat([edges.src['h'], edges.dst['h']], dim=1)
 
-        return {'e': self.pretrans(z2), 'eig_s': edges.src['eig'], 'eig_d': edges.dst['eig']}
+        return {'e': self.pretrans(z2)}
 
 
     def message_func(self, edges):
-        return {'e': edges.data['e'], 'eig_s': edges.data['eig_s'].to('cuda' if torch.cuda.is_available() else 'cpu'), 'eig_d': edges.data['eig_d'].to('cuda' if torch.cuda.is_available() else 'cpu')}
+        return {'e': edges.data['e']}
 
     def reduce_func(self, nodes):
         h_in = nodes.data['h']
         h = nodes.mailbox['e']
-        eig_s = nodes.mailbox['eig_s']
-        eig_d = nodes.mailbox['eig_d']
         D = h.shape[-2]
 
         to_cat = []
 
         for aggregate in self.aggregators:
             try:
-                to_cat.append(aggregate(self, h, eig_s, eig_d))
+                to_cat.append(aggregate(self, h))
             except:
-                to_cat.append(aggregate(self, h, eig_s, eig_d, h_in))
+                to_cat.append(aggregate(self, h, h_in))
 
         h = torch.cat(to_cat, dim=1)
 
