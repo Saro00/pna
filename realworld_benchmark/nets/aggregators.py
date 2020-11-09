@@ -61,5 +61,5 @@ def aggregate_mean_abs(self, h):
 
 
 AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_max, 'min': aggregate_min,
-               'std': aggregate_std, 'var': aggregate_var, 'moment3': aggregate_moment_3, 'moment4': aggregate_moment_4,
+               'var': aggregate_var, 'moment3': aggregate_moment_3, 'moment4': aggregate_moment_4,
                'moment5': aggregate_moment_5,  'lap': aggregate_lap, 'mean_abs': aggregate_mean_abs}
