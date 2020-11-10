@@ -15,11 +15,12 @@ import numpy as np
 EPS = 1e-5
 
 class MoleculeDGL(torch.utils.data.Dataset):
-    '''
+
     def __len__(self):
         """Return the number of graphs in the dataset."""
         return self.n_samples
 
+    '''
     def __getitem__(self, idx):
         """
             Get the idx^th sample.
