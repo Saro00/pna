@@ -110,6 +110,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
             print("[I] Finished loading.")
             print("[I] Data load time: {:.4f}s".format(time.time() - start))
 
+    '''
     # form a mini batch from a given list of samples = [(graph, label) pairs]
     def collate(self, samples):
         # The input samples is a list of pairs (graph, label).
@@ -123,6 +124,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
         snorm_e = torch.cat(tab_snorm_e).sqrt()
         batched_graph = dgl.batch(graphs)
         return batched_graph, labels, snorm_n, snorm_e
+    '''
 
     def _add_self_loops(self):
         # function for adding self loops
