@@ -72,29 +72,6 @@ class MoleculeDGL(torch.utils.data.Dataset):
             self.graph_lists.append(g)
             self.graph_labels.append(molecule['logP_SA_cycle_normalized'])
 
-    def get_eig(self, pos_enc_dim=7, norm='none'):
-
-        for g in self.graph_lists:
-            # Laplacian
-            A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-            if norm == 'none':
-                N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1), dtype=float)
-                L = N * sp.eye(g.number_of_nodes()) - A
-            elif norm == 'sym':
-                N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-                L = sp.eye(g.number_of_nodes()) - N * A * N
-            elif norm == 'walk':
-                N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1., dtype=float)
-                L = sp.eye(g.number_of_nodes()) - N * A
-            EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=5e-1)
-            EigVec = EigVec[:, EigVal.argsort()]  # increasing order
-            g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
-
-    def _add_positional_encodings(self, pos_enc_dim):
-
-        for g in self.graph_lists:
-            g.ndata['pos_enc'] = g.ndata['eig'][:, 1:pos_enc_dim + 1]
-
     def __len__(self):
         """Return the number of graphs in the dataset."""
         return self.n_samples
