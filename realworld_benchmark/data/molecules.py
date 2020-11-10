@@ -104,6 +104,7 @@ def get_nodes_betweenness_centrality(graph):
 class StructureAwareGraph(torch.utils.data.Dataset):
     # Create a StructureAwareGraph from a MoleculeDGL
     def __init__(self, molecule_dgl):
+        self.data = molecule_dgl.data
         self.data_dir = molecule_dgl.data_dir
         self.split = molecule_dgl.split
         self.num_graphs = molecule_dgl.num_graphs
