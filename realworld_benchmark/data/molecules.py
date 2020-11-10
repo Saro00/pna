@@ -30,8 +30,8 @@ def add_graph_features_and_labels(graph):
     graph.ndata['feat'] = get_nodes_betweenness_centrality(graph)
 
     # Set node labels
-    self.node_labels.append(get_nodes_closeness_centrality(graph))
-    self.graph_labels = []
+    dataset.node_labels.append(get_nodes_closeness_centrality(graph))
+    dataset.graph_labels = []
 
 
 def self_loop(g):
@@ -74,8 +74,11 @@ class MoleculeDataset(torch.utils.data.Dataset):
         with open(data_dir + name + '.pkl', "rb") as f:
             f = pickle.load(f)
             self.train = f[0]
+            add_graph_features_and_labels(self.train)
             self.val = f[1]
+            add_graph_features_and_labels(self.val)
             self.test = f[2]
+            add_graph_features_and_labels(self.test)
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
         if verbose:
