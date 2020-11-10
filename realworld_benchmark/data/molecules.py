@@ -15,12 +15,38 @@ import numpy as np
 EPS = 1e-5
 
 class MoleculeDGL(torch.utils.data.Dataset):
+    def _prepare(self):
+        print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
+
+        for molecule in self.data:
+            node_features = molecule['atom_type'].long()
+
+            adj = molecule['bond_type']
+            edge_list = (adj != 0).nonzero()  # converting adj matrix to edge_list
+
+            edge_idxs_in_adj = edge_list.split(1, dim=1)
+            edge_features = adj[edge_idxs_in_adj].reshape(-1).long()
+
+            # Create the DGL Graph
+            g = dgl.DGLGraph()
+            g.add_nodes(molecule['num_atom'])
+
+            for src, dst in edge_list:
+                g.add_edges(src.item(), dst.item())
+            g.edata['feat'] = edge_features
+
+            # Set node features
+            g.ndata['feat'] = g.in_degrees(g.nodes)
+
+            self.graph_lists.append(g)
+
+            # Set node labels
+            self.node_labels.append(g.in_degrees(g.nodes))
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
         return self.n_samples
 
-    '''
     def __getitem__(self, idx):
         """
             Get the idx^th sample.
@@ -35,7 +61,6 @@ class MoleculeDGL(torch.utils.data.Dataset):
                 And its label.
         """
         return self.graph_lists[idx], self.graph_labels[idx]
-    '''
 
 class MoleculeDataset(torch.utils.data.Dataset):
 
@@ -50,12 +75,12 @@ class MoleculeDataset(torch.utils.data.Dataset):
         data_dir = 'data/'
         with open(data_dir + name + '.pkl', "rb") as f:
             f = pickle.load(f)
-            # maybe add here?
             self.train = f[0]
-            # maybe add here?
+            self.train._prepare()
             self.val = f[1]
-            # maybe add here?
+            self.val._prepare()
             self.test = f[2]
+            self.test._prepare()
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
         if verbose:
