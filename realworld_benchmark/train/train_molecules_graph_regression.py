@@ -12,7 +12,7 @@ import math
 
 from .metrics import MAE
 
-def train_epoch(model, optimizer, device, data_loader, epoch, flip):
+def train_epoch(model, optimizer, device, data_loader, epoch):
     model.train()
     epoch_loss = 0
     epoch_train_mae = 0
@@ -25,11 +25,6 @@ def train_epoch(model, optimizer, device, data_loader, epoch, flip):
         batch_snorm_e = batch_snorm_e.to(device)
         batch_targets = batch_targets.to(device)
         batch_snorm_n = batch_snorm_n.to(device)         # num x 1
-        if flip:
-            batch_graphs_eig = batch_graphs.ndata['eig'].to(device)
-            sign_flip = torch.rand(batch_graphs_eig.size()).to(device)
-            sign_flip[sign_flip >= 0.5] = 1.0; sign_flip[sign_flip < 0.5] = -1.0
-            batch_graphs.ndata['eig'] = torch.mul(sign_flip, batch_graphs_eig)
         optimizer.zero_grad()
         batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
         loss = model.loss(batch_scores, batch_targets)
