@@ -14,7 +14,7 @@ import numpy as np
 
 EPS = 1e-5
 
-
+# Can be removed?
 class MoleculeDGL(torch.utils.data.Dataset):
     def __init__(self, data_dir, split, num_graphs):
         pass
@@ -30,7 +30,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
 
 
 def get_nodes_degree(graph):
-    return graph.in_degrees(graph.nodes)
+    return graph.in_degrees()
 
 def get_nodes_closeness_centrality(graph):
     return graph.closeness_centrality(graph.to_networkx())
@@ -51,7 +51,7 @@ class StructureAwareGraph(torch.utils.data.Dataset):
         self._prepare()
 
     def _prepare(self):
-        print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
+        print("\npreparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
 
         for molecule in self.data:
             print("\rgraph %d out of %d" % (len(self.graph_lists), len(self.data)), end="")
@@ -78,7 +78,7 @@ class StructureAwareGraph(torch.utils.data.Dataset):
             self.graph_lists.append(g)
 
             # Set node labels
-            self.node_labels.append(atom_features)
+            self.node_labels.append(g.in_degrees())
 
     def __len__(self):
         return self.n_samples
