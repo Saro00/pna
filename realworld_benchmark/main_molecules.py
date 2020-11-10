@@ -117,8 +117,6 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
     test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
 
-    print("Data loaded")
-
     # At any point you can hit Ctrl + C to break out of training early.
     try:
         with tqdm(range(params['epochs']), unit='epoch') as t:
