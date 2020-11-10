@@ -62,8 +62,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
             # Create the DGL Graph
             g = dgl.DGLGraph()
             g.add_nodes(molecule['num_atom'])
-            g.ndata['feat'] = node_features
-
+            g.ndata['feat'] = torch.stack(node_features, torch.ones(len(node_features)), dim = 1)
 
             for src, dst in edge_list:
                 g.add_edges(src.item(), dst.item())
@@ -71,6 +70,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
 
             self.graph_lists.append(g)
             self.graph_labels.append(molecule['logP_SA_cycle_normalized'])
+            #self.node_labels.append
 
 
     def __len__(self):
@@ -92,51 +92,6 @@ class MoleculeDGL(torch.utils.data.Dataset):
         """
         return self.graph_lists[idx], self.graph_labels[idx]
 
-
-'''
-
-class MoleculeDatasetDGL(torch.utils.data.Dataset):
-    def __init__(self, name='Zinc'):
-        t0 = time.time()
-        self.name = name
-
-        self.num_atom_type = 28  # known meta-info about the zinc dataset; can be calculated as well
-        self.num_bond_type = 4  # known meta-info about the zinc dataset; can be calculated as well
-
-        data_dir = './data/molecules'
-
-        self.train = MoleculeDGL(data_dir, 'train', num_graphs=10000)
-        self.val = MoleculeDGL(data_dir, 'val', num_graphs=1000)
-        self.test = MoleculeDGL(data_dir, 'test', num_graphs=1000)
-        print("Time taken: {:.4f}s".format(time.time() - t0))
-
-
-def self_loop(g):
-    """
-        Utility function only, to be used only when necessary as per user self_loop flag
-        : Overwriting the function dgl.transform.add_self_loop() to not miss ndata['feat'] and edata['feat']
-
-
-        This function is called inside a function in MoleculeDataset class.
-    """
-    new_g = dgl.DGLGraph()
-    new_g.add_nodes(g.number_of_nodes())
-    new_g.ndata['feat'] = g.ndata['feat']
-
-    src, dst = g.all_edges(order="eid")
-    src = dgl.backend.zerocopy_to_numpy(src)
-    dst = dgl.backend.zerocopy_to_numpy(dst)
-    non_self_edges_idx = src != dst
-    nodes = np.arange(g.number_of_nodes())
-    new_g.add_edges(src[non_self_edges_idx], dst[non_self_edges_idx])
-    new_g.add_edges(nodes, nodes)
-
-    # This new edata is not used since this function gets called only for GCN, GAT
-    # However, we need this for the generic requirement of ndata and edata
-    new_g.edata['feat'] = torch.zeros(new_g.number_of_edges())
-    return new_g
-
-'''
 
 class MoleculeDataset(torch.utils.data.Dataset):
 
