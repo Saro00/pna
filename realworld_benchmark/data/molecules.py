@@ -14,6 +14,107 @@ import numpy as np
 
 EPS = 1e-5
 
+
+class MoleculeDGL(torch.utils.data.Dataset):
+    def __init__(self, data_dir, split, num_graphs):
+        self.data_dir = data_dir
+        self.split = split
+        self.num_graphs = num_graphs
+
+        with open(data_dir + "/%s.pickle" % self.split, "rb") as f:
+            # with open('data/ZINC.pkl', "rb") as f:
+
+            self.data = pickle.load(f)
+
+        # loading the sampled indices from file ./zinc_molecules/<split>.index
+        with open(data_dir + "/%s.index" % self.split, "r") as f:
+            data_idx = [list(map(int, idx)) for idx in csv.reader(f)]
+            self.data = [self.data[i] for i in data_idx[0]]
+
+        assert len(self.data) == num_graphs, "Sample num_graphs again; available idx: train/val/test => 10k/1k/1k"
+
+        """
+        data is a list of Molecule dict objects with following attributes
+
+          molecule = data[idx]
+        ; molecule['num_atom'] : nb of atoms, an integer (N)
+        ; molecule['atom_type'] : tensor of size N, each element is an atom type, an integer between 0 and num_atom_type
+        ; molecule['bond_type'] : tensor of size N x N, each element is a bond type, an integer between 0 and num_bond_type
+        ; molecule['logP_SA_cycle_normalized'] : the chemical property to regress, a float variable
+        """
+
+        self.graph_lists = []
+        self.graph_labels = []
+        self.n_samples = len(self.data)
+        self._prepare()
+
+    def _prepare(self):
+        print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
+
+        for molecule in self.data:
+            node_features = molecule['atom_type'].long()
+
+            adj = molecule['bond_type']
+            edge_list = (adj != 0).nonzero()  # converting adj matrix to edge_list
+
+            edge_idxs_in_adj = edge_list.split(1, dim=1)
+            edge_features = adj[edge_idxs_in_adj].reshape(-1).long()
+
+            # Create the DGL Graph
+            g = dgl.DGLGraph()
+            g.add_nodes(molecule['num_atom'])
+            g.ndata['feat'] = node_features
+
+            for src, dst in edge_list:
+                g.add_edges(src.item(), dst.item())
+            g.edata['feat'] = edge_features
+
+            self.graph_lists.append(g)
+            self.graph_labels.append(molecule['logP_SA_cycle_normalized'])
+
+    def get_eig(self, pos_enc_dim=7, norm='none'):
+
+        for g in self.graph_lists:
+            # Laplacian
+            A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+            if norm == 'none':
+                N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1), dtype=float)
+                L = N * sp.eye(g.number_of_nodes()) - A
+            elif norm == 'sym':
+                N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+                L = sp.eye(g.number_of_nodes()) - N * A * N
+            elif norm == 'walk':
+                N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1., dtype=float)
+                L = sp.eye(g.number_of_nodes()) - N * A
+            EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=5e-1)
+            EigVec = EigVec[:, EigVal.argsort()]  # increasing order
+            g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
+
+    def _add_positional_encodings(self, pos_enc_dim):
+
+        for g in self.graph_lists:
+            g.ndata['pos_enc'] = g.ndata['eig'][:, 1:pos_enc_dim + 1]
+
+    def __len__(self):
+        """Return the number of graphs in the dataset."""
+        return self.n_samples
+
+    def __getitem__(self, idx):
+        """
+            Get the idx^th sample.
+            Parameters
+            ---------
+            idx : int
+                The sample index.
+            Returns
+            -------
+            (dgl.DGLGraph, int)
+                DGLGraph with node feature stored in `feat` field
+                And its label.
+        """
+        return self.graph_lists[idx], self.graph_labels[idx]
+
+
 def get_nodes_degree(graph):
     return graph.in_degrees(graph.nodes)
 
@@ -35,9 +136,6 @@ class StructureAwareGraph(torch.utils.data.Dataset):
 
     def _prepare(self):
         print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
-
-        self.node_labels = []
-        self.graph_labels = []
 
         for molecule in self.data:
             node_features = molecule['atom_type'].long()
