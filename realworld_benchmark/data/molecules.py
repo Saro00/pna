@@ -15,6 +15,7 @@ import numpy as np
 EPS = 1e-5
 
 class MoleculeDGL(torch.utils.data.Dataset):
+    '''
     def __init__(self, data_dir, split, num_graphs):
         self.data_dir = data_dir
         self.split = split
@@ -47,7 +48,6 @@ class MoleculeDGL(torch.utils.data.Dataset):
         self.n_samples = len(self.data)
         self._prepare()
 
-    '''
     def _prepare(self):
         print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
 
