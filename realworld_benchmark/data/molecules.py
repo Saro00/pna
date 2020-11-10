@@ -17,79 +17,16 @@ EPS = 1e-5
 
 class MoleculeDGL(torch.utils.data.Dataset):
     def __init__(self, data_dir, split, num_graphs):
-        self.data_dir = data_dir
-        self.split = split
-        self.num_graphs = num_graphs
-
-        with open(data_dir + "/%s.pickle" % self.split, "rb") as f:
-            # with open('data/ZINC.pkl', "rb") as f:
-
-            self.data = pickle.load(f)
-
-        # loading the sampled indices from file ./zinc_molecules/<split>.index
-        with open(data_dir + "/%s.index" % self.split, "r") as f:
-            data_idx = [list(map(int, idx)) for idx in csv.reader(f)]
-            self.data = [self.data[i] for i in data_idx[0]]
-
-        assert len(self.data) == num_graphs, "Sample num_graphs again; available idx: train/val/test => 10k/1k/1k"
-
-        """
-        data is a list of Molecule dict objects with following attributes
-
-          molecule = data[idx]
-        ; molecule['num_atom'] : nb of atoms, an integer (N)
-        ; molecule['atom_type'] : tensor of size N, each element is an atom type, an integer between 0 and num_atom_type
-        ; molecule['bond_type'] : tensor of size N x N, each element is a bond type, an integer between 0 and num_bond_type
-        ; molecule['logP_SA_cycle_normalized'] : the chemical property to regress, a float variable
-        """
-
-        self.graph_lists = []
-        self.graph_labels = []
-        self.n_samples = len(self.data)
-        self._prepare()
+        pass
 
     def _prepare(self):
-        print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
-
-        for molecule in self.data:
-            node_features = molecule['atom_type'].long()
-
-            adj = molecule['bond_type']
-            edge_list = (adj != 0).nonzero()  # converting adj matrix to edge_list
-
-            edge_idxs_in_adj = edge_list.split(1, dim=1)
-            edge_features = adj[edge_idxs_in_adj].reshape(-1).long()
-
-            # Create the DGL Graph
-            g = dgl.DGLGraph()
-            g.add_nodes(molecule['num_atom'])
-            g.ndata['feat'] = node_features
-
-            for src, dst in edge_list:
-                g.add_edges(src.item(), dst.item())
-            g.edata['feat'] = edge_features
-
-            self.graph_lists.append(g)
-            self.graph_labels.append(molecule['logP_SA_cycle_normalized'])
+        pass
 
     def __len__(self):
-        """Return the number of graphs in the dataset."""
-        return self.n_samples
+        pass
 
     def __getitem__(self, idx):
-        """
-            Get the idx^th sample.
-            Parameters
-            ---------
-            idx : int
-                The sample index.
-            Returns
-            -------
-            (dgl.DGLGraph, int)
-                DGLGraph with node feature stored in `feat` field
-                And its label.
-        """
-        return self.graph_lists[idx], self.graph_labels[idx]
+        pass
 
 
 def get_nodes_degree(graph):
