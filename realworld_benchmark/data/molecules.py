@@ -21,6 +21,8 @@ def get_nodes_degree(graph):
 def get_nodes_closeness_centrality(graph):
     return graph.closeness_centrality(graph.to_networkx())
 
+def get_nodes_betweenness_centrality(graph):
+    return graph.betweenness_centrality(graph.to_networkx())
 
 class MoleculeDGL(torch.utils.data.Dataset):
     def __init__(self, data_dir, split, num_graphs):
@@ -59,7 +61,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
         print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
 
         for molecule in self.data:
-            #node_features = molecule['atom_type'].long()
+            atom_features = molecule['atom_type'].long()
 
             adj = molecule['bond_type']
             edge_list = (adj != 0).nonzero()  # converting adj matrix to edge_list
@@ -76,7 +78,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
             g.edata['feat'] = edge_features
 
             # Set node features
-            g.ndata['feat'] = zip(get_nodes_degree(g))
+            g.ndata['feat'] = zip(atom_features, get_nodes_degree(g), get_nodes_betweenness_centrality(g))
 
             self.graph_lists.append(g)
 
