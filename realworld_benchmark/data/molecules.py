@@ -27,6 +27,9 @@ class MoleculeDGL(torch.utils.data.Dataset):
     def _prepare(self):
         print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
 
+        self.node_labels = []
+        self.graph_labels = []
+
         for molecule in self.data:
             node_features = molecule['atom_type'].long()
 
