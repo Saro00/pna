@@ -47,7 +47,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
         self.n_samples = len(self.data)
         self._prepare()
 
-'''
+    '''
     def _prepare(self):
         print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
 
@@ -72,7 +72,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
             self.graph_lists.append(g)
             self.graph_labels.append(molecule['logP_SA_cycle_normalized'])
             #self.node_labels.append
-'''
+    '''
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
