@@ -117,7 +117,7 @@ class StructureAwareGraph(torch.utils.data.Dataset):
         print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
 
         for molecule in self.data:
-            node_features = molecule['atom_type'].long()
+            atom_features = molecule['atom_type'].long()
 
             adj = molecule['bond_type']
             edge_list = (adj != 0).nonzero()  # converting adj matrix to edge_list
@@ -134,12 +134,12 @@ class StructureAwareGraph(torch.utils.data.Dataset):
             g.edata['feat'] = edge_features
 
             # Set node features
-            g.ndata['feat'] = node_features
+            g.ndata['feat'] = atom_features
 
             self.graph_lists.append(g)
 
             # Set node labels
-            self.node_labels.append(node_features)
+            self.node_labels.append(get_nodes_degree(g))
 
     def __len__(self):
         return self.n_samples
