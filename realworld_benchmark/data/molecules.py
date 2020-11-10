@@ -78,7 +78,8 @@ class MoleculeDGL(torch.utils.data.Dataset):
             g.edata['feat'] = edge_features
 
             # Set node features
-            g.ndata['feat'] = zip(atom_features, get_nodes_degree(g), get_nodes_betweenness_centrality(g))
+            #g.ndata['feat'] = zip(atom_features, get_nodes_degree(g), get_nodes_betweenness_centrality(g))
+            g.ndata['feat'] = get_nodes_betweenness_centrality(g)
 
             self.graph_lists.append(g)
 
