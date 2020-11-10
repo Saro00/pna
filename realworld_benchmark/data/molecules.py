@@ -14,7 +14,7 @@ import numpy as np
 
 EPS = 1e-5
 
-
+'''
 class MoleculeDGL(torch.utils.data.Dataset):
     def __init__(self, data_dir, split, num_graphs):
         self.data_dir = data_dir
@@ -135,6 +135,7 @@ def self_loop(g):
     new_g.edata['feat'] = torch.zeros(new_g.number_of_edges())
     return new_g
 
+'''
 
 class MoleculeDataset(torch.utils.data.Dataset):
 
