@@ -101,6 +101,7 @@ class EIGNet(nn.Module):
         return self.MLP_layer(hg)
 
     def loss(self, scores, targets):
+        print((len(scores), len(targets)))
         assert False
-        loss = nn.L2Loss()(scores, targets)
+        loss = nn.MSELoss()(scores, targets)
         return loss
