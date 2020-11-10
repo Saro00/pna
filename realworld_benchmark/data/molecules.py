@@ -51,7 +51,7 @@ class StructureAwareGraph(torch.utils.data.Dataset):
         self._prepare()
 
     def _prepare(self):
-        print("\npreparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
+        print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
 
         for molecule in self.data:
             print("\rgraph %d out of %d" % (len(self.graph_lists), len(self.data)), end="")
@@ -80,6 +80,8 @@ class StructureAwareGraph(torch.utils.data.Dataset):
 
             # Set node labels
             self.node_labels.append(g.in_degrees())
+
+        print()
 
     def __len__(self):
         return self.n_samples
@@ -114,8 +116,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
     def collate(self, samples):
         # The input samples is a list of pairs (graph, label).
         graphs, labels = map(list, zip(*samples))
-        print([len(l) for l in labels])
-        labels = torch.cat(labels).float()
+        labels = labels.float()
         print([len(l) for l in labels])
         tab_sizes_n = [graphs[i].number_of_nodes() for i in range(len(graphs))]
         tab_snorm_n = [torch.FloatTensor(size, 1).fill_(1. / float(size)) for size in tab_sizes_n]
