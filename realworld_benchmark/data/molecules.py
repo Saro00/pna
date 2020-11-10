@@ -108,6 +108,7 @@ class StructureAwareGraph(torch.utils.data.Dataset):
         self.data_dir = molecule_dgl.data_dir
         self.split = molecule_dgl.split
         self.num_graphs = molecule_dgl.num_graphs
+        self.n_samples = molecule_dgl.n_samples
         self.graph_lists = []
         self.node_labels = []
         self._prepare()
@@ -144,7 +145,7 @@ class StructureAwareGraph(torch.utils.data.Dataset):
         return self.n_samples
 
     def __getitem__(self, idx):
-        return self.graph_lists[idx], self.graph_labels[idx]
+        return self.graph_lists[idx], self.node_labels[idx]
 
 class MoleculeDataset(torch.utils.data.Dataset):
 
