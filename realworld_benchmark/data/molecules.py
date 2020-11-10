@@ -78,7 +78,7 @@ class StructureAwareGraph(torch.utils.data.Dataset):
             self.graph_lists.append(g)
 
             # Set node labels
-            self.node_labels.append(get_nodes_degree(g))
+            self.node_labels.append(atom_features)
 
     def __len__(self):
         return self.n_samples
