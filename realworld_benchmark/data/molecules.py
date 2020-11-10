@@ -122,7 +122,8 @@ class MoleculeDataset(torch.utils.data.Dataset):
         tab_snorm_e = [torch.FloatTensor(size, 1).fill_(1. / float(size)) for size in tab_sizes_e]
         snorm_e = torch.cat(tab_snorm_e).sqrt()
         batched_graph = dgl.batch(graphs)
-        return batched_graph, labels, snorm_n, snorm_e
+        batched_labels = dgl.batch(labels)
+        return batched_graph, batched_labels, snorm_n, snorm_e
 
     def _add_self_loops(self):
         # function for adding self loops
