@@ -14,7 +14,6 @@ import numpy as np
 
 EPS = 1e-5
 
-'''
 class MoleculeDGL(torch.utils.data.Dataset):
     def __init__(self, data_dir, split, num_graphs):
         self.data_dir = data_dir
@@ -93,6 +92,8 @@ class MoleculeDGL(torch.utils.data.Dataset):
         """
         return self.graph_lists[idx], self.graph_labels[idx]
 
+
+'''
 
 class MoleculeDatasetDGL(torch.utils.data.Dataset):
     def __init__(self, name='Zinc'):
