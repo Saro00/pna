@@ -23,7 +23,16 @@ def get_nodes_closeness_centrality(graph):
 def get_nodes_betweenness_centrality(graph):
     return graph.betweenness_centrality(graph.to_networkx())
 
-class MoleculeDGL(torch.utils.data.Dataset):
+class StructureAwareGraph(torch.utils.data.Dataset):
+    # Create a StructureAwareGraph from a MoleculeDGL
+    def __init__(self, molecule_dgl):
+        self.data_dir = molecule_dgl.data_dir
+        self.split = molecule_dgl.split
+        self.num_graphs = molecule_dgl.num_graphs
+        self.graph_lists = []
+        self.node_labels = []
+        self._prepare()
+
     def _prepare(self):
         print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
 
@@ -56,22 +65,9 @@ class MoleculeDGL(torch.utils.data.Dataset):
             self.node_labels.append(node_features)
 
     def __len__(self):
-        """Return the number of graphs in the dataset."""
         return self.n_samples
 
     def __getitem__(self, idx):
-        """
-            Get the idx^th sample.
-            Parameters
-            ---------
-            idx : int
-                The sample index.
-            Returns
-            -------
-            (dgl.DGLGraph, int)
-                DGLGraph with node feature stored in `feat` field
-                And its label.
-        """
         return self.graph_lists[idx], self.graph_labels[idx]
 
 class MoleculeDataset(torch.utils.data.Dataset):
@@ -87,12 +83,9 @@ class MoleculeDataset(torch.utils.data.Dataset):
         data_dir = 'data/'
         with open(data_dir + name + '.pkl', "rb") as f:
             f = pickle.load(f)
-            self.train = f[0]
-            self.train._prepare()
-            self.val = f[1]
-            self.val._prepare()
-            self.test = f[2]
-            self.test._prepare()
+            self.train = StructureAwareGraph(f[0])
+            self.val = StructureAwareGraph(f[1])
+            self.test = StructureAwareGraph(f[2])
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
         if verbose:
