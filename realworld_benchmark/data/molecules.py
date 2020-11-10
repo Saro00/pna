@@ -15,6 +15,13 @@ import numpy as np
 EPS = 1e-5
 
 
+def get_nodes_degree(graph):
+    return graph.in_degrees(graph.nodes)
+
+def get_nodes_closeness_centrality(graph):
+    return graph.closeness_centrality(graph.to_networkx())
+
+
 class MoleculeDGL(torch.utils.data.Dataset):
     def __init__(self, data_dir, split, num_graphs):
         self.data_dir = data_dir
@@ -69,12 +76,12 @@ class MoleculeDGL(torch.utils.data.Dataset):
             g.edata['feat'] = edge_features
 
             # Set node features
-            g.ndata['feat'] = g.in_degrees(g.nodes)
+            g.ndata['feat'] = zip(get_nodes_degree(g))
 
             self.graph_lists.append(g)
 
             # Set node labels
-            self.node_labels.append(g.in_degrees(g.nodes))
+            self.node_labels.append(get_nodes_closeness_centrality(g))
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
