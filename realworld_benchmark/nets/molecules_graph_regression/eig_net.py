@@ -60,8 +60,6 @@ class EIGNet(nn.Module):
         if self.JK == 'sum':
             h_list = [h]
 
-        h = torch.cuda.FloatTensor([[x] for x in h])
-
         for i, conv in enumerate(self.layers):
             print("\n\n")
             print(h)
