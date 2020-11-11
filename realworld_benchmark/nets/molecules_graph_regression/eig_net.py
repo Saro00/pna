@@ -89,19 +89,8 @@ class EIGNet(nn.Module):
                 h += layer
             g.ndata['h'] = h
 
-        if self.readout == "sum":
-            hg = dgl.sum_nodes(g, 'h')
-        elif self.readout == "max":
-            hg = dgl.max_nodes(g, 'h')
-        elif self.readout == "mean":
-            hg = dgl.mean_nodes(g, 'h')
-        else:
-            hg = dgl.mean_nodes(g, 'h')  # default readout is mean nodes
-
-        return self.MLP_layer(hg) #TODO
         #return self.MLP_layer(g.ndata['h'])
 
     def loss(self, scores, targets):
-        loss = nn.L1Loss()(scores, targets)
-        #loss = nn.L1Loss()(scores, torch.FloatTensor(targets)) #TODO
+        loss = nn.L1Loss()(scores, torch.FloatTensor(targets))
         return loss
