@@ -63,12 +63,12 @@ class EIGNet(nn.Module):
 
 
     def forward(self, g, h, e, snorm_n, snorm_e):
-        h = self.embedding_h(h)
+        #h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
         if self.JK == 'sum':
             h_list = [h]
-        if self.edge_feat:
-            e = self.embedding_e(e)
+        #if self.edge_feat:
+        #    e = self.embedding_e(e)
 
         for i, conv in enumerate(self.layers):
             h_t = conv(g, h, e, snorm_n)
