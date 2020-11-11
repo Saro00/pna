@@ -188,7 +188,7 @@ class PCBADGL(torch.utils.data.Dataset):
 
 
     def get_eig(self, norm):
-        self.graph_lists = [positional_encoding(g, 4, norm=norm) for g in self.graph_lists]
+        self.graph_lists = [positional_encoding(g, 2, norm=norm) for g in self.graph_lists]
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
