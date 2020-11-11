@@ -48,7 +48,7 @@ class StructureAwareGraph(torch.utils.data.Dataset):
         self.n_samples = molecule_dgl.n_samples
         self.graph_lists = []
         #self.node_labels = []
-        self.graph_labels = []
+        self.graph_labels = [] # TODO
         self._prepare()
 
     def _prepare(self):
@@ -83,7 +83,7 @@ class StructureAwareGraph(torch.utils.data.Dataset):
             #self.node_labels.append(g.in_degrees())
 
             # Set graph label
-            self.graph_labels.append(molecule['logP_SA_cycle_normalized'])
+            self.graph_labels.append(molecule['logP_SA_cycle_normalized']) #TODO
 
         print()
 
@@ -91,7 +91,8 @@ class StructureAwareGraph(torch.utils.data.Dataset):
         return self.n_samples
 
     def __getitem__(self, idx):
-        return self.graph_lists[idx], self.node_labels[idx]
+        #return self.graph_lists[idx], self.node_labels[idx]
+        return self.graph_lists[idx], self.graph_labels[idx] #TODO
 
 class MoleculeDataset(torch.utils.data.Dataset):
 
@@ -121,7 +122,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
         # The input samples is a list of pairs (graph, label).
         graphs, labels = map(list, zip(*samples))
         #labels = torch.cat(labels).long()
-        labels = torch.tensor(np.array(labels)).unsqueeze(1)
+        labels = torch.tensor(np.array(labels)).unsqueeze(1) #TODO
         tab_sizes_n = [graphs[i].number_of_nodes() for i in range(len(graphs))]
         tab_snorm_n = [torch.FloatTensor(size, 1).fill_(1. / float(size)) for size in tab_sizes_n]
         snorm_n = torch.cat(tab_snorm_n).sqrt()
