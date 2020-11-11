@@ -12,5 +12,5 @@ import numpy as np
 
 
 def MAE(scores, targets):
-    MAE = F.l1_loss(scores, targets)
+    MAE = F.l1_loss(scores, torch.cuda.FloatTensor([[x] for x in targets]))
     return MAE
