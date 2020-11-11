@@ -37,11 +37,6 @@ class EIGNet(nn.Module):
 
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
 
-        self.embedding_h = nn.Embedding(in_dim_node, hidden_dim)
-
-        if self.edge_feat:
-            self.embedding_e = nn.Embedding(num_bond_type, edge_dim) # TODO
-
         self.layers = nn.ModuleList([EIGLayer(in_dim=hidden_dim, out_dim=hidden_dim, dropout=dropout, graph_norm=self.graph_norm,
                       batch_norm=self.batch_norm, residual=self.residual, aggregators=self.aggregators,
                       scalers=self.scalers, avg_d=self.avg_d, type_net=self.type_net, edge_features=self.edge_feat,
@@ -63,13 +58,9 @@ class EIGNet(nn.Module):
 
 
     def forward(self, g, h, e, snorm_n, snorm_e):
-        print(h)
-        h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
         if self.JK == 'sum':
             h_list = [h]
-        if self.edge_feat:
-            e = self.embedding_e(e)
 
         for i, conv in enumerate(self.layers):
             h_t = conv(g, h, e, snorm_n)
