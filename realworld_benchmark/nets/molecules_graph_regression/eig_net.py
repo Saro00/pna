@@ -92,7 +92,5 @@ class EIGNet(nn.Module):
         return self.MLP_layer(g.ndata['h'])
 
     def loss(self, scores, targets):
-        print("\nloss start")
         loss = nn.MSELoss()(scores, torch.cuda.FloatTensor([[x] for x in targets]))
-        print("\nloss end")
         return loss
