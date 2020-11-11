@@ -56,7 +56,7 @@ class StructureAwareGraph(torch.utils.data.Dataset):
         for molecule in self.data:
             print("\rgraph %d out of %d" % (len(self.graph_lists), len(self.data)), end="")
 
-            atom_features = molecule['atom_type'].float()
+            atom_features = molecule['atom_type'].long()
 
             adj = molecule['bond_type']
             edge_list = (adj != 0).nonzero()  # converting adj matrix to edge_list
