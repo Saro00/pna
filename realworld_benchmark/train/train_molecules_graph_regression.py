@@ -19,28 +19,18 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
     nb_data = 0
     gpu_mem = 0
     for iter, (batch_graphs, batch_targets, batch_snorm_n, batch_snorm_e) in enumerate(data_loader):
-
-        print("\nB" + str(iter) + "\n")
-
         batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
         batch_e = batch_graphs.edata['feat'].to(device)
         batch_snorm_e = batch_snorm_e.to(device)
         batch_targets = batch_targets.to(device)
         batch_snorm_n = batch_snorm_n.to(device)         # num x 1
         optimizer.zero_grad()
-        print("\nA\n")
         batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
-        print("\nB\n")
-        loss = model.loss(batch_scores, batch_targets)
-        print("\nC\n")
+        loss = model.loss(batch_scores, batch_targets) #error here
         loss.backward()
-        print("\nD\n")
         optimizer.step()
-        print("\nE\n")
         epoch_loss += loss.detach().item()
-        print("\nF\n")
         epoch_train_mae += MAE(batch_scores, batch_targets)
-        print("\nG\n")
         nb_data += batch_targets.size(0)
     epoch_loss /= (iter + 1)
     epoch_train_mae /= (iter + 1)
