@@ -124,20 +124,12 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                 if epoch == -1:
                     model.reset_params()
 
-                print('A')
-
                 t.set_description('Epoch %d' % epoch)
 
                 start = time.time()
 
                 epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
-
-                print('B')
-
                 epoch_val_loss, epoch_val_mae = evaluate_network(model, device, val_loader, epoch)
-
-                print('C')
-
 
                 epoch_train_losses.append(epoch_train_loss)
                 epoch_val_losses.append(epoch_val_loss)

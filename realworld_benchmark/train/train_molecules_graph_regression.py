@@ -14,11 +14,14 @@ from .metrics import MAE
 
 def train_epoch(model, optimizer, device, data_loader, epoch):
     model.train()
+    print("\nA\n")
     epoch_loss = 0
     epoch_train_mae = 0
     nb_data = 0
     gpu_mem = 0
     for iter, (batch_graphs, batch_targets, batch_snorm_n, batch_snorm_e) in enumerate(data_loader):
+
+        print("\nB" + iter + "\n")
 
         batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
         batch_e = batch_graphs.edata['feat'].to(device)
