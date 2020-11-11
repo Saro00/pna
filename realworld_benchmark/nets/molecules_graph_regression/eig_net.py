@@ -56,7 +56,7 @@ class EIGNet(nn.Module):
 
 
     def forward(self, g, h, e, snorm_n, snorm_e):
-        h = self.in_feat_dropout(h)
+        #h = self.in_feat_dropout(h)
         if self.JK == 'sum':
             h_list = [h]
 
