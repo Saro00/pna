@@ -134,8 +134,7 @@ class EIGLayerSimple(nn.Module):
 
     def reduce_func(self, nodes):
         h_in = nodes.data['h']
-        h = torch.cuda.FloatTensor([t.tolist() for t in nodes.mailbox['e']])
-        print(h)
+        h = nodes.mailbox['e']
         D = h.shape[-2]
         to_cat = []
         for aggregate in self.aggregators:
@@ -144,6 +143,7 @@ class EIGLayerSimple(nn.Module):
             except:
                 to_cat.append(aggregate(self, h, h_in))
 
+        to_cat = torch.cuda.FloatTensor([t.tolist() for t in nodes.mailbox['e']])
         print(to_cat)
         h = torch.cat(to_cat, dim=1)
 
