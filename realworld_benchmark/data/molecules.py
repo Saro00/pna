@@ -56,13 +56,13 @@ class StructureAwareGraph(torch.utils.data.Dataset):
         for molecule in self.data:
             print("\rgraph %d out of %d" % (len(self.graph_lists), len(self.data)), end="")
 
-            atom_features = molecule['atom_type'].long()
+            atom_features = molecule['atom_type'].float()
 
             adj = molecule['bond_type']
             edge_list = (adj != 0).nonzero()  # converting adj matrix to edge_list
 
             edge_idxs_in_adj = edge_list.split(1, dim=1)
-            edge_features = adj[edge_idxs_in_adj].reshape(-1).long()
+            edge_features = adj[edge_idxs_in_adj].reshape(-1).float()
 
             # Create the DGL Graph
             g = dgl.DGLGraph()
@@ -116,7 +116,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
     def collate(self, samples):
         # The input samples is a list of pairs (graph, label).
         graphs, labels = map(list, zip(*samples))
-        labels = torch.cat(labels).long()
+        labels = torch.cat(labels).float()
         tab_sizes_n = [graphs[i].number_of_nodes() for i in range(len(graphs))]
         tab_snorm_n = [torch.FloatTensor(size, 1).fill_(1. / float(size)) for size in tab_sizes_n]
         snorm_n = torch.cat(tab_snorm_n).sqrt()
