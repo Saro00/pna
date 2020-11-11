@@ -79,6 +79,9 @@ class EIGNet(nn.Module):
                 h += layer
             g.ndata['h'] = h
 
+        print(h)
+        print(g.ndata('h'))
+
         return self.MLP_layer(g.ndata['h'])
 
     def loss(self, scores, targets):
