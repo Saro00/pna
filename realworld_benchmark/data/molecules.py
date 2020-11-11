@@ -87,7 +87,7 @@ class StructureAwareGraph(torch.utils.data.Dataset):
         return self.n_samples
 
     def __getitem__(self, idx):
-        return self.graph_lists[idx], self.graph_labels[idx]
+        return self.graph_lists[idx], self.node_labels[idx]
 
 class MoleculeDataset(torch.utils.data.Dataset):
 
