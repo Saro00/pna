@@ -124,6 +124,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                 if epoch == -1:
                     model.reset_params()
 
+                print('A')
 
                 t.set_description('Epoch %d' % epoch)
 
@@ -131,6 +132,8 @@ def train_val_pipeline(dataset, params, net_params, dirs):
 
                 epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
                 epoch_val_loss, epoch_val_mae = evaluate_network(model, device, val_loader, epoch)
+
+                print('B')
 
                 epoch_train_losses.append(epoch_train_loss)
                 epoch_val_losses.append(epoch_val_loss)
@@ -143,6 +146,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                 writer.add_scalar('val/_mae', epoch_val_mae, epoch)
                 writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
 
+                print('C')
 
                 _, epoch_test_mae = evaluate_network(model, device, test_loader, epoch)
                 t.set_postfix(time=time.time() - start, lr=optimizer.param_groups[0]['lr'],
@@ -150,9 +154,15 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                               train_MAE=epoch_train_mae.item(), val_MAE=epoch_val_mae.item(),
                               test_MAE=epoch_test_mae.item(), refresh=False)
 
+                print('D')
+
                 per_epoch_time.append(time.time() - start)
 
+                print('E')
+
                 scheduler.step(epoch_val_loss)
+
+                print('F')
 
                 if optimizer.param_groups[0]['lr'] < params['min_lr']:
                     print("\n!! LR EQUAL TO MIN LR SET.")
@@ -163,6 +173,8 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                     print('-' * 89)
                     print("Max_time for training elapsed {:.2f} hours, so stopping".format(params['max_time']))
                     break
+
+                print('G')
 
                 print('')
 
