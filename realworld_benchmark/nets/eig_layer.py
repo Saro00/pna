@@ -143,7 +143,6 @@ class EIGLayerSimple(nn.Module):
             except:
                 to_cat.append(aggregate(self, h, h_in))
 
-        print(to_cat)
         h = torch.cat(to_cat, dim=1)
 
         if len(self.scalers) > 1:
