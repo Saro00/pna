@@ -143,7 +143,7 @@ class EIGLayerSimple(nn.Module):
             except:
                 to_cat.append(aggregate(self, h, h_in))
 
-        to_cat = torch.cuda.FloatTensor([t.tolist() for t in nodes.mailbox['e']])
+        to_cat = [torch.cuda.FloatTensor([[x] for x in t]) for t in to_cat]
         print(to_cat)
         h = torch.cat(to_cat, dim=1)
 
