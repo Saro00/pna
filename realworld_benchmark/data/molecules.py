@@ -139,3 +139,4 @@ class MoleculeDataset(torch.utils.data.Dataset):
         self.train.graph_lists = [self_loop(g) for g in self.train.graph_lists]
         self.val.graph_lists = [self_loop(g) for g in self.val.graph_lists]
         self.test.graph_lists = [self_loop(g) for g in self.test.graph_lists]
+
