@@ -21,7 +21,7 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
     gpu_mem = 0
     for iter, (batch_graphs, batch_targets, batch_snorm_n, batch_snorm_e) in enumerate(data_loader):
 
-        print("\nB" + iter + "\n")
+        print("\nB" + str(iter) + "\n")
 
         batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
         batch_e = batch_graphs.edata['feat'].to(device)
@@ -38,7 +38,9 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
         nb_data += batch_targets.size(0)
     epoch_loss /= (iter + 1)
     epoch_train_mae /= (iter + 1)
-    
+
+    print("C")
+
     return epoch_loss, epoch_train_mae, optimizer
 
 def evaluate_network(model, device, data_loader, epoch):
