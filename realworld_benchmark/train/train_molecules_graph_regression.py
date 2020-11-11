@@ -14,7 +14,6 @@ from .metrics import MAE
 
 def train_epoch(model, optimizer, device, data_loader, epoch):
     model.train()
-    print("\nA\n")
     epoch_loss = 0
     epoch_train_mae = 0
     nb_data = 0
@@ -29,17 +28,22 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
         batch_targets = batch_targets.to(device)
         batch_snorm_n = batch_snorm_n.to(device)         # num x 1
         optimizer.zero_grad()
+        print("\nA\n")
         batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
+        print("\nB\n")
         loss = model.loss(batch_scores, batch_targets)
+        print("\nC\n")
         loss.backward()
+        print("\nD\n")
         optimizer.step()
+        print("\nE\n")
         epoch_loss += loss.detach().item()
+        print("\nF\n")
         epoch_train_mae += MAE(batch_scores, batch_targets)
+        print("\nG\n")
         nb_data += batch_targets.size(0)
     epoch_loss /= (iter + 1)
     epoch_train_mae /= (iter + 1)
-
-    print("C")
 
     return epoch_loss, epoch_train_mae, optimizer
 
