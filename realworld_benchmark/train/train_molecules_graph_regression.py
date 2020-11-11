@@ -26,10 +26,14 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
         batch_snorm_n = batch_snorm_n.to(device)         # num x 1
         optimizer.zero_grad()
         batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
-        loss = model.loss(batch_scores, batch_targets) #error here
+        loss = model.loss(batch_scores, batch_targets)
+        print("\nA\n")
         loss.backward()
+        print("\nB\n")
         optimizer.step()
+        print("\nC\n")
         epoch_loss += loss.detach().item()
+        print("\nD\n")
         epoch_train_mae += MAE(batch_scores, batch_targets)
         nb_data += batch_targets.size(0)
     epoch_loss /= (iter + 1)
