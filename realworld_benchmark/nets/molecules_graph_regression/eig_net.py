@@ -93,6 +93,6 @@ class EIGNet(nn.Module):
 
     def loss(self, scores, targets):
         print("\nloss: " + str(len(scores)) + " " + str(len(targets)))
+        print((scores, targets, torch.FloatTensor(targets)))
         loss = nn.MSELoss()(scores, torch.FloatTensor(targets))
-        print((scores, targets))
         return loss
