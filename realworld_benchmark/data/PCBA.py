@@ -179,12 +179,11 @@ class PCBADGL(torch.utils.data.Dataset):
         self.graph_lists = []
         self.graph_labels = []
         for i, g in enumerate(self.data):
-            if g[0].number_of_nodes() > 5 and rd.random() < 0.5: # and rd.random() < 0.2:
+            if g[0].number_of_nodes() > 5 and rd.random() < 1: # and rd.random() < 0.2:
                 self.graph_lists.append(g[0])
                 self.graph_labels.append(g[1])
         self.n_samples = len(self.graph_lists)
         del self.data
-        self.get_eig(norm)
 
 
     def get_eig(self, norm):
@@ -216,12 +215,16 @@ class PCBADataset(Dataset):
         if verbose:
             print("[I] Loading dataset %s..." % (name))
         self.name = name
-        self.dataset = DownloadPCBA(name = 'ogbg-molpcba')
-        self.split_idx = self.dataset.get_idx_split()
-        self.train = PCBADGL(self.dataset, self.split_idx['train'], norm=norm)
-        self.val = PCBADGL(self.dataset, self.split_idx['valid'], norm=norm)
-        self.test = PCBADGL(self.dataset, self.split_idx['test'], norm=norm)
-        del self.dataset
+        dataset = DownloadPCBA(name = 'ogbg-molpcba')
+        split_idx = dataset.get_idx_split()
+        self.train = PCBADGL(dataset, split_idx['train'], norm=norm)
+        self.val = PCBADGL(dataset, split_idx['valid'], norm=norm)
+        self.test = PCBADGL(dataset, split_idx['test'], norm=norm)
+        del dataset
+        del split_idx
+        self.train.get_eig(norm=norm)
+        self.val.get_eig(norm=norm)
+        self.test.get_eig(norm=norm)
 
         self.evaluator = Evaluator(name='ogbg-molpcba')
 
