@@ -40,7 +40,7 @@ class EIGNet(nn.Module):
         self.embedding_h = nn.Embedding(in_dim_node, hidden_dim)
 
         if self.edge_feat:
-            self.embedding_e = nn.Embedding(num_bond_type, edge_dim)
+            self.embedding_e = nn.Embedding(num_bond_type, edge_dim) # TODO
 
         self.layers = nn.ModuleList([EIGLayer(in_dim=hidden_dim, out_dim=hidden_dim, dropout=dropout, graph_norm=self.graph_norm,
                       batch_norm=self.batch_norm, residual=self.residual, aggregators=self.aggregators,
