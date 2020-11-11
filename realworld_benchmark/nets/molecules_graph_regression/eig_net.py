@@ -89,7 +89,7 @@ class EIGNet(nn.Module):
                 h += layer
             g.ndata['h'] = h
 
-        #return self.MLP_layer(g.ndata['h'])
+        return self.MLP_layer(g.ndata['h'])
 
     def loss(self, scores, targets):
         loss = nn.L1Loss()(scores, torch.FloatTensor(targets))
