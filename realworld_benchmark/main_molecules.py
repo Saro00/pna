@@ -384,6 +384,8 @@ def main():
     net_params['num_atom_type'] = dataset.num_atom_type
     net_params['num_bond_type'] = dataset.num_bond_type
     net_params['in_dim'] = torch.unique(dataset.train[0][0].ndata['feat'],dim=0).size(0)
+    print(dataset.train[0][0].ndata['feat'])
+    print(torch.unique(dataset.train[0][0].ndata['feat'], dim=0))
     print("IN_DIM = " + str(torch.unique(dataset.train[0][0].ndata['feat'], dim=0).size(0)))
 
     D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
