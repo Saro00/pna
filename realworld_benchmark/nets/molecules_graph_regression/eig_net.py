@@ -61,7 +61,12 @@ class EIGNet(nn.Module):
             h_list = [h]
 
         for i, conv in enumerate(self.layers):
+            print("\n\n")
+            print(h)
+            print("\n\n")
             h_t = conv(g, h, e, snorm_n)
+            print("\n\n")
+            print(h_t)
             if self.gru_enable and i != len(self.layers) - 1:
                 h_t = self.gru(h, h_t)
             h = h_t
@@ -78,9 +83,6 @@ class EIGNet(nn.Module):
             for layer in h_list:
                 h += layer
             g.ndata['h'] = h
-
-        print(h)
-        print(g.ndata('h'))
 
         return self.MLP_layer(g.ndata['h'])
 
