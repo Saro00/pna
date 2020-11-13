@@ -44,8 +44,8 @@ def train_epoch(model, optimizer, device, data_loader, epoch, augmentation, flip
         if distortion > 1e-7:
             batch_graphs_eig = batch_graphs.ndata['eig'].clone()
             dist = (torch.rand(batch_x[:, 0].shape) - 0.5) * 2 * distortion
-            batch_graphs.ndata['eig'][:, 1] = torch.mul(dist, torch.mean(torch.abs(batch_graphs_eig[:, 1]), keepdim=True)) + batch_graphs_eig[:, 1]
-            batch_graphs.ndata['eig'][:, 2] = torch.mul(dist, torch.mean(torch.abs(batch_graphs_eig[:, 2]), keepdim=True)) + batch_graphs_eig[:, 2]
+            batch_graphs.ndata['eig'][:, 1] = torch.mul(dist, torch.mean(torch.abs(batch_graphs_eig[:, 1]), dim=-1, keepdim=True)) + batch_graphs_eig[:, 1]
+            batch_graphs.ndata['eig'][:, 2] = torch.mul(dist, torch.mean(torch.abs(batch_graphs_eig[:, 2]), dim=-1, keepdim=True)) + batch_graphs_eig[:, 2]
 
         optimizer.zero_grad()
         batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
