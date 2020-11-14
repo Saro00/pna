@@ -64,6 +64,9 @@ class EIGLayerSimple(nn.Module):
         print(h.shape)
         print(h)
 
+        # Fix shape
+        h = (h * 10)[:75]
+
         h_in = h
         g.ndata['h'] = h
 
