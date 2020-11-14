@@ -161,6 +161,7 @@ class EIGLayerSimple(nn.Module):
         g.update_all(self.message_func, self.reduce_func)
         h = g.ndata['h']
 
+        print(h.shape)
         print(h)
 
         # posttransformation
