@@ -76,7 +76,7 @@ class EIGLayerSimple(nn.Module):
         for l in h:
             l = (l * 10)[:75]
             h_new.append(l)
-        h = torch.tensor([list(x) for x in h_new])
+        h = torch.cuda.FloatTensor([list(x) for x in h_new])
 
         print(h.shape)
         print(h)
