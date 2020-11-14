@@ -152,6 +152,9 @@ class EIGLayerSimple(nn.Module):
 
     def forward(self, g, h, e, snorm_n):
 
+        print(h.shape)
+        print(h)
+
         h_in = h
         g.ndata['h'] = h
 
