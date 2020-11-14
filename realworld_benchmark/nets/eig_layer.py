@@ -74,8 +74,10 @@ class EIGLayerSimple(nn.Module):
         # Fix shape
         h_new = []
         for l in h:
-            l = (l * 10)[:75]
-            h_new.append(l)
+            m = []
+            for _ in range(10):
+                m.extend(l)
+            h_new.append(m[:75])
         h = torch.cuda.FloatTensor([list(x) for x in h_new])
 
         print(h.shape)
