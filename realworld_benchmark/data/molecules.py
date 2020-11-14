@@ -74,12 +74,12 @@ class StructureAwareGraph(torch.utils.data.Dataset):
 
             # Set node features
             #g.ndata['feat'] = torch.stack((atom_features, g.in_degrees()), dim=1)
-            g.ndata['feat'] = atom_features
+            g.ndata['feat'] = atom_features.float()
 
             self.graph_lists.append(g)
 
             # Set node labels
-            self.node_labels.append(g.in_degrees())
+            self.node_labels.append(g.in_degrees().float())
 
         print()
 

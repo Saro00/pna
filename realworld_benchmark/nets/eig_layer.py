@@ -138,10 +138,7 @@ class EIGLayerSimple(nn.Module):
         D = h.shape[-2]
         to_cat = []
         for aggregate in self.aggregators:
-            try:
-                to_cat.append(aggregate(self, h))
-            except:
-                to_cat.append(aggregate(self, h, h_in))
+            to_cat.append(aggregate(self, h))
 
         h = torch.cat(to_cat, dim=1)
 
