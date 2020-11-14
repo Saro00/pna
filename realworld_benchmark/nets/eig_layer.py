@@ -165,7 +165,7 @@ class EIGLayerSimple(nn.Module):
         print(h)
 
         # posttransformation
-        h = self.posttrans(h)
+        #h = self.posttrans(h) #TODO
 
         # graph and batch normalization and residual
         if self.graph_norm:
