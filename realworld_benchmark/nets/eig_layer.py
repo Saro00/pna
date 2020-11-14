@@ -103,14 +103,6 @@ class EIGLayer(nn.Module):
         if type_net == 'simple':
             self.model = EIGLayerSimple(in_dim=in_dim, out_dim=out_dim, dropout=dropout, graph_norm=graph_norm, batch_norm=batch_norm, residual=residual,
                                    aggregators=aggregators, scalers=scalers, avg_d=avg_d, posttrans_layers=posttrans_layers)
-        elif type_net == 'complex':
-            self.model = EIGLayerComplex(in_dim=in_dim, out_dim=out_dim, dropout=dropout, graph_norm=graph_norm, batch_norm=batch_norm, aggregators=aggregators, residual=residual,
-                                    scalers=scalers, avg_d=avg_d, edge_features=edge_features, edge_dim=edge_dim, pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers)
-        elif type_net == 'towers':
-            self.model = EIGLayerTower(in_dim=in_dim, out_dim=out_dim, aggregators=aggregators, scalers=scalers, avg_d=avg_d, dropout=dropout, graph_norm=graph_norm,
-                                       batch_norm=batch_norm, towers=towers, pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers, divide_input=divide_input,
-                                       residual=residual, edge_features=edge_features, edge_dim=edge_dim)
-
 
 def __repr__(self):
     return '{}(in_channels={}, out_channels={})'.format(self.__class__.__name__, self.in_dim, self.out_dim)
