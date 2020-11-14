@@ -109,8 +109,8 @@ class MoleculeDataset(torch.utils.data.Dataset):
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
             g, l = self.train[0]
-            print(g.ndata['feat'][:20])
-            print(l[:20])
+            print(g.ndata['feat'][:5])
+            print(l[:5])
         if verbose:
             print('train, test, val sizes :', len(self.train), len(self.test), len(self.val))
             print("[I] Finished loading.")

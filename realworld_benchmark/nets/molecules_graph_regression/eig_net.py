@@ -61,7 +61,6 @@ class EIGNet(nn.Module):
             h_list = [h]
 
         for i, conv in enumerate(self.layers):
-            print((h.shape, e.shape, snorm_n.shape, snorm_e.shape))
             h_t = conv(g, h, e, snorm_n)
             if self.gru_enable and i != len(self.layers) - 1:
                 h_t = self.gru(h, h_t)

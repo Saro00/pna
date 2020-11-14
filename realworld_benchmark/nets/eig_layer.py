@@ -27,8 +27,6 @@ class EIGLayerSimple(nn.Module):
 
         self.batchnorm_h = nn.BatchNorm1d(out_dim)
 
-        print(len(aggregators), len(scalers), len(aggregators) * len(scalers))
-
         self.posttrans = MLP(in_size=(len(aggregators) * len(scalers)) * in_dim, hidden_size=out_dim,
                              out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation='none')
         self.avg_d = avg_d
@@ -64,9 +62,6 @@ class EIGLayerSimple(nn.Module):
         print(h.shape)
         print(h)
 
-        # Fix shape
-        h = (h * 10)[:75]
-
         h_in = h
         g.ndata['h'] = h
 
@@ -75,6 +70,9 @@ class EIGLayerSimple(nn.Module):
         # aggregation
         g.update_all(self.message_func, self.reduce_func)
         h = g.ndata['h']
+
+        # Fix shape
+        h = (h * 10)[:75]
 
         print(h.shape)
         print(h)
