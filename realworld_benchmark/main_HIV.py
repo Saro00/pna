@@ -288,7 +288,7 @@ def main():
         DATASET_NAME = config['dataset']
     print('ok')
     print(DATASET_NAME)
-    dataset = HIVDataset(DATASET_NAME, args.re_split, , pos_enc_dim=int(args.pos_enc_dim), norm=args.lap_norm)
+    dataset = HIVDataset(DATASET_NAME, args.re_split, pos_enc_dim=int(args.pos_enc_dim), norm=args.lap_norm)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
