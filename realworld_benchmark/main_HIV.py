@@ -315,8 +315,6 @@ def main():
         params['print_epoch_interval'] = int(args.print_epoch_interval)
     if args.max_time is not None:
         params['max_time'] = float(args.max_time)
-    if args.pos_enc_dim is not None:
-        net_params['pos_enc_dim'] = args.pos_enc_dim
 
     # network parameters
     net_params = config['net_params']
@@ -393,6 +391,8 @@ def main():
         net_params['not_pre'] = args.not_pre
     if args.type_net is not None:
         net_params['type_net'] = args.type_net
+    if args.pos_enc_dim is not None:
+        net_params['pos_enc_dim'] = args.pos_enc_dim
 
     D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
                        dataset.train.graph_lists])
