@@ -37,6 +37,7 @@ class EIGNet(nn.Module):
         posttrans_layers = net_params['posttrans_layers']
         self.gru_enable = net_params['gru']
         device = net_params['device']
+        self.device = device
 
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
 
