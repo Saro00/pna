@@ -268,6 +268,7 @@ def main():
     parser.add_argument('--pretrans_layers', type=int, help='pretrans_layers.')
     parser.add_argument('--posttrans_layers', type=int, help='posttrans_layers.')
     parser.add_argument('--not_pre', action='store_true', default=False, help='Not applying pre-transformation')
+    parser.add_argument('--pos_enc_dim', default=0, type=int, help='Positional encoding dimension')
 
     args = parser.parse_args()
     print(args.config)
@@ -287,7 +288,7 @@ def main():
         DATASET_NAME = config['dataset']
     print('ok')
     print(DATASET_NAME)
-    dataset = HIVDataset(DATASET_NAME, args.re_split, norm=args.lap_norm)
+    dataset = HIVDataset(DATASET_NAME, args.re_split, , pos_enc_dim=int(args.pos_enc_dim), norm=args.lap_norm)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
@@ -314,6 +315,8 @@ def main():
         params['print_epoch_interval'] = int(args.print_epoch_interval)
     if args.max_time is not None:
         params['max_time'] = float(args.max_time)
+    if args.pos_enc_dim is not None:
+        net_params['pos_enc_dim'] = args.pos_enc_dim
 
     # network parameters
     net_params = config['net_params']

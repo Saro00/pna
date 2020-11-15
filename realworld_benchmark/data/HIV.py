@@ -47,7 +47,7 @@ def positional_encoding(g, pos_enc_dim, norm):
 
 
 class HIVDGL(torch.utils.data.Dataset):
-    def __init__(self, data, split, norm='norm'):
+    def __init__(self, data, split, norm='norm', pos_enc_dim=0):
         self.split = split
         self.data = [g for g in data[self.split]]
         self.graph_lists = []
@@ -58,10 +58,16 @@ class HIVDGL(torch.utils.data.Dataset):
                 self.graph_labels.append(g[1])
         self.n_samples = len(self.graph_lists)
         self.get_eig(norm=norm)
+        if pos_enc_dim > 0:
+            self._add_positional_encodings(pos_enc_dim)
 
 
     def get_eig(self, norm):
         self.graph_lists = [positional_encoding(g, 4, norm=norm) for g in self.graph_lists]
+
+    def _add_positional_encodings(self, pos_enc_dim):
+        for g in self.graph_lists:
+            g.ndata['pos_enc'] = g.ndata['eig'][:,1:pos_enc_dim+1]
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
@@ -84,7 +90,7 @@ class HIVDGL(torch.utils.data.Dataset):
 
 
 class HIVDataset(Dataset):
-    def __init__(self, name, re_split=False, norm='none', verbose=True):
+    def __init__(self, name, re_split=False, pos_enc_dim=0, norm='none', verbose=True):
         start = time.time()
         if verbose:
             print("[I] Loading dataset %s..." % (name))
@@ -98,9 +104,9 @@ class HIVDataset(Dataset):
              'train': torch.tensor([ind[i] for i in range(32000)]),
              'valid': torch.tensor([ind[i] for i in range(32000, 36564)])}
 
-        self.train = HIVDGL(self.dataset, self.split_idx['train'], norm=norm)
-        self.val = HIVDGL(self.dataset, self.split_idx['valid'], norm=norm)
-        self.test = HIVDGL(self.dataset, self.split_idx['test'], norm=norm)
+        self.train = HIVDGL(self.dataset, self.split_idx['train'], norm=norm, pos_enc_dim=pos_enc_dim)
+        self.val = HIVDGL(self.dataset, self.split_idx['valid'], norm=norm, pos_enc_dim=pos_enc_dim)
+        self.test = HIVDGL(self.dataset, self.split_idx['test'], norm=norm, pos_enc_dim=pos_enc_dim)
 
         self.evaluator = Evaluator(name='ogbg-molhiv')
 
