@@ -263,8 +263,6 @@ class SBMsDataset(torch.utils.data.Dataset):
         self.val.graph_lists = [positional_encoding(g, dim, norm, pos_enc_dim) for g in self.val.graph_lists]
         self.test.graph_lists = [positional_encoding(g, dim, norm, pos_enc_dim) for g in self.test.graph_lists]
 
-
-
 def get_eig_val(g, pos_enc_dim=7, norm='none', tol=1e-3):
     # Laplacian
     A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
