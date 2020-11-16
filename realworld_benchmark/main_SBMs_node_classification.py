@@ -284,7 +284,7 @@ def main():
     parser.add_argument('--cat', help="Please give a value for cat")
     parser.add_argument('--self_loop', help="Please give a value for self_loop")
     parser.add_argument('--max_time', help="Please give a value for max_time")
-    parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim")
+    parser.add_argument('--pos_enc_dim', help="Please give a value for pos_enc_dim", default=0)
     parser.add_argument('--pos_enc', help="Please give a value for pos_enc")
     parser.add_argument('--type_net', default='simple', help='Type of net')
     parser.add_argument('--lap_norm', default='none', help='Laplacian normalisation')
