@@ -164,11 +164,12 @@ class SBMsDataset(torch.utils.data.Dataset):
         """
             Loading SBM datasets
         """
-        multiplicity_prop = get_multiplicity('SBM_PATTERN', 2, 3, 1e-3, 4, 'none', 1e-3)
-        print(multiplicity_prop)
+
         start = time.time()
         if verbose:
             print("[I] Loading dataset %s..." % (name))
+            multiplicity_prop = get_multiplicity('SBM_PATTERN', 2, 3, 1e-3, 4, 'none', 1e-3)
+            print(multiplicity_prop)
         self.name = name
         data_dir = 'data/'
         with open(data_dir+name+'.pkl',"rb") as f:
@@ -282,7 +283,7 @@ def get_multiplicity(DATASET_NAME, first, second, tol, dim, norm, tol_scipy):
     if DATASET_NAME == 'ZINC':
         dataset = MoleculeDataset(DATASET_NAME)
     elif DATASET_NAME == 'SBM_PATTERN':
-        dataset = SBMsDataset(DATASET_NAME)
+        dataset = SBMsDataset(DATASET_NAME, verbose=False)
     elif DATASET_NAME == 'CIFAR10':
         dataset = SuperPixDataset(DATASET_NAME)
     elif DATASET_NAME == 'COLLAB':
