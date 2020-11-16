@@ -122,6 +122,10 @@ def aggregate_NN(h, eig_filt):
 def aggregate_mean_abs(self, h, eig_s, eig_d):
   return torch.abs(torch.mean(h, dim=1))
 
+def mean_dist(self, h, eig_s, eig_d, k = 0.1):
+    dist = (torch.rand(h.shape) - 0.5) * 2 * k
+    return torch.mean(h + torch.mul(h, dist), dim=1)
+
 
 
 AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_max, 'min': aggregate_min,
@@ -159,4 +163,7 @@ AGGREGATORS = {'mean': aggregate_mean, 'sum': aggregate_sum, 'max': aggregate_ma
                'eig3-dx-in': partial(aggregate_eig_dx_in, eig_idx=3), 'eig4-dx-in': partial(aggregate_eig_dx_in, eig_idx=4),
                'eig5-dx-in': partial(aggregate_eig_dx_in, eig_idx=5),
                'eig1-dx-new' : partial(aggregate_eig_dx_split, eig_idx=1), 'eig2-dx-new' : partial(aggregate_eig_dx_split, eig_idx=2),
-                'eig3-dx-new' : partial(aggregate_eig_dx_split, eig_idx=3), 'aggregate_NN': aggregate_NN, 'mean_abs': aggregate_mean_abs}
+                'eig3-dx-new' : partial(aggregate_eig_dx_split, eig_idx=3), 'aggregate_NN': aggregate_NN, 'mean_abs': aggregate_mean_abs
+               'mean_dist_0.01' : partial(mean_dist, k=0.01), 'mean_dist_0.05' : partial(mean_dist, k=0.05), 'mean_dist_0.1' : partial(mean_dist, k=0.1)
+                'mean_dist_0.2' : partial(mean_dist, k=0.2), 'mean_dist_0.4' : partial(mean_dist, k=0.4)
+               }
