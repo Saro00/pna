@@ -9,11 +9,6 @@ import torch
 from scipy import sparse as sp
 import numpy as np
 
-class DotDict(dict):
-    def __init__(self, **kwds):
-        self.update(kwds)
-        self.__dict__ = self
-
 
 class load_SBMsDataSetDGL(torch.utils.data.Dataset):
 
