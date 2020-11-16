@@ -261,7 +261,7 @@ class SBMsDataset(torch.utils.data.Dataset):
         # Graph positional encoding v/ Laplacian eigenvectors
         self.train.graph_lists = [positional_encoding(g, dim, norm, pos_enc_dim) for g in self.train.graph_lists]
         self.val.graph_lists = [positional_encoding(g, dim, norm, pos_enc_dim) for g in self.val.graph_lists]
-        self.test.graph_lists = [positional_encoding(g, dim, norm, pos_enc_dim) for g in self.test.graph_lists]ù
+        self.test.graph_lists = [positional_encoding(g, dim, norm, pos_enc_dim) for g in self.test.graph_lists]
 
 
 
