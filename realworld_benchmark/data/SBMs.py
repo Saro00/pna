@@ -168,8 +168,6 @@ class SBMsDataset(torch.utils.data.Dataset):
         start = time.time()
         if verbose:
             print("[I] Loading dataset %s..." % (name))
-            multiplicity_prop = get_multiplicity('SBM_PATTERN', 2, 3, 1e-3, 4, 'none', 1e-3)
-            print(multiplicity_prop)
         self.name = name
         data_dir = 'data/'
         with open(data_dir+name+'.pkl',"rb") as f:
@@ -178,6 +176,20 @@ class SBMsDataset(torch.utils.data.Dataset):
             self.val = f[1]
             self.test = f[2]
         self._add_positional_encoding(5, norm, pos_enc_dim)
+
+        train_graphs = self.train.graph_lists
+        val_graphs = self.val.graph_lists
+        test_graphs = self.test.graph_lists
+        train_eigs = [get_eig_val(g, pos_enc_dim=4, norm=norm, tol=1e-3) for g in train_graphs]
+        val_eigs = [get_eig_val(g, pos_enc_dim=4, norm=norm, tol=1e-3) for g in val_graphs]
+        test_eigs = [get_eig_val(g, pos_enc_dim=4, norm=norm, tol=1e-3) for g in test_graphs]
+        eigs = train_eigs + val_eigs + test_eigs
+        i = 0
+        n = len(eigs)
+        for eig in eigs:
+            if abs(eig[first] - eig[second]) > 1e-3:
+                i += 1
+        print (i / n, i, n)
 
         if verbose:
             print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
