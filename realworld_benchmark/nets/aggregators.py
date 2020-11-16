@@ -123,7 +123,7 @@ def aggregate_mean_abs(self, h, eig_s, eig_d):
   return torch.abs(torch.mean(h, dim=1))
 
 def mean_dist(self, h, eig_s, eig_d, h_in, k = 0.1):
-    dist = (torch.rand(h.shape) - 0.5) * 2 * k
+    dist = ((torch.rand(h.shape) - 0.5) * 2 * k).to('cuda')
     return torch.mean(h + torch.mul(h, dist), dim=1)
 
 
