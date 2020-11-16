@@ -164,6 +164,8 @@ class SBMsDataset(torch.utils.data.Dataset):
         """
             Loading SBM datasets
         """
+        multiplicity_prop = get_multiplicity('SBM_PATTERN', 2, 3, 1e-3, 4, 'none', 1e-3)
+        print(multiplicity_prop)
         start = time.time()
         if verbose:
             print("[I] Loading dataset %s..." % (name))
@@ -259,5 +261,51 @@ class SBMsDataset(torch.utils.data.Dataset):
         # Graph positional encoding v/ Laplacian eigenvectors
         self.train.graph_lists = [positional_encoding(g, dim, norm, pos_enc_dim) for g in self.train.graph_lists]
         self.val.graph_lists = [positional_encoding(g, dim, norm, pos_enc_dim) for g in self.val.graph_lists]
-        self.test.graph_lists = [positional_encoding(g, dim, norm, pos_enc_dim) for g in self.test.graph_lists]
+        self.test.graph_lists = [positional_encoding(g, dim, norm, pos_enc_dim) for g in self.test.graph_lists]ù
+
+
+
+def get_eig_val(g, pos_enc_dim=7, norm='none', tol=1e-3):
+    # Laplacian
+    A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+    if norm == 'none':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1), dtype=float)
+        L = N * sp.eye(g.number_of_nodes()) - A
+    elif norm == 'sym':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(g.number_of_nodes()) - N * A * N
+    elif norm == 'walk':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1., dtype=float)
+        L = sp.eye(g.number_of_nodes()) - N * A
+    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=tol)
+    return EigVal
+
+def get_multiplicity(DATASET_NAME, first, second, tol, dim, norm, tol_scipy):
+    if DATASET_NAME == 'ZINC':
+        dataset = MoleculeDataset(DATASET_NAME)
+    elif DATASET_NAME == 'SBM_PATTERN':
+        dataset = SBMsDataset(DATASET_NAME)
+    elif DATASET_NAME == 'CIFAR10':
+        dataset = SuperPixDataset(DATASET_NAME)
+    elif DATASET_NAME == 'COLLAB':
+        dataset = COLLABDataset(DATASET_NAME)
+
+    if DATASET_NAME == 'COLLAB':
+        pass
+    else:
+        train_graphs = dataset.train.graph_lists
+        val_graphs = dataset.val.graph_lists
+        test_graphs = dataset.test.graph_lists
+        train_eigs = [get_eig_val(g, pos_enc_dim=dim, norm=norm, tol=tol_scipy) for g in train_graphs]
+        val_eigs = [get_eig_val(g, pos_enc_dim=dim, norm=norm, tol=tol_scipy) for g in val_graphs]
+        test_eigs = [get_eig_val(g, pos_enc_dim=dim, norm=norm, tol=tol_scipy) for g in test_graphs]
+        eigs = train_eigs + val_eigs + test_eigs
+        i = 0
+        n = len(eigs)
+        for eig in eigs:
+            if abs(eig[first] - eig[second]) > tol:
+                i += 1
+        return i / n, i, n
+
+
 
