@@ -171,6 +171,10 @@ class SBMsDataset(torch.utils.data.Dataset):
             self.val = f[1]
             self.test = f[2]
         self._add_positional_encoding(5, norm, pos_enc_dim)
+        if verbose:
+            print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
+            print("[I] Finished loading.")
+            print("[I] Data load time: {:.4f}s".format(time.time()-start))
 
         train_graphs = self.train.graph_lists
         val_graphs = self.val.graph_lists
@@ -182,14 +186,11 @@ class SBMsDataset(torch.utils.data.Dataset):
         i = 0
         n = len(eigs)
         for eig in eigs:
-            if abs(eig[first] - eig[second]) > 1e-3:
+            if abs(eig[2] - eig[3]) > 1e-3:
                 i += 1
         print (i / n, i, n)
 
-        if verbose:
-            print('train, test, val sizes :',len(self.train),len(self.test),len(self.val))
-            print("[I] Finished loading.")
-            print("[I] Data load time: {:.4f}s".format(time.time()-start))
+
 
 
     # form a mini batch from a given list of samples = [(graph, label) pairs]
