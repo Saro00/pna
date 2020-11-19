@@ -281,8 +281,8 @@ def main():
         DATASET_NAME = config['dataset']
     print('ok')
     print(DATASET_NAME)
-    dataset = MoleculeDataset(DATASET_NAME, [NODE_INFORMATION[feature] for feature in features.split()],
-                              NODE_INFORMATION[label], norm=args.lap_norm)
+    dataset = MoleculeDataset(DATASET_NAME, [NODE_INFORMATION[feature] for feature in args.features.split()],
+                              NODE_INFORMATION[args.label], norm=args.lap_norm)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
