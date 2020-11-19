@@ -21,7 +21,7 @@ def get_nodes_random(graph):
     return list([random.random() for _ in graph.nodes()])
 
 def get_nodes_eigenvector(graph, k=1):
-    A = networkx.to_scipy_sparse_matrix(graph.to_networkx(), dtype=float)
+    A = numpy.real(networkx.to_scipy_sparse_matrix(graph.to_networkx()))
     e, v = scipy.sparse.linalg.eigs(A, k)
     return v
 
