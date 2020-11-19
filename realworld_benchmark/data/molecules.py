@@ -47,13 +47,13 @@ class StructureAwareGraph(torch.utils.data.Dataset):
         for molecule in self.data:
             print("\rgraph %d out of %d" % (len(self.graph_lists), len(self.data)), end="")
 
-            atom_features = molecule['atom_type'].long()
+            #atom_features = molecule['atom_type'].long()
 
             adj = molecule['bond_type']
             edge_list = (adj != 0).nonzero()  # converting adj matrix to edge_list
 
             edge_idxs_in_adj = edge_list.split(1, dim=1)
-            edge_features = adj[edge_idxs_in_adj].reshape(-1).long()
+            #edge_features = adj[edge_idxs_in_adj].reshape(-1).long()
 
             # Create the DGL Graph
             g = dgl.DGLGraph()
@@ -61,7 +61,7 @@ class StructureAwareGraph(torch.utils.data.Dataset):
 
             for src, dst in edge_list:
                 g.add_edges(src.item(), dst.item())
-            g.edata['feat'] = edge_features
+            #g.edata['feat'] = edge_features
 
             # Set node features
             g.ndata['feat'] = torch.FloatTensor([np.array(x) for x in np.array([f(g) for f in features]).transpose()])
