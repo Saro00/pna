@@ -380,11 +380,11 @@ def main():
     if args.lap_norm is not None:
         net_params['lap_norm'] = args.lap_norm
 
-    _, node_labels = dataset.train[0]
-    print(node_labels)
-    print(node_labels[0])
-    print(node_labels[:][0])
-    net_params['num_feat'] = len(node_labels[0])
+    g0, _ = dataset.train[0]
+    print(g0.ndata['feat'])
+    print(g0.ndata['feat'][0])
+    print(g0.ndata['feat'][:][0])
+    net_params['num_feat'] = len(g0.ndata['feat'][0])
 
     D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
                        dataset.train.graph_lists])
