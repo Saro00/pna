@@ -22,7 +22,7 @@ def get_nodes_random(graph):
 
 def get_nodes_eigenvector(graph, k=1):
     A = networkx.linalg.graphmatrix.adjacency_matrix(graph.to_networkx()).asfptype()
-    print(type(A))
+    print(scipy.sparse.linalg.eigs(A, k))
     return scipy.sparse.linalg.eigs(A, k)
 
 NODE_INFORMATION = {'degree' : get_nodes_degree, 'closeness_centrality' : get_nodes_closeness_centrality,
