@@ -29,7 +29,7 @@ class DotDict(dict):
 from nets.molecules_graph_regression.eig_net import EIGNet
 from data.molecules import MoleculeDataset  # import dataset
 from train.train_molecules_graph_regression import train_epoch, evaluate_network
-from node_information import get_nodes_degree, get_nodes_closeness_centrality, get_nodes_betweenness_centrality
+from node_information import NODE_INFORMATION
 
 """
     GPU Setup
@@ -259,6 +259,10 @@ def main():
     parser.add_argument('--posttrans_layers', type=int, help='posttrans_layers.')
     parser.add_argument('--not_pre', action='store_true', default=False, help='Not applying pre-transformation')
 
+    # structure aware gnn
+    parser.add_argument('--features', type=str, help='Space separated list of node features.')
+    parser.add_argument('--label', type=str, help='Single node label')
+
     args = parser.parse_args()
     print(args.config)
 
@@ -277,8 +281,8 @@ def main():
         DATASET_NAME = config['dataset']
     print('ok')
     print(DATASET_NAME)
-    dataset = MoleculeDataset(DATASET_NAME, [get_nodes_closeness_centrality, get_nodes_betweenness_centrality],
-                              get_nodes_degree, norm=args.lap_norm)
+    dataset = MoleculeDataset(DATASET_NAME, [NODE_INFORMATION[feature] for feature in features.split()],
+                              NODE_INFORMATION[label], norm=args.lap_norm)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
