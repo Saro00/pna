@@ -95,7 +95,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
             f = pickle.load(f)
             self.train = StructureAwareGraph(f[0], features, label)
             self.val = StructureAwareGraph(f[1], features, label)
-            self.test = StructureAwareGraph(f[2])
+            self.test = StructureAwareGraph(f[2], features, label)
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
             g, l = self.train[0]
