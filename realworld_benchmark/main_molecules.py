@@ -29,7 +29,7 @@ class DotDict(dict):
 from nets.molecules_graph_regression.eig_net import EIGNet
 from data.molecules import MoleculeDataset  # import dataset
 from train.train_molecules_graph_regression import train_epoch, evaluate_network
-import node_information
+from node_information import get_nodes_degree, get_nodes_closeness_centrality, get_nodes_betweenness_centrality
 
 """
     GPU Setup
