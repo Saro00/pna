@@ -29,6 +29,7 @@ class DotDict(dict):
 from nets.molecules_graph_regression.eig_net import EIGNet
 from data.molecules import MoleculeDataset  # import dataset
 from train.train_molecules_graph_regression import train_epoch, evaluate_network
+import node_information
 
 """
     GPU Setup
@@ -276,7 +277,8 @@ def main():
         DATASET_NAME = config['dataset']
     print('ok')
     print(DATASET_NAME)
-    dataset = MoleculeDataset(DATASET_NAME, norm=args.lap_norm)
+    dataset = MoleculeDataset(DATASET_NAME, [get_nodes_closeness_centrality, get_nodes_betweenness_centrality],
+                              get_nodes_degree, norm=args.lap_norm)
     if args.out_dir is not None:
         out_dir = args.out_dir
     else:
@@ -381,9 +383,6 @@ def main():
         net_params['lap_norm'] = args.lap_norm
 
     g0, _ = dataset.train[0]
-    print(g0.ndata['feat'])
-    print(g0.ndata['feat'][0])
-    print(g0.ndata['feat'][:][0])
     net_params['num_feat'] = len(g0.ndata['feat'][0])
 
     D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in

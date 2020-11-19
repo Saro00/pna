@@ -29,18 +29,9 @@ class MoleculeDGL(torch.utils.data.Dataset):
         pass
 
 
-def get_nodes_degree(graph):
-    return graph.in_degrees()
-
-def get_nodes_closeness_centrality(graph):
-    return graph.closeness_centrality(graph.to_networkx())
-
-def get_nodes_betweenness_centrality(graph):
-    return graph.betweenness_centrality(graph.to_networkx())
-
 class StructureAwareGraph(torch.utils.data.Dataset):
     # Create a StructureAwareGraph from a MoleculeDGL
-    def __init__(self, molecule_dgl):
+    def __init__(self, molecule_dgl, features, label):
         self.data = molecule_dgl.data
         self.data_dir = molecule_dgl.data_dir
         self.split = molecule_dgl.split
@@ -73,12 +64,12 @@ class StructureAwareGraph(torch.utils.data.Dataset):
             g.edata['feat'] = edge_features
 
             # Set node features
-            g.ndata['feat'] = torch.FloatTensor([np.array([x,y]) for x,y in zip(atom_features, g.in_degrees())])
+            g.ndata['feat'] = torch.FloatTensor([np.array(x) for x in [f(g) for f in features]])
 
             self.graph_lists.append(g)
 
             # Set node labels
-            self.node_labels.append(torch.FloatTensor([np.array([x]) for x in g.in_degrees()]))
+            self.node_labels.append(torch.FloatTensor([np.array([x]) for x in label(g)]))
 
 
         print()
@@ -91,7 +82,7 @@ class StructureAwareGraph(torch.utils.data.Dataset):
 
 class MoleculeDataset(torch.utils.data.Dataset):
 
-    def __init__(self, name, norm='none', verbose=True):
+    def __init__(self, name, features, label, norm='none', verbose=True):
         """
             Loading SBM datasets
         """
@@ -102,8 +93,8 @@ class MoleculeDataset(torch.utils.data.Dataset):
         data_dir = 'data/'
         with open(data_dir + name + '.pkl', "rb") as f:
             f = pickle.load(f)
-            self.train = StructureAwareGraph(f[0])
-            self.val = StructureAwareGraph(f[1])
+            self.train = StructureAwareGraph(f[0], features, label)
+            self.val = StructureAwareGraph(f[1], features, label)
             self.test = StructureAwareGraph(f[2])
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
