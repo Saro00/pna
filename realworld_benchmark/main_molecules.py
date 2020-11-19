@@ -178,6 +178,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     val_mae = val_mae.item()
     train_mae = train_mae.item()
 
+    print(args.features + " ---> " + args.label)
     print("Train MAE: {:.4f}".format(train_mae))
     print("Val MAE: {:.4f}".format(val_mae))
     print("Test MAE: {:.4f}".format(test_mae))
