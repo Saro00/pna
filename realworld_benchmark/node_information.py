@@ -1,5 +1,6 @@
 import networkx
 import random
+import numpy
 import scipy.sparse.linalg
 
 def get_nodes_degree(graph):
