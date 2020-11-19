@@ -178,7 +178,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     val_mae = val_mae.item()
     train_mae = train_mae.item()
 
-    print(args.features + " ---> " + args.label)
+    print(params['features'] + " ---> " + params['label'])
     print("Train MAE: {:.4f}".format(train_mae))
     print("Val MAE: {:.4f}".format(val_mae))
     print("Test MAE: {:.4f}".format(test_mae))
@@ -310,6 +310,9 @@ def main():
         params['print_epoch_interval'] = int(args.print_epoch_interval)
     if args.max_time is not None:
         params['max_time'] = float(args.max_time)
+
+    params['features'] = args.features
+    params['label'] = args.label
 
     # network parameters
     net_params = config['net_params']
