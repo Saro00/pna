@@ -60,7 +60,7 @@ class EIGNet(nn.Module):
 
     def forward(self, g, h, e, snorm_n, snorm_e):
         h = self.embedding_h(h)
-        h = self.in_feat_dropout(h)
+        #h = self.in_feat_dropout(h)
         if self.JK == 'sum':
             h_list = [h]
 
@@ -86,6 +86,5 @@ class EIGNet(nn.Module):
         return self.MLP_layer(g.ndata['h'])
 
     def loss(self, scores, targets):
-        #loss = nn.MSELoss()(scores, torch.cuda.FloatTensor([[x] for x in targets]))
         loss = nn.MSELoss()(scores, targets)
         return loss
