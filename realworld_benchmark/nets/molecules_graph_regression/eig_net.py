@@ -36,6 +36,7 @@ class EIGNet(nn.Module):
 
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
 
+        print("NUMBER OF FEATURES = " + str(num_feat))
         self.embedding_h = nn.Linear(num_feat, hidden_dim)
 
         self.layers = nn.ModuleList([EIGLayer(in_dim=hidden_dim, out_dim=hidden_dim, dropout=dropout, graph_norm=self.graph_norm,
