@@ -23,7 +23,7 @@ def get_nodes_random(graph):
 
 def get_nodes_eigenvector(graph, k=1):
     A = networkx.to_scipy_sparse_matrix(graph.to_networkx())
-    e, v = scipy.sparse.linalg.eigs(A, k)
+    e, v = scipy.sparse.linalg.eigs(numpy.real(A), k)
     return numpy.real(v)
 
 NODE_INFORMATION = {'degree' : get_nodes_degree, 'closeness_centrality' : get_nodes_closeness_centrality,
