@@ -380,9 +380,8 @@ def main():
     if args.lap_norm is not None:
         net_params['lap_norm'] = args.lap_norm
 
-    # ZINC
-    net_params['num_atom_type'] = dataset.num_atom_type
-    net_params['num_bond_type'] = dataset.num_bond_type
+    _, node_labels = dataset[0]
+    net_params['num_feat'] = len(node_labels[0])
 
     D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
                        dataset.train.graph_lists])

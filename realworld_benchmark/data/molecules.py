@@ -74,7 +74,6 @@ class StructureAwareGraph(torch.utils.data.Dataset):
 
             # Set node features
             g.ndata['feat'] = torch.stack((atom_features, g.in_degrees()), dim=1)
-            print("len = " + str(len(g.ndata['feat'][0])))
             #g.ndata['feat'] = torch.FloatTensor([np.array([x]) for x in atom_features])
 
             self.graph_lists.append(g)
