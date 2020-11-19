@@ -179,9 +179,9 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     train_mae = train_mae.item()
 
     print(params['features'] + " ---> " + params['label'])
-    print("Train MAE: {:.4f}".format(train_mae))
-    print("Val MAE: {:.4f}".format(val_mae))
-    print("Test MAE: {:.4f}".format(test_mae))
+    print("Train MAE: {:.16f}".format(train_mae))
+    print("Val MAE: {:.16f}".format(val_mae))
+    print("Test MAE: {:.16f}".format(test_mae))
     print("TOTAL TIME TAKEN: {:.4f}s".format(time.time() - t0))
     print("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
 
