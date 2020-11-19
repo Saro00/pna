@@ -98,7 +98,6 @@ class MoleculeDataset(torch.utils.data.Dataset):
             self.test = StructureAwareGraph(f[2], features, label)
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
-            g, l = self.train[0]
         if verbose:
             print('train, test, val sizes :', len(self.train), len(self.test), len(self.val))
             print("[I] Finished loading.")
