@@ -38,12 +38,12 @@ class EIGNet(nn.Module):
 
         self.embedding_h = nn.Linear(num_feat, hidden_dim)
 
-        self.layers = nn.ModuleList([EIGLayer(in_dim=hidden_dim, out_dim=hidden_dim, dropout=dropout, graph_norm=self.graph_norm,
+        self.layers = nn.ModuleList([EIGLayer(in_dim=num_feat, out_dim=hidden_dim, dropout=dropout, graph_norm=self.graph_norm,
                       batch_norm=self.batch_norm, residual=self.residual, aggregators=self.aggregators,
                       scalers=self.scalers, avg_d=self.avg_d, type_net=self.type_net, edge_features=self.edge_feat,
                       edge_dim=edge_dim, pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers).model for _
              in range(n_layers - 1)])
-        self.layers.append(EIGLayer(in_dim=hidden_dim, out_dim=out_dim, dropout=dropout,
+        self.layers.append(EIGLayer(in_dim=num_feat, out_dim=out_dim, dropout=dropout,
                                     graph_norm=self.graph_norm, batch_norm=self.batch_norm,
                                     residual=self.residual, aggregators=self.aggregators, scalers=self.scalers,
                                     avg_d=self.avg_d, type_net=self.type_net, edge_features=self.edge_feat, edge_dim=edge_dim,
