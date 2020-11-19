@@ -24,5 +24,7 @@ def get_nodes_eigenvector(graph, k=1):
 
 NODE_INFORMATION = {'degree' : get_nodes_degree, 'closeness_centrality' : get_nodes_closeness_centrality,
                     'betweenness_centrality' : get_nodes_betweenness_centrality, 'pagerank' : get_nodes_pagerank,
-                    'triangles' : get_nodes_triangles, 'random' : get_nodes_random, 'eig1' : (lambda g : graph(g, 1)),
-                    'eig2' : (lambda g : graph(g, 2)), 'eig3' : (lambda g : graph(g, 3))}
+                    'triangles' : get_nodes_triangles, 'random' : get_nodes_random,
+                    'eig1' : (lambda g : get_nodes_eigenvector(g, 1)),
+                    'eig2' : (lambda g : get_nodes_eigenvector(g, 2)),
+                    'eig3' : (lambda g : get_nodes_eigenvector(g, 3))}
