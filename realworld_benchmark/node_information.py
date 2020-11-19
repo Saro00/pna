@@ -22,9 +22,9 @@ def get_nodes_random(graph):
     return list([random.random() for _ in graph.nodes()])
 
 def get_nodes_eigenvector(graph, k=1):
-    A = numpy.real(networkx.to_scipy_sparse_matrix(graph.to_networkx()))
+    A = networkx.to_scipy_sparse_matrix(graph.to_networkx())
     e, v = scipy.sparse.linalg.eigs(A, k)
-    return v
+    return numpy.real(v)
 
 NODE_INFORMATION = {'degree' : get_nodes_degree, 'closeness_centrality' : get_nodes_closeness_centrality,
                     'betweenness_centrality' : get_nodes_betweenness_centrality, 'pagerank' : get_nodes_pagerank,
