@@ -39,9 +39,9 @@ class StructureAwareGraph(torch.utils.data.Dataset):
         self.n_samples = molecule_dgl.n_samples
         self.graph_lists = []
         self.node_labels = []
-        self._prepare()
+        self._prepare(features, label)
 
-    def _prepare(self):
+    def _prepare(self, features, label):
         print("preparing %d graphs for the %s set..." % (self.num_graphs, self.split.upper()))
 
         for molecule in self.data:
