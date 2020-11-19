@@ -11,7 +11,7 @@ from nets.mlp_readout_layer import MLPReadout
 class EIGNet(nn.Module):
     def __init__(self, net_params):
         super().__init__()
-        num_feat = net_params['hidden_dim']
+        num_feat = net_params['num_feat']
         hidden_dim = net_params['hidden_dim']
         out_dim = net_params['out_dim']
         in_feat_dropout = net_params['in_feat_dropout']
