@@ -59,9 +59,6 @@ class EIGLayerSimple(nn.Module):
 
     def forward(self, g, h, e, snorm_n):
 
-        print(h.shape)
-        print(h)
-
         h_in = h
         g.ndata['h'] = h
 
@@ -70,9 +67,6 @@ class EIGLayerSimple(nn.Module):
         # aggregation
         g.update_all(self.message_func, self.reduce_func)
         h = g.ndata['h']
-
-        print(h.shape)
-        print(h)
 
         # posttransformation
         h = self.posttrans(h)

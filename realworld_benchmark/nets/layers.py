@@ -210,8 +210,6 @@ class MLP(nn.Module):
         self.hidden_size = hidden_size
         self.out_size = out_size
 
-        print(in_size, hidden_size, out_size, layers)
-
         self.fully_connected = nn.ModuleList()
         if layers <= 1:
             self.fully_connected.append(FCLayer(in_size, out_size, activation=last_activation, b_norm=last_b_norm,
