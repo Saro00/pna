@@ -73,8 +73,9 @@ class StructureAwareGraph(torch.utils.data.Dataset):
             g.edata['feat'] = edge_features
 
             # Set node features
-            #g.ndata['feat'] = torch.stack((atom_features, g.in_degrees()), dim=1)
-            g.ndata['feat'] = torch.FloatTensor([np.array([x]) for x in atom_features])
+            g.ndata['feat'] = torch.stack((atom_features, g.in_degrees()), dim=1)
+            print("len = " + str(len(g.ndata['feat'])))
+            #g.ndata['feat'] = torch.FloatTensor([np.array([x]) for x in atom_features])
 
             self.graph_lists.append(g)
 
@@ -109,8 +110,6 @@ class MoleculeDataset(torch.utils.data.Dataset):
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
             g, l = self.train[0]
-            print(g.ndata['feat'][:5])
-            print(l[:5])
         if verbose:
             print('train, test, val sizes :', len(self.train), len(self.test), len(self.val))
             print("[I] Finished loading.")
