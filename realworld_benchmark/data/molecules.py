@@ -106,7 +106,9 @@ class MoleculeDataset(torch.utils.data.Dataset):
     def collate(self, samples):
         # The input samples is a list of pairs (graph, label).
         graphs, labels = map(list, zip(*samples))
+        print("\nCOLLATE LABELS: " + labels)
         labels = torch.cat(labels).long()
+        print("\nCOLLATE LABELS: " + labels)
         labels = torch.cuda.FloatTensor([[x] for x in labels])
         print("\nCOLLATE LABELS: " + labels)
         tab_sizes_n = [graphs[i].number_of_nodes() for i in range(len(graphs))]
