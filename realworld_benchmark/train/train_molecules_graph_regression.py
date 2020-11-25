@@ -26,6 +26,11 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
         batch_snorm_n = batch_snorm_n.to(device)         # num x 1
         optimizer.zero_grad()
         batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
+
+        print("*** train_epoch ***")
+        print(batch_targets)
+        print("*** ***")
+
         loss = model.loss(batch_scores, batch_targets)
         loss.backward()
         optimizer.step()
