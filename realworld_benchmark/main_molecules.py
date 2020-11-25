@@ -122,7 +122,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
 
     print(list(enumerate(train_loader))[0])
 
-    break
+    return
 
     # At any point you can hit Ctrl + C to break out of training early.
     try:
