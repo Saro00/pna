@@ -31,7 +31,7 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
 
         global DEBUG_VAR2
         if DEBUG_VAR2 == 10:
-            print("*** train_eopch ***")
+            print("*** \ntrain_eopch ***")
             print(batch_targets)
             print("*** ***")
             DEBUG_VAR2 = 0
