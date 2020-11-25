@@ -6,7 +6,7 @@ from nets.eig_layer import EIGLayer
 from nets.mlp_readout_layer import MLPReadout
 
 
-DEBUG_VAR = 0
+DEBUG_VAR1 = 0
 
 class EIGNet(nn.Module):
     def __init__(self, net_params):
@@ -88,12 +88,14 @@ class EIGNet(nn.Module):
     def loss(self, scores, targets):
         loss = nn.MSELoss()(scores, targets)
 
-        global DEBUG_VAR
-        if DEBUG_VAR == 10:
+        global DEBUG_VAR1
+        if DEBUG_VAR1 == 10:
             print("*** loss ***")
             print(scores)
             print(targets)
             print(loss)
             print("*** ***")
+            DEBUG_VAR1 = 0
+        DEBUG_VAR1 += 1
 
         return loss

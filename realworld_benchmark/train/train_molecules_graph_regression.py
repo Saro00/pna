@@ -12,6 +12,8 @@ import math
 
 from .metrics import MAE
 
+DEBUG_VAR2 = 0
+
 def train_epoch(model, optimizer, device, data_loader, epoch):
     model.train()
     epoch_loss = 0
@@ -27,14 +29,14 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
         optimizer.zero_grad()
         batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
 
-        global DEBUG_VAR
-        if DEBUG_VAR == 10:
+        global DEBUG_VAR2
+        if DEBUG_VAR2 == 10:
             print("*** train_eopch ***")
             print(batch_targets)
             print("*** ***")
-            DEBUG_VAR = 0
+            DEBUG_VAR2 = 0
 
-        DEBUG_VAR += 1
+        DEBUG_VAR2 += 1
 
         loss = model.loss(batch_scores, batch_targets)
         loss.backward()
