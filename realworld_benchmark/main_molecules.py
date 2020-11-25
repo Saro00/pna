@@ -114,15 +114,11 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     epoch_train_losses, epoch_val_losses = [], []
     epoch_train_MAEs, epoch_val_MAEs = [], []
 
-    print(dataset.train.node_labels[0])
 
     train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, collate_fn=dataset.collate)
     val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
     test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
 
-    print(list(enumerate(train_loader))[0])
-
-    return
 
     # At any point you can hit Ctrl + C to break out of training early.
     try:
