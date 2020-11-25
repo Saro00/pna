@@ -120,6 +120,10 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
     test_loader = DataLoader(testset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
 
+    print(list(enumerate(train_loader))[0])
+
+    break
+
     # At any point you can hit Ctrl + C to break out of training early.
     try:
         with tqdm(range(params['epochs']), unit='epoch') as t:
@@ -130,8 +134,6 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                 t.set_description('Epoch %d' % epoch)
 
                 start = time.time()
-
-                print(list(enumerate(train_loader))[0])
 
                 epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
                 epoch_val_loss, epoch_val_mae = evaluate_network(model, device, val_loader, epoch)
