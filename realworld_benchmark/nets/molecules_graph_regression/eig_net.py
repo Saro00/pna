@@ -7,6 +7,7 @@ from nets.mlp_readout_layer import MLPReadout
 
 
 
+
 class EIGNet(nn.Module):
     def __init__(self, net_params):
         super().__init__()
