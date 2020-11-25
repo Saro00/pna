@@ -107,7 +107,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
         # The input samples is a list of pairs (graph, label).
         graphs, labels = map(list, zip(*samples))
         print("\nCOLLATE LABELS: " + str(labels))
-        labels = torch.cat(labels).long()
+        labels = torch.cat(labels).float()
         print("\nCOLLATE LABELS: " + str(labels))
         labels = torch.cuda.FloatTensor([[x] for x in labels])
         print("\nCOLLATE LABELS: " + str(labels))
