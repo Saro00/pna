@@ -89,15 +89,11 @@ class EIGNet(nn.Module):
         loss = nn.MSELoss()(scores, targets)
 
         global DEBUG_VAR
-        #if DEBUG_VAR == 1000:
-        print("*** loss ***")
-        print(scores)
-        print(targets)
-        print(loss)
-        print("*** ***")
-
-        DEBUG_VAR = 0
-
-        DEBUG_VAR += 1
+        if DEBUG_VAR == 10:
+            print("*** loss ***")
+            print(scores)
+            print(targets)
+            print(loss)
+            print("*** ***")
 
         return loss
