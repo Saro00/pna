@@ -131,7 +131,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
 
                 start = time.time()
 
-                print(data_loader[0])
+                print(train_loader[0])
 
                 epoch_train_loss, epoch_train_mae, optimizer = train_epoch(model, optimizer, device, train_loader, epoch)
                 epoch_val_loss, epoch_val_mae = evaluate_network(model, device, val_loader, epoch)
