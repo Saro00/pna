@@ -71,6 +71,9 @@ class StructureAwareGraph(torch.utils.data.Dataset):
             # Set node labels
             self.node_labels.append(torch.cuda.FloatTensor([np.array([x]) for x in label(g)]))
 
+            if len(self.node_labels) == 1:
+                print(g.ndata['feat'])
+                print(self.node_labels[-1])
 
         print()
 
