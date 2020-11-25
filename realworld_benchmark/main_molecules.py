@@ -129,7 +129,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
 
                 start = time.time()
 
-                for iter, (batch_graphs, batch_targets, batch_snorm_n, batch_snorm_e) in enumerate(data_loader):
+                for iter, (batch_graphs, batch_targets, batch_snorm_n, batch_snorm_e) in enumerate(train_loader):
                     print("*** \nmain_molecules ***")
                     print(batch_targets)
                     print("*** ***")
