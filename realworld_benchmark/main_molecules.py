@@ -114,8 +114,9 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     epoch_train_losses, epoch_val_losses = [], []
     epoch_train_MAEs, epoch_val_MAEs = [], []
 
-    print(type(dataset))
-    print(dataset)
+    _, temp = dataset.train[0]
+    print(temp)
+    print(dataset.train.node_labels[0])
 
     train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, collate_fn=dataset.collate)
     val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
