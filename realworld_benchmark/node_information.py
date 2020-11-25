@@ -16,7 +16,7 @@ def get_nodes_pagerank(graph):
     return list(networkx.algorithms.link_analysis.pagerank_alg.pagerank(graph.to_networkx()).values())
 
 def get_nodes_triangles(graph):
-    return list(networkx.algorithms.cluster.triangles(graph.to_networkx()).values())
+    return list(networkx.algorithms.cluster.triangles(graph.to_networkx().to_undirected()).values())
 
 def get_nodes_random(graph):
     return list([random.random() for _ in graph.nodes()])
@@ -24,8 +24,7 @@ def get_nodes_random(graph):
 def get_nodes_eigenvector(graph, k=1):
     A = networkx.linalg.graphmatrix.adjacency_matrix(graph.to_networkx()).asfptype()
     e, v = scipy.sparse.linalg.eigs(A, k)
-    res = numpy.real([[x[-1]] for x in v])
-    return numpy.real(res)
+    return numpy.real([x[-1] for x in v])
 
 NODE_INFORMATION = {'degree' : get_nodes_degree, 'closeness_centrality' : get_nodes_closeness_centrality,
                     'betweenness_centrality' : get_nodes_betweenness_centrality, 'pagerank' : get_nodes_pagerank,
