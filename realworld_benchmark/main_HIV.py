@@ -130,7 +130,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                 start = time.time()
 
                 epoch_train_loss, epoch_train_roc, optimizer = train_epoch(model, optimizer, device, train_loader,
-                                                                           epoch)
+                                                                           epoch, net_params['distortion'])
                 epoch_val_loss, epoch_val_roc = evaluate_network(model, device, val_loader, epoch)
 
                 epoch_train_losses.append(epoch_train_loss)
@@ -267,6 +267,7 @@ def main():
     parser.add_argument('--edge_dim', type=int, help='Size of edge embeddings.')
     parser.add_argument('--pretrans_layers', type=int, help='pretrans_layers.')
     parser.add_argument('--posttrans_layers', type=int, help='posttrans_layers.')
+    parser.add_argument('--distortion', type=float, default=0., help='Distortion of the vector field')
     parser.add_argument('--not_pre', action='store_true', default=False, help='Not applying pre-transformation')
     parser.add_argument('--pos_enc_dim', default=0, type=int, help='Positional encoding dimension')
 
@@ -393,6 +394,8 @@ def main():
         net_params['type_net'] = args.type_net
     if args.pos_enc_dim is not None:
         net_params['pos_enc_dim'] = args.pos_enc_dim
+    if args.distortion is not None:
+        net_params['distortion'] = args.distortion
 
     D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
                        dataset.train.graph_lists])

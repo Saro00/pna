@@ -15,7 +15,7 @@ from tqdm import tqdm
 """
 
 
-def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
+def train_epoch_sparse(model, optimizer, device, data_loader, epoch, distortion):
     model.train()
     epoch_loss = 0
     epoch_train_ROC = 0
@@ -27,6 +27,12 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
         batch_snorm_e = batch_snorm_e.to(device)
         batch_snorm_n = batch_snorm_n.to(device)
         batch_labels = batch_labels.to(device)
+        if distortion > 1e-7:
+            batch_graphs_eig = batch_graphs.ndata['eig'].clone()
+            dist = (torch.rand(batch_x[:, 0].shape) - 0.5) * 2 * distortion
+            batch_graphs.ndata['eig'][:, 1] = torch.mul(dist, torch.mean(torch.abs(batch_graphs_eig[:, 1]), dim=-1, keepdim=True)) + batch_graphs_eig[:, 1]
+            batch_graphs.ndata['eig'][:, 2] = torch.mul(dist, torch.mean(torch.abs(batch_graphs_eig[:, 2]), dim=-1, keepdim=True)) + batch_graphs_eig[:, 2]
+
         optimizer.zero_grad()
         batch_scores = model.forward(batch_graphs, batch_x, batch_e, batch_snorm_n, batch_snorm_e)
         loss = model.loss(batch_scores, batch_labels)
@@ -35,6 +41,8 @@ def train_epoch_sparse(model, optimizer, device, data_loader, epoch):
         epoch_loss += loss.detach().item()
         list_scores.append(batch_scores.detach())
         list_labels.append(batch_labels.detach().unsqueeze(-1))
+        if distortion > 1e-7:
+            batch_graphs.ndata['eig'] = batch_graphs_eig.detach()
 
     epoch_loss /= (iter + 1)
     evaluator = Evaluator(name='ogbg-molhiv')
