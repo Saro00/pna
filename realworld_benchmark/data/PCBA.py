@@ -212,7 +212,7 @@ class PCBADGL(torch.utils.data.Dataset):
 
 
 class PCBADataset(Dataset):
-    def __init__(self, name, norm='none', verbose=True):
+    def __init__(self, name, pos_enc_dim=0, norm='none', verbose=True):
         start = time.time()
         if verbose:
             print("[I] Loading dataset %s..." % (name))
