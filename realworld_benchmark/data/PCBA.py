@@ -173,7 +173,7 @@ class DownloadPCBA(object):
 
 
 class PCBADGL(torch.utils.data.Dataset):
-    def __init__(self, data, split, norm='none'):
+    def __init__(self, data, split, norm='none', pos_enc_dim=0):
         self.split = split
         self.data = [g for g in data[self.split]]
         self.graph_lists = []
