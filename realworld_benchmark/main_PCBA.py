@@ -205,7 +205,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     FINAL RESULTS\nTEST AP: {:.4f}\nTRAIN AP: {:.4f}\n\n
     Total Time Taken: {:.4f} hrs\nAverage Time Per Epoch: {:.4f} s\n\n\n""" \
                 .format(DATASET_NAME, MODEL_NAME, params, net_params, model, net_params['total_param'],
-                        np.mean(np.array(test_ap)), np.array(train_ap), (time.time() - t0) / 3600,
+                        np.mean(np.array(best_val_test_ap)), np.array(best_val_train_ap), (time.time() - t0) / 3600,
                         np.mean(per_epoch_time)))
 
 
