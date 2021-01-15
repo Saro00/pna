@@ -111,7 +111,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                                                      verbose=True)
 
     epoch_train_losses, epoch_val_losses = [], []
-    epoch_train_APs, epoch_val_APs = [], []
+    epoch_train_APs, epoch_val_APs, epoch_test_APs = [], [], []
 
     train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, collate_fn=dataset.collate, pin_memory=True)
     val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate, pin_memory=True)
@@ -146,6 +146,8 @@ def train_val_pipeline(dataset, params, net_params, dirs):
 
 
                 _, epoch_test_ap = evaluate_network(model, device, test_loader, epoch)
+				epoch_test_APs.append(epoch_test_ap.item())
+
                 t.set_postfix(time=time.time() - start, lr=optimizer.param_groups[0]['lr'],
                               train_loss=epoch_train_loss, val_loss=epoch_val_loss,
                               train_AP=epoch_train_ap.item(), val_AP=epoch_val_ap.item(),
@@ -174,23 +176,23 @@ def train_val_pipeline(dataset, params, net_params, dirs):
         print('-' * 89)
         print('Exiting from training early because of KeyboardInterrupt')
 
-    _, test_ap = evaluate_network(model, device, test_loader, epoch)
-    _, val_ap = evaluate_network(model, device, val_loader, epoch)
-    _, train_ap = evaluate_network(model, device, train_loader, epoch)
+    best_val_epoch = np.argmax(np.array(epoch_val_APs))
+    best_train_epoch = np.argmax(np.array(epoch_train_APs))
+    best_val_ap = epoch_val_APs[best_val_epoch]
+    best_val_test_ap = epoch_test_APs[best_val_epoch]
 
-    test_ap = test_ap.item()
-    val_ap = val_ap.item()
-    train_ap = train_ap.item()
+    best_val_train_ap = epoch_train_APs[best_val_epoch]
+    best_train_ap = epoch_train_APs[best_train_epoch]
 
-    print("Train AP: {:.4f}".format(train_ap))
-    print("Val AP: {:.4f}".format(val_ap))
-    print("Test AP: {:.4f}".format(test_ap))
+    print("Best Train AP: {:.4f}".format(best_train_ap))
+    print("Best Val AP: {:.4f}".format(best_val_ap))
+    print("Test AP of Best Val: {:.4f}".format(best_val_test_ap))
+    print("Train AP of Best Val: {:.4f}".format(best_val_train_ap))
+
     print("TOTAL TIME TAKEN: {:.4f}s".format(time.time() - t0))
     print("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
-    #for i, layer in enumerate(model.layers):
-        #for j, tower in enumerate(layer.towers):
-            #print('For layer ', i, ' tower ', j, ' the weights are ', tower.bias)
-            #print('For layer ', i, ' tower ', j, ' the bias are ', tower.bias)
+
+
 
 
     writer.close()
