@@ -232,7 +232,7 @@ def main():
     parser.add_argument('--L', help="Please give a value for L")
     parser.add_argument('--hidden_dim', help="Please give a value for hidden_dim")
     parser.add_argument('--out_dim', help="Please give a value for out_dim")
-    parser.add_argument('--decreasing_dim', help="Please give a value for decreasing_dim")
+    parser.add_argument('--decreasing_dim', default='True', help="Please give a value for decreasing_dim")
     parser.add_argument('--residual', help="Please give a value for residual")
     parser.add_argument('--JK', default='last', help='Jumping Knowledge')
     parser.add_argument('--edge_feat', help="Please give a value for edge_feat")
@@ -329,7 +329,7 @@ def main():
     if args.out_dim is not None:
         net_params['out_dim'] = int(args.out_dim)    
     if args.decreasing_dim is not None:
-        net_params['decreasing_dim'] = bool(args.decreasing_dim)
+        net_params['decreasing_dim'] = True if args.decreasing_dim == 'True' else False
     if args.residual is not None:
         net_params['residual'] = True if args.residual == 'True' else False
     if args.JK is not None:
