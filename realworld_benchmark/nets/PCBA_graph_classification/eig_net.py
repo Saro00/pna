@@ -16,6 +16,7 @@ class EIGNet(nn.Module):
         super().__init__()
         hidden_dim = net_params['hidden_dim']
         out_dim = net_params['out_dim']
+        decreasing_dim = net_params['decreasing_dim']
         in_feat_dropout = net_params['in_feat_dropout']
         dropout = net_params['dropout']
         n_layers = net_params['L']
@@ -56,7 +57,7 @@ class EIGNet(nn.Module):
         if self.gru_enable:
             self.gru = GRU(hidden_dim, hidden_dim, device)
 
-        self.MLP_layer = MLPReadout(out_dim, 128)
+        self.MLP_layer = MLPReadout(out_dim, 128, decreasing_dim=decreasing_dim)
 
 
     def forward(self, g, h, e, snorm_n, snorm_e):
