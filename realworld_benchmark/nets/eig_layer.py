@@ -9,6 +9,42 @@ from .layers import MLP, FCLayer
 from .scalers import SCALERS
 
 
+from dgl.nn.pytorch.glob import mean_nodes, sum_nodes
+
+class VirtualNode(nn.Module):
+    def __init__(self, dim, dropout, batch_norm=False, bias=True, vn_type='mean'):
+        self.vn_type = vn_type.lower()
+        self.fc_layer = FCLayer(in_size=dim, out_size=dim, activation='relu', dropout=dropout, 
+                                b_norm=b_norm, bias=bias)
+
+
+    def forward(self, g, h, vn_h):
+
+        g.ndata['h'] = h
+
+        # Pool the features
+        if self.vn_type == 'mean':
+            pool = mean_nodes(g, 'h')
+        elif self.vn_type == 'sum':
+            pool = sum_nodes(g, 'h')
+        elif self.vn_type == 'logsum':
+            pool = mean_nodes(g, 'h')
+            pool = pool * torch.log(num_nodes)
+        else:
+            raise ValueError(f'Undefined input "{self.pooling}". Accepted values are "sum", "mean", "logsum"')
+        
+        # Compute the new virtual node features
+        vn_h = self.fc_layer.forward(vn_h + pool)
+
+        # Add the virtual node value to the graph features
+        count = 0
+        for ii, num_nodes in enumerate(g.batch_num_nodes):
+            h[count:count+num_nodes] = h[count:count+num_nodes] + vn_h[ii]
+            count += num_nodes
+
+        return vn_h, h
+
+
 
 class EIGLayerComplex(nn.Module):
     def __init__(self, in_dim, out_dim, dropout, graph_norm, batch_norm, aggregators, scalers, avg_d, residual,
@@ -334,7 +370,6 @@ class EIGLayerTower(nn.Module):
         if self.residual:
             h_out = h_in + h_out  # residual connection
         return h_out
-
 
 
 

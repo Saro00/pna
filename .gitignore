@@ -1,2 +1,5 @@
 
-realworld_benchmark/data/__pycache__/
+__pycache__/
+out/
+
+realworld_benchmark/data/ogbg_molpcba_dgl/

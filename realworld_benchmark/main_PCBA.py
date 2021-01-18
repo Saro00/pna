@@ -270,6 +270,7 @@ def main():
     parser.add_argument('--pretrans_layers', type=int, help='pretrans_layers.')
     parser.add_argument('--posttrans_layers', type=int, help='posttrans_layers.')
     parser.add_argument('--not_pre', action='store_true', default=False, help='Not applying pre-transformation')
+    parser.add_argument('--virtual_node', default=None, help='virtual node type, "none", "sum", "mean", "logsum"')
 
     args = parser.parse_args()
     print(args.config)
@@ -322,6 +323,8 @@ def main():
     net_params['device'] = device
     net_params['gpu_id'] = config['gpu']['id']
     net_params['batch_size'] = params['batch_size']
+    net_params['virtual_node'] = args.virtual_node
+
     if args.L is not None:
         net_params['L'] = int(args.L)
     if args.hidden_dim is not None:

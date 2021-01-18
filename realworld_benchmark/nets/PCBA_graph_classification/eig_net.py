@@ -1,7 +1,7 @@
 import torch.nn as nn
 import dgl
 from nets.gru import GRU
-from nets.eig_layer import EIGLayer
+from nets.eig_layer import EIGLayer, VirtualNode
 from nets.mlp_readout_layer import MLPReadout
 import torch
 from ogb.graphproppred.mol_encoder import AtomEncoder, BondEncoder
@@ -35,6 +35,7 @@ class EIGNet(nn.Module):
         posttrans_layers = net_params['posttrans_layers']
         self.gru_enable = net_params['gru']
         device = net_params['device']
+        self.virtual_node = net_params['virtual_node']
 
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
 
@@ -59,8 +60,19 @@ class EIGNet(nn.Module):
 
         self.MLP_layer = MLPReadout(out_dim, 128, decreasing_dim=decreasing_dim)
 
+        self.virtual_node_layers = None
+        if (self.virtual_node is not None) and (self.virtual_node.lower() != 'none'):
+            self.virtual_node_layers = \
+                nn.ModuleList([
+                VirtualNode(dim=hidden_dim, dropout=dropout, batch_norm=self.batch_norm,
+                            bias=True, vn_type=self.virtual_node)
+                for _ in range(n_layers - 1)])
+
+
 
     def forward(self, g, h, e, snorm_n, snorm_e):
+
+        #
         h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
         if self.JK == 'sum':
@@ -68,25 +80,36 @@ class EIGNet(nn.Module):
         if self.edge_feat:
             e = self.embedding_e(e)
 
+        # Loop all layers
         for i, conv in enumerate(self.layers):
+            # Graph conv layers
             h_t = conv(g, h, e, snorm_n)
             if self.gru_enable and i != len(self.layers) - 1:
                 h_t = self.gru(h, h_t)
             h = h_t
+
+            # Virtual node layer
+            if self.virtual_node_layers is not None:
+                if i == 1:
+                    vn_h = 0
+                vn_h, h = self.virtual_node_layers[i].forward(g, h, vn_h)
+
+            # Append list of features for jumping knowledge
             if self.JK == 'sum':
                 h_list.append(h)
 
         g.ndata['h'] = h
+        
+        if self.JK == 'last': # Take the last layer as the conv readout
+            pass
 
-        if self.JK == 'last':
-            g.ndata['h'] = h
-
-        elif self.JK == 'sum':
+        elif self.JK == 'sum': # Jumping knowledge (summing all layers outputs)
             h = 0
             for layer in h_list:
                 h += layer
             g.ndata['h'] = h
 
+        # Readout layer
         if self.readout == "sum":
             hg = dgl.sum_nodes(g, 'h')
         elif self.readout == "max":
