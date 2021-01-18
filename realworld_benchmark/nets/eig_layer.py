@@ -30,7 +30,8 @@ class VirtualNode(nn.Module):
             pool = sum_nodes(g, 'h')
         elif self.vn_type == 'logsum':
             pool = mean_nodes(g, 'h')
-            pool = pool * torch.log(torch.tensor(g.batch_num_nodes, dtype=h.dtype, device=h.device))
+            lognum = torch.log(torch.tensor(g.batch_num_nodes, dtype=h.dtype, device=h.device))
+            pool = pool * lognum.unsqueeze(-1)
         else:
             raise ValueError(f'Undefined input "{self.pooling}". Accepted values are "sum", "mean", "logsum"')
         
