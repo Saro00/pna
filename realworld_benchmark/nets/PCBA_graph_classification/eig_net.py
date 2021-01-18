@@ -92,7 +92,8 @@ class EIGNet(nn.Module):
             if self.virtual_node_layers is not None:
                 if i == 0:
                     vn_h = 0
-                vn_h, h = self.virtual_node_layers[i].forward(g, h, vn_h)
+                if i < len(self.virtual_node_layers):
+                    vn_h, h = self.virtual_node_layers[i].forward(g, h, vn_h)
 
             # Append list of features for jumping knowledge
             if self.JK == 'sum':
