@@ -90,7 +90,7 @@ class EIGNet(nn.Module):
 
             # Virtual node layer
             if self.virtual_node_layers is not None:
-                if i == 1:
+                if i == 0:
                     vn_h = 0
                 vn_h, h = self.virtual_node_layers[i].forward(g, h, vn_h)
 
