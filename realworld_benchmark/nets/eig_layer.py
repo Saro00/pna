@@ -15,7 +15,7 @@ class VirtualNode(nn.Module):
     def __init__(self, dim, dropout, batch_norm=False, bias=True, vn_type='mean'):
         self.vn_type = vn_type.lower()
         self.fc_layer = FCLayer(in_size=dim, out_size=dim, activation='relu', dropout=dropout, 
-                                batch_norm=batch_norm, bias=bias)
+                                b_norm=batch_norm, bias=bias)
 
 
     def forward(self, g, h, vn_h):
