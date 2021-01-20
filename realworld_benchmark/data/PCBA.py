@@ -19,7 +19,7 @@ from ogb.io.read_graph_dgl import read_csv_graph_dgl
 import networkx as nx
 
 import gc
-Gstory = 0
+story = 0
 
 
 def positional_encoding(g, pos_enc_dim, norm):
