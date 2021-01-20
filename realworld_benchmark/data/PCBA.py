@@ -5,6 +5,7 @@ from torch.utils.data import Dataset
 import random as rd
 from ogb.graphproppred import Evaluator
 import networkx as nx
+import tqdm
 
 
 import scipy
@@ -214,11 +215,12 @@ class PCBADGL(torch.utils.data.Dataset):
 
 
     def get_eig(self, norm):
-        # Computing eigenvectors
-        for ii, g in enumerate(self.graph_lists):
-            self.graph_lists[ii] = positional_encoding(g, 3, norm=norm)
-            if ii % 10000 == 0:
-                print(f'{ii}/{len(self.graph_lists)}')
+        
+        print('Computing Eigenvectors')
+        with tqdm(range(len(self.graph_lists)), unit='Graph') as t:
+            for ii in t:
+                self.graph_lists[ii] = positional_encoding(self.graph_lists[ii], 3, norm=norm)
+
 
     def __len__(self):
         """Return the number of graphs in the dataset."""
