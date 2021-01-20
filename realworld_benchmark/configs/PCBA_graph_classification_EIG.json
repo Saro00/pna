@@ -4,7 +4,7 @@
     "id": 0
   },
   "model": "EIG",
-  "dataset": "HIV",
+  "dataset": "PCBA",
   "out_dir": "out/molecules_graph_regression/",
   "params": {
     "seed": 41,
