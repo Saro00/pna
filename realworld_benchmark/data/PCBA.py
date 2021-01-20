@@ -4,8 +4,10 @@ import torch
 from torch.utils.data import Dataset
 import random as rd
 from ogb.graphproppred import Evaluator
+import networkx as nx
 
 
+import scipy
 from scipy import sparse as sp
 import numpy as np
 import itertools
@@ -38,6 +40,29 @@ def positional_encoding(g, pos_enc_dim, norm):
         L = sp.eye(g.number_of_nodes()) - N * A
 
 
+    # Loop all connected components to compute eigenvectors separately
+    components = list(nx.connected_components(g.to_networkx().to_undirected()))
+    EigVec = torch.zeros((L.shape[0], pos_enc_dim), dtype=torch.float32)
+    for component in components:
+        comp = list(component)
+        this_L = L[comp][:, comp]
+        if pos_enc_dim < len(comp) - 1: # Compute the k-lowest eigenvectors
+            this_EigVal, this_EigVec = sp.linalg.eigs(this_L, k=pos_enc_dim, which='SR', tol=1e-5)
+        else: # Compute all eigenvectors
+            this_EigVal, this_EigVec = scipy.linalg.eig(this_L.toarray())
+            if pos_enc_dim > len(comp): # Pad with non-sense eigenvectors
+                temp_EigVal = np.ones(pos_enc_dim - len(comp), dtype=np.float32) + float('inf')
+                temp_EigVec = np.zeros((len(comp), pos_enc_dim - len(comp)), dtype=np.float32)
+                this_EigVal = np.concatenate([this_EigVal, temp_EigVal], axis=0)
+                this_EigVec = np.concatenate([this_EigVec, temp_EigVec], axis=1)
+
+        # Sort and convert to torch
+        this_EigVec = this_EigVec[:, this_EigVal.argsort()]
+        this_Eigvec = torch.from_numpy(np.real(this_EigVec[:, :pos_enc_dim])).float()
+        EigVec[comp, :] = this_Eigvec
+        
+
+
     # # Eigenvectors with numpy
     # EigVal, EigVec = np.linalg.eig(L.toarray())
     # idx = EigVal.argsort() # increasing order
@@ -46,7 +71,7 @@ def positional_encoding(g, pos_enc_dim, norm):
 
     # Eigenvectors with scipy
     #EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
-    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim, which='SR', tol=1e-2)
+    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim, which='SR', tol=1e-5)
     EigVec = EigVec[:, EigVal.argsort()]  # increasing order
     g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
     #g.ndata['eig'] = torch.from_numpy(np.random.rand(g.number_of_nodes(), pos_enc_dim)).float()
