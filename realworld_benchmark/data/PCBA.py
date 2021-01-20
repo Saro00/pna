@@ -19,7 +19,7 @@ from ogb.io.read_graph_dgl import read_csv_graph_dgl
 import networkx as nx
 
 import gc
-
+Gstory = 0
 
 
 def positional_encoding(g, pos_enc_dim, norm):
@@ -68,6 +68,10 @@ def positional_encoding(g, pos_enc_dim, norm):
         elif len(node_list) == 2:
             EigVec_global[node_list[0], :pos_enc_dim] = np.zeros((1, pos_enc_dim))
     g.ndata['eig'] = torch.from_numpy(EigVec_global).float()
+    global story
+    story = story + 1
+    if story%100 == 0:
+        print(story)
     return g
 
 
