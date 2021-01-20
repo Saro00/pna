@@ -29,7 +29,6 @@ def positional_encoding(g, pos_enc_dim, norm):
     num = int(g.number_of_nodes())
     G = nx.Graph()
     G.add_nodes_from([i for i in range(num)])
-    print(g)
     for nod1, nod2 in zip(g.all_edges()[0].detach(), g.all_edges()[1].detach()):
         G.add_edge(nod1, nod2)
 
@@ -42,16 +41,13 @@ def positional_encoding(g, pos_enc_dim, norm):
         G_new.add_nodes_from(list(component))
         list_G.append(G_new)
         list_nodes.append(list(component))
-    print('ok')
     for i in range(len(list_G)):
         for nod1, nod2 in list(G.edges(list_nodes[i])):
             list_G[i].add_edge(nod1, nod2)
-    print('si')
 
     EigVec_global = np.ones((num, pos_enc_dim))
     for connected in list_G:
         node_list = list(connected.nodes)
-        print('here')
         A = nx.adjacency_matrix(connected, nodelist=node_list).astype(float)
         if norm == 'none':
             D = sp.diags(list(map(lambda x: x[1], connected.degree())))
@@ -64,7 +60,6 @@ def positional_encoding(g, pos_enc_dim, norm):
             D_norm = sp.diags(list(map(lambda x: x[1] ** (-1), connected.degree())))
             D = sp.diags(list(map(lambda x: x[1], connected.degree())))
             L = D_norm * (D - A)
-        print('here2')
 
         if len(node_list) > 2:
             EigVal, EigVec = sp.linalg.eigs(L, k=min(len(node_list) - 2, pos_enc_dim), which='SR', tol=0)
