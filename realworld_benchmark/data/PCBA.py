@@ -50,7 +50,7 @@ def positional_encoding(g, pos_enc_dim, norm):
 
     EigVec_global = np.ones((num, pos_enc_dim))
     for connected in list_G:
-        node_list = list(g.nodes)
+        node_list = list(connected.nodes)
         print('here')
         A = nx.adjacency_matrix(connected, nodelist=node_list).astype(float)
         if norm == 'none':
