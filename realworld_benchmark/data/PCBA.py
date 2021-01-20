@@ -45,11 +45,11 @@ def positional_encoding(g, pos_enc_dim, norm):
 
     # Eigenvectors with scipy
     # EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
-    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=1e-5)
+    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=1e-4)
     EigVec = EigVec[:, EigVal.argsort()]  # increasing order
     g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim + 1])).float()
-    print(int(g.ndata['eig'][:, 0].unique().size))
-    if int(g.ndata['eig'][:, 0].unique().size) != 1:
+    print(int(g.ndata['eig'][:, 0].unique().size[0]))
+    if int(g.ndata['eig'][:, 0].unique().size[0]) != 1:
         return positional_encoding_bis(g, pos_enc_dim, norm)
     return g
 
@@ -95,7 +95,7 @@ def positional_encoding_bis(g, pos_enc_dim, norm):
             L = D_norm * (D - A)
 
         if len(node_list) > 2:
-            EigVal, EigVec = sp.linalg.eigs(L, k=min(len(node_list) - 2, pos_enc_dim), which='SR', tol=0)
+            EigVal, EigVec = sp.linalg.eigs(L, k=min(len(node_list) - 2, pos_enc_dim), which='SR', tol=1e-4)
             EigVec = EigVec[:, EigVal.argsort()] / np.max(EigVec[:, EigVal.argsort()], 0)
             EigVec_global[node_list, : min(len(node_list) - 2, pos_enc_dim)] = EigVec[:, :]
         elif len(node_list) == 2:
