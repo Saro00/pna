@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 import random as rd
 from ogb.graphproppred import Evaluator
 import networkx as nx
-import tqdm
+from tqdm import tqdm
 
 
 import scipy
@@ -216,7 +216,7 @@ class PCBADGL(torch.utils.data.Dataset):
 
     def get_eig(self, norm):
         
-        print('Computing Eigenvectors')
+        print('Computing Eigenvectors...')
         with tqdm(range(len(self.graph_lists)), unit='Graph') as t:
             for ii in t:
                 self.graph_lists[ii] = positional_encoding(self.graph_lists[ii], 3, norm=norm)
