@@ -29,6 +29,7 @@ def positional_encoding(g, pos_enc_dim, norm):
     num = int(g.number_of_nodes())
     G = nx.Graph()
     G.add_nodes_from([i for i in range(num)])
+    print(g)
     print(g['edge_index'][0])
     for nod1, nod2 in zip(g['edge_index'][0], g['edge_index'][1]):
         G.add_edge(nod1, nod2)
