@@ -16,6 +16,8 @@ import os.path as osp
 from dgl.data.utils import load_graphs, save_graphs, Subset
 from ogb.utils.url import decide_download, download_url, extract_zip
 from ogb.io.read_graph_dgl import read_csv_graph_dgl
+import networkx as nx
+
 import gc
 
 
@@ -24,37 +26,49 @@ def positional_encoding(g, pos_enc_dim, norm):
     """
         Graph positional encoding v/ Laplacian eigenvectors
     """
+    num = int(g.number_of_nodes())
+    G = nx.Graph()
+    G.add_nodes_from([i for i in range(num)])
 
-    # Laplacian
-    A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
-    if norm == 'none':
-        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1), dtype=float)
-        L = N * sp.eye(g.number_of_nodes()) - A
-    elif norm == 'sym':
-        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
-        L = sp.eye(g.number_of_nodes()) - N * A * N
-    elif norm == 'walk':
-        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1., dtype=float)
-        L = sp.eye(g.number_of_nodes()) - N * A
+    for nod1, nod2 in zip(g['edge_index'][0], g['edge_index'][1]):
+        G.add_edge(nod1, nod2)
 
+    components = list(nx.connected_components(G))
+    list_G = []
+    list_nodes = []
 
-    # # Eigenvectors with numpy
-    # EigVal, EigVec = np.linalg.eig(L.toarray())
-    # idx = EigVal.argsort() # increasing order
-    # EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
-    # g.ndata['pos_enc'] = torch.from_numpy(np.abs(EigVec[:,1:pos_enc_dim+1])).float()
+    for component in components:
+        G_new = nx.Graph()
+        G_new.add_nodes_from(list(component))
+        list_G.append(G_new)
+        list_nodes.append(list(component))
+    for i in range(len(list_G)):
+        for nod1, nod2 in list(G.edges(list_nodes[i])):
+            list_G[i].add_edge(nod1, nod2)
 
-    # Eigenvectors with scipy
-    #EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
-    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim, which='SR', tol=1e-2)
-    EigVec = EigVec[:, EigVal.argsort()]  # increasing order
-    g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
-    #g.ndata['eig'] = torch.from_numpy(np.random.rand(g.number_of_nodes(), pos_enc_dim)).float()
-    del A
-    del N
-    del L
-    del EigVec
-    del EigVal
+    EigVec_global = np.ones((num, pos_enc_dim))
+    for g in list_G:
+        node_list = list(g.nodes)
+        A = nx.adjacency_matrix(g, nodelist=node_list).astype(float)
+        if norm == 'none':
+            D = sp.diags(list(map(lambda x: x[1], g.degree())))
+            L = D - A
+        elif norm == 'sym':
+            D_norm = sp.diags(list(map(lambda x: x[1] ** (-0.5), g.degree())))
+            D = sp.diags(list(map(lambda x: x[1], g.degree())))
+            L = D_norm * (D - A) * D_norm
+        elif norm == 'walk':
+            D_norm = sp.diags(list(map(lambda x: x[1] ** (-1), g.degree())))
+            D = sp.diags(list(map(lambda x: x[1], g.degree())))
+            L = D_norm * (D - A)
+
+        if len(node_list) > 2:
+            EigVal, EigVec = sp.linalg.eigs(L, k=min(len(node_list) - 2, pos_enc_dim), which='SR', tol=0)
+            EigVec = EigVec[:, EigVal.argsort()] / np.max(EigVec[:, EigVal.argsort()], 0)
+            EigVec_global[node_list, : min(len(node_list) - 2, pos_enc_dim)] = EigVec[:, :]
+        elif len(node_list) == 2:
+            EigVec_global[node_list[0], :pos_enc_dim] = np.zeros((1, pos_enc_dim))
+    g.ndata['eig'] = torch.from_numpy(EigVec_global).float()
     return g
 
 
