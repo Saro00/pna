@@ -19,10 +19,41 @@ from ogb.io.read_graph_dgl import read_csv_graph_dgl
 import networkx as nx
 
 import gc
-story = 0
-
 
 def positional_encoding(g, pos_enc_dim, norm):
+    """
+        Graph positional encoding v/ Laplacian eigenvectors
+    """
+
+    # Laplacian
+    A = g.adjacency_matrix_scipy(return_edge_ids=False).astype(float)
+    if norm == 'none':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1), dtype=float)
+        L = N * sp.eye(g.number_of_nodes()) - A
+    elif norm == 'sym':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        L = sp.eye(g.number_of_nodes()) - N * A * N
+    elif norm == 'walk':
+        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1, dtype=float)
+        L = sp.eye(g.number_of_nodes()) - N * A
+
+    # # Eigenvectors with numpy
+    # EigVal, EigVec = np.linalg.eig(L.toarray())
+    # idx = EigVal.argsort() # increasing order
+    # EigVal, EigVec = EigVal[idx], np.real(EigVec[:,idx])
+    # g.ndata['pos_enc'] = torch.from_numpy(np.abs(EigVec[:,1:pos_enc_dim+1])).float()
+
+    # Eigenvectors with scipy
+    # EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
+    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=1e-2)
+    EigVec = EigVec[:, EigVal.argsort()]  # increasing order
+    g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim + 1])).float()
+
+    return g
+
+
+
+def positional_encoding_bis(g, pos_enc_dim, norm):
     """
         Graph positional encoding v/ Laplacian eigenvectors
     """
@@ -68,10 +99,6 @@ def positional_encoding(g, pos_enc_dim, norm):
         elif len(node_list) == 2:
             EigVec_global[node_list[0], :pos_enc_dim] = np.zeros((1, pos_enc_dim))
     g.ndata['eig'] = torch.from_numpy(EigVec_global).float()
-    global story
-    story = story + 1
-    if story%100 == 0:
-        print(story)
     return g
 
 
