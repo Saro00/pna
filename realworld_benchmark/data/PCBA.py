@@ -48,19 +48,19 @@ def positional_encoding(g, pos_enc_dim, norm):
             list_G[i].add_edge(nod1, nod2)
 
     EigVec_global = np.ones((num, pos_enc_dim))
-    for g in list_G:
+    for connected in list_G:
         node_list = list(g.nodes)
-        A = nx.adjacency_matrix(g, nodelist=node_list).astype(float)
+        A = nx.adjacency_matrix(connected, nodelist=node_list).astype(float)
         if norm == 'none':
-            D = sp.diags(list(map(lambda x: x[1], g.degree())))
+            D = sp.diags(list(map(lambda x: x[1], connected.degree())))
             L = D - A
         elif norm == 'sym':
-            D_norm = sp.diags(list(map(lambda x: x[1] ** (-0.5), g.degree())))
-            D = sp.diags(list(map(lambda x: x[1], g.degree())))
+            D_norm = sp.diags(list(map(lambda x: x[1] ** (-0.5), connected.degree())))
+            D = sp.diags(list(map(lambda x: x[1], connected.degree())))
             L = D_norm * (D - A) * D_norm
         elif norm == 'walk':
-            D_norm = sp.diags(list(map(lambda x: x[1] ** (-1), g.degree())))
-            D = sp.diags(list(map(lambda x: x[1], g.degree())))
+            D_norm = sp.diags(list(map(lambda x: x[1] ** (-1), connected.degree())))
+            D = sp.diags(list(map(lambda x: x[1], connected.degree())))
             L = D_norm * (D - A)
 
         if len(node_list) > 2:
