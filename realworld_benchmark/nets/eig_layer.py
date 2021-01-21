@@ -325,7 +325,7 @@ class EIGLayerTower(nn.Module):
                  edge_dim=0):
         super().__init__()
         assert ((
-                    not divide_input) or in_dim % towers == 0), "if divide_input is set the number of towers has to divide in_dim"
+                    not divide_input) or in_dim % towers == 0), f"if divide_input is set the number of towers has to divide in_dim. in_dim={in_dim}, towers={towers}"
         assert (out_dim % towers == 0), "the number of towers has to divide the out_dim"
         assert avg_d is not None
 
