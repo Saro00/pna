@@ -44,10 +44,11 @@ class VirtualNode(nn.Module):
             vn_h = vn_h_temp
 
         # Add the virtual node value to the graph features
-        count = 0
-        for ii, num_nodes in enumerate(g.batch_num_nodes):
-            h[count:count+num_nodes] = h[count:count+num_nodes] + vn_h[ii]
-            count += num_nodes
+        temp_h = torch.tensor(
+            [[vn_h[ii]]*num_nodes for ii, num_nodes in enumerate(g.batch_num_nodes)],
+            dtype=h.dtype, device=h.device
+        )
+        h = h + vn_h
 
         return vn_h, h
 
