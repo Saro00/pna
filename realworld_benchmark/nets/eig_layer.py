@@ -48,7 +48,7 @@ class VirtualNode(nn.Module):
             [[vn_h[ii]]*num_nodes for ii, num_nodes in enumerate(g.batch_num_nodes)],
             dtype=h.dtype, device=h.device
         )
-        h = h + vn_h
+        h = h + temp_h
 
         return vn_h, h
 
