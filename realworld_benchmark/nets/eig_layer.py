@@ -12,11 +12,12 @@ from .scalers import SCALERS
 from dgl.nn.pytorch.glob import mean_nodes, sum_nodes
 
 class VirtualNode(nn.Module):
-    def __init__(self, dim, dropout, batch_norm=False, bias=True, vn_type='mean'):
+    def __init__(self, dim, dropout, batch_norm=False, bias=True, residual=True, vn_type='mean'):
         super().__init__()
         self.vn_type = vn_type.lower()
         self.fc_layer = FCLayer(in_size=dim, out_size=dim, activation='relu', dropout=dropout, 
                                 b_norm=batch_norm, bias=bias)
+        self.residual = residual
 
 
     def forward(self, g, h, vn_h):
@@ -36,13 +37,20 @@ class VirtualNode(nn.Module):
             raise ValueError(f'Undefined input "{self.pooling}". Accepted values are "sum", "mean", "logsum"')
         
         # Compute the new virtual node features
-        vn_h = self.fc_layer.forward(vn_h + pool)
+        vn_h_temp = self.fc_layer.forward(vn_h + pool)
+        if self.residual:
+            vn_h = vn_h + vn_h_temp
+        else:
+            vn_h = vn_h_temp
 
         # Add the virtual node value to the graph features
-        count = 0
-        for ii, num_nodes in enumerate(g.batch_num_nodes):
-            h[count:count+num_nodes] = h[count:count+num_nodes] + vn_h[ii]
-            count += num_nodes
+        temp_h = torch.cat(
+            [vn_h[ii:ii+1].repeat(num_nodes) for ii, num_nodes in enumerate(g.batch_num_nodes)],
+            dim=0)
+
+        # print(temp_h.shape)
+        # print(h.shape)
+        h = h + temp_h
 
         return vn_h, h
 
