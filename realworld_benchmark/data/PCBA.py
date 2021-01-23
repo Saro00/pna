@@ -34,10 +34,10 @@ def positional_encoding(g, pos_enc_dim, norm):
         N = sp.diags(g.in_degrees().numpy(), dtype=float)
         L = N * sp.eye(g.number_of_nodes()) - A
     elif norm == 'sym':
-        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -0.5, dtype=float)
+        N = sp.diags(g.in_degrees().numpy() ** -0.5, dtype=float)
         L = sp.eye(g.number_of_nodes()) - N * A * N
     elif norm == 'walk':
-        N = sp.diags(dgl.backend.asnumpy(g.in_degrees()).clip(1) ** -1., dtype=float)
+        N = sp.diags(g.in_degrees().numpy() ** -1., dtype=float)
         L = sp.eye(g.number_of_nodes()) - N * A
 
 
@@ -205,7 +205,7 @@ class PCBADGL(torch.utils.data.Dataset):
         self.graph_lists = []
         self.graph_labels = []
         for i, g in enumerate(self.data):
-            if g[0].number_of_nodes() > 5 and rd.random() < 0.001: # and rd.random() < 0.2:
+            if g[0].number_of_nodes() > 5 and rd.random() < 0.2: # and rd.random() < 0.2:
                 self.graph_lists.append(g[0])
                 self.graph_labels.append(g[1])
         self.n_samples = len(self.graph_lists)
