@@ -47,6 +47,9 @@ class VirtualNode(nn.Module):
         temp_h = torch.cat(
             [vn_h[ii].repeat(num_nodes) for ii, num_nodes in enumerate(g.batch_num_nodes)],
             dim=0)
+
+        print(temp_h.shape)
+        print(h.shape)
         h = h + temp_h
 
         return vn_h, h
