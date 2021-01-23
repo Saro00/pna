@@ -67,7 +67,7 @@ class EIGNet(nn.Module):
             self.virtual_node_layers = \
                 nn.ModuleList([
                 VirtualNode(dim=hidden_dim, dropout=dropout, batch_norm=self.batch_norm,
-                            bias=True, vn_type=self.virtual_node)
+                            bias=True, vn_type=self.virtual_node, residual=self.residual)
                 for _ in range(n_layers - 1)])
 
 
