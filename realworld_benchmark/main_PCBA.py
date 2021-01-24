@@ -292,13 +292,6 @@ def main():
     print('ok')
     print(DATASET_NAME)
     dataset = PCBADataset(DATASET_NAME, norm=args.lap_norm)
-    gc.collect()
-    dataset.get_eig_test()
-    gc.collect()
-    dataset.get_eig_val()
-    gc.collect()
-    dataset.get_eig_train()
-    gc.collect()
 
     if args.out_dir is not None:
         out_dir = args.out_dir
