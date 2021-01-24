@@ -205,7 +205,7 @@ class PCBADGL(torch.utils.data.Dataset):
         self.graph_lists = []
         self.graph_labels = []
         for i, g in enumerate(self.data):
-            if g[0].number_of_nodes() > 5 and rd.random() < 0.8: # and rd.random() < 0.2:
+            if g[0].number_of_nodes() > 5 and rd.random() < 0.7: # and rd.random() < 0.2:
                 self.graph_lists.append(g[0])
                 self.graph_labels.append(g[1])
         self.n_samples = len(self.graph_lists)
@@ -288,8 +288,8 @@ class PCBADataset(Dataset):
         tab_snorm_e = [ torch.FloatTensor(size,1).fill_(1./float(size)) for size in tab_sizes_e ]
         snorm_e = torch.cat(tab_snorm_e).sqrt()
 
-        if 'eig' not in graphs[0].ndata:
-            graphs = [positional_encoding(g, 3, norm=self.norm) for g in graphs]
+        #if 'eig' not in graphs[0].ndata:
+        #    graphs = [positional_encoding(g, 3, norm=self.norm) for g in graphs]
 
         batched_graph = dgl.batch(graphs)
 
