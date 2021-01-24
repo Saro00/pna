@@ -248,6 +248,7 @@ class PCBADataset(Dataset):
         if verbose:
             print("[I] Loading dataset %s..." % (name))
         self.name = name
+        self.norm = norm
         dataset = DownloadPCBA(name = 'ogbg-molpcba')
         split_idx = dataset.get_idx_split()
         self.train = PCBADGL(dataset, split_idx['train'], norm=norm, pos_enc_dim=pos_enc_dim)
@@ -255,9 +256,6 @@ class PCBADataset(Dataset):
         self.test = PCBADGL(dataset, split_idx['test'], norm=norm, pos_enc_dim=pos_enc_dim)
         del dataset
         del split_idx
-        self.train.get_eig(norm=norm)
-        self.val.get_eig(norm=norm)
-        self.test.get_eig(norm=norm)
 
         self.evaluator = Evaluator(name='ogbg-molpcba')
 
@@ -265,6 +263,16 @@ class PCBADataset(Dataset):
             print('train, test, val sizes :', len(self.train), len(self.test), len(self.val))
             print("[I] Finished loading.")
             print("[I] Data load time: {:.4f}s".format(time.time() - start))
+
+    def get_eig_train(self):
+        self.train.get_eig(norm=self.norm)
+
+    def get_eig_val(self):
+        self.val.get_eig(norm=self.norm)
+
+    def get_eig_test(self):
+        self.test.get_eig(norm=self.norm)
+
 
     # form a mini batch from a given list of samples = [(graph, label) pairs]
     def collate(self, samples):
