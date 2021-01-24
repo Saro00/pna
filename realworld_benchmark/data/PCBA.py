@@ -290,7 +290,6 @@ class PCBADataset(Dataset):
 
         if 'eig' not in graphs[0].ndata:
             graphs = [positional_encoding(g, 3, norm=self.norm) for g in graphs]
-            print(len(graphs))
 
         batched_graph = dgl.batch(graphs)
 
