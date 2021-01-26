@@ -8,12 +8,12 @@
   "out_dir": "out/molecules_graph_regression/",
   "params": {
     "seed": 41,
-    "epochs": 200,
-    "batch_size": 128,
-    "init_lr": 0.05,
+    "epochs": 500,
+    "batch_size": 1024,
+    "init_lr": 0.005,
     "lr_reduce_factor": 0.5,
-    "lr_schedule_patience": 100,
-    "min_lr": 0.009,
+    "lr_schedule_patience": 5,
+    "min_lr": 0.0002,
     "weight_decay": 0,
     "print_epoch_interval": 1,
     "max_time": 48
