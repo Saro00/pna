@@ -63,7 +63,9 @@ def positional_encoding(g, pos_enc_dim, norm, eig_asin):
         EigVec[comp, :] = this_Eigvec
         
     if eig_asin:
-        EigVec = np.arcsin(this_EigVec)
+        EigVec = np.arcsin(np.real(EigVec[:, :pos_enc_dim]))
+    else:
+        EigVec = np.real(EigVec[:, :pos_enc_dim])
 
     # # Eigenvectors with numpy
     # EigVal, EigVec = np.linalg.eig(L.toarray())
@@ -75,7 +77,7 @@ def positional_encoding(g, pos_enc_dim, norm, eig_asin):
     #EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
     # EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim, which='SR', tol=1e-5)
     # EigVec = EigVec[:, EigVal.argsort()]  # increasing order
-    g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
+    g.ndata['eig'] = torch.from_numpy(EigVec).float()
     #g.ndata['eig'] = torch.from_numpy(np.random.rand(g.number_of_nodes(), pos_enc_dim)).float()
     del A
     del N
