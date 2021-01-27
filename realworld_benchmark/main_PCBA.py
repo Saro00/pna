@@ -258,6 +258,7 @@ def main():
     parser.add_argument('--expid', help='Experiment id.')
     parser.add_argument('--type_net', default='simple', help='Type of net')
     parser.add_argument('--lap_norm', default='none', help='Laplacian normalisation')
+    parser.add_argument('--eig_asin', default=False, help='Whether to use arcsine on the eigenvectors')
 
     # eig params
     parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
@@ -291,7 +292,7 @@ def main():
         DATASET_NAME = config['dataset']
     print('ok')
     print(DATASET_NAME)
-    dataset = PCBADataset(DATASET_NAME, norm=args.lap_norm)
+    dataset = PCBADataset(DATASET_NAME, norm=args.lap_norm, eig_asin=args.eig_asin)
     gc.collect()
     dataset.get_eig_test()
     gc.collect()

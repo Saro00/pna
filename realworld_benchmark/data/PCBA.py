@@ -23,7 +23,7 @@ import gc
 
 
 
-def positional_encoding(g, pos_enc_dim, norm):
+def positional_encoding(g, pos_enc_dim, norm, eig_asin):
     """
         Graph positional encoding v/ Laplacian eigenvectors
     """
@@ -62,7 +62,8 @@ def positional_encoding(g, pos_enc_dim, norm):
         this_Eigvec = torch.from_numpy(np.real(this_EigVec[:, :pos_enc_dim])).float()
         EigVec[comp, :] = this_Eigvec
         
-
+    if eig_asin:
+        EigVec = np.arcsin(this_EigVec)
 
     # # Eigenvectors with numpy
     # EigVal, EigVec = np.linalg.eig(L.toarray())
@@ -72,8 +73,8 @@ def positional_encoding(g, pos_enc_dim, norm):
 
     # Eigenvectors with scipy
     #EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
-    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim, which='SR', tol=1e-5)
-    EigVec = EigVec[:, EigVal.argsort()]  # increasing order
+    # EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim, which='SR', tol=1e-5)
+    # EigVec = EigVec[:, EigVal.argsort()]  # increasing order
     g.ndata['eig'] = torch.from_numpy(np.real(EigVec[:, :pos_enc_dim])).float()
     #g.ndata['eig'] = torch.from_numpy(np.random.rand(g.number_of_nodes(), pos_enc_dim)).float()
     del A
@@ -214,12 +215,12 @@ class PCBADGL(torch.utils.data.Dataset):
             self._add_positional_encodings(pos_enc_dim)
 
 
-    def get_eig(self, norm):
+    def get_eig(self, norm, eig_asin):
         
         print('Computing Eigenvectors...')
         with tqdm(range(len(self.graph_lists)), unit='Graph') as t:
             for ii in t:
-                self.graph_lists[ii] = positional_encoding(self.graph_lists[ii], 3, norm=norm)
+                self.graph_lists[ii] = positional_encoding(self.graph_lists[ii], 3, norm=norm, eig_asin=eig_asin)
 
 
     def __len__(self):
@@ -243,12 +244,13 @@ class PCBADGL(torch.utils.data.Dataset):
 
 
 class PCBADataset(Dataset):
-    def __init__(self, name, pos_enc_dim=0, norm='none', verbose=True):
+    def __init__(self, name, pos_enc_dim=0, norm='none', eig_asin=False, verbose=True):
         start = time.time()
         if verbose:
             print("[I] Loading dataset %s..." % (name))
         self.name = name
         self.norm = norm
+        self.eig_asin = eig_asin
         dataset = DownloadPCBA(name = 'ogbg-molpcba')
         split_idx = dataset.get_idx_split()
         self.train = PCBADGL(dataset, split_idx['train'], norm=norm, pos_enc_dim=pos_enc_dim)
@@ -265,13 +267,13 @@ class PCBADataset(Dataset):
             print("[I] Data load time: {:.4f}s".format(time.time() - start))
 
     def get_eig_train(self):
-        self.train.get_eig(norm=self.norm)
+        self.train.get_eig(norm=self.norm, eig_asin=self.eig_asin)
 
     def get_eig_val(self):
-        self.val.get_eig(norm=self.norm)
+        self.val.get_eig(norm=self.norm, eig_asin=self.eig_asin)
 
     def get_eig_test(self):
-        self.test.get_eig(norm=self.norm)
+        self.test.get_eig(norm=self.norm, eig_asin=self.eig_asin)
 
 
     # form a mini batch from a given list of samples = [(graph, label) pairs]
