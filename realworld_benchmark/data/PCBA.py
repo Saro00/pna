@@ -83,6 +83,8 @@ def positional_encoding(g, pos_enc_dim, norm, eig_asin):
     del N
     del L
     del EigVec
+    del this_EigVal
+    del this_Eigvec
     return g
 
 
