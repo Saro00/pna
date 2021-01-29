@@ -83,6 +83,9 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
     device = net_params['device']
 
+    print(params)
+    print(net_params)
+
     # Write the network and optimization hyper-parameters in folder config/
     with open(write_config_file + '.txt', 'w') as f:
         f.write("""Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n\nTotal Parameters: {}\n\n""".format(
@@ -113,6 +116,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
 
     epoch_train_losses, epoch_val_losses = [], []
     epoch_train_APs, epoch_val_APs, epoch_test_APs = [], [], []
+    epoch_LRs = []
 
     train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, collate_fn=dataset.collate, pin_memory=True)
     val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate, pin_memory=True)
@@ -138,6 +142,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                 epoch_val_losses.append(epoch_val_loss)
                 epoch_train_APs.append(epoch_train_ap.item())
                 epoch_val_APs.append(epoch_val_ap.item())
+                epoch_LRs.append(optimizer.param_groups[0]['lr'])
 
                 writer.add_scalar('train/_loss', epoch_train_loss, epoch)
                 writer.add_scalar('val/_loss', epoch_val_loss, epoch)
@@ -192,6 +197,9 @@ def train_val_pipeline(dataset, params, net_params, dirs):
 
     print("TOTAL TIME TAKEN: {:.4f}s".format(time.time() - t0))
     print("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
+    print("TOTAL NUMBER OF EPOCHS: {}".format(epoch))
+    print("EPOCH of Best VAL: {}".format(best_val_epoch))
+    print("Learning-rate of Best VAL: {:.4f}".format(epoch_LRs[best_val_epoch]))
 
 
 
