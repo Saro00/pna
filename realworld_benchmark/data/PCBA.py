@@ -263,13 +263,15 @@ class PCBADataset(Dataset):
         self.val = PCBADGL(dataset, split_idx['valid'], norm=norm, pos_enc_dim=pos_enc_dim)
         self.test = PCBADGL(dataset, split_idx['test'], norm=norm, pos_enc_dim=pos_enc_dim)
 
-        self.train.get_eig(norm=norm)
+        self.train.get_eig(norm=self.norm, eig_asin=self.eig_asin)
         if pos_enc_dim > 0:
             self.train._add_positional_encodings(pos_enc_dim)
-        self.test.get_eig(norm=norm)
+
+        self.test.get_eig(norm=self.norm, eig_asin=self.eig_asin)
         if pos_enc_dim > 0:
             self.test._add_positional_encodings(pos_enc_dim)
-        self.val.get_eig(norm=norm)
+
+        self.val.get_eig(norm=self.norm, eig_asin=self.eig_asin)
         if pos_enc_dim > 0:
             self.val._add_positional_encodings(pos_enc_dim)
 
