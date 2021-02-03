@@ -38,7 +38,7 @@ class EIGNet(nn.Module):
         pretrans_layers = net_params['pretrans_layers']
         posttrans_layers = net_params['posttrans_layers']
         self.gru_enable = net_params['gru']
-        device = net_params['device']
+        self.device = net_params['device']
         self.virtual_node = net_params['virtual_node']
 
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
@@ -61,7 +61,7 @@ class EIGNet(nn.Module):
                                     pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers, 
                                     towers=self.towers).model)
         if self.gru_enable:
-            self.gru = GRU(hidden_dim, hidden_dim, device)
+            self.gru = GRU(hidden_dim, hidden_dim, self.device)
 
         self.MLP_layer = MLPReadout(out_dim, 128, decreasing_dim=decreasing_dim)
 
