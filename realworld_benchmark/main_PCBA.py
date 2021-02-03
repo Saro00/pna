@@ -272,6 +272,7 @@ def main():
     parser.add_argument('--posttrans_layers', type=int, help='posttrans_layers.')
     parser.add_argument('--not_pre', action='store_true', default=False, help='Not applying pre-transformation')
     parser.add_argument('--virtual_node', default=None, help='virtual node type, "none", "sum", "mean", "logsum"')
+    parser.add_argument('--pos_enc_dim', default=0, type=int, help='Positional encoding dimension')
 
     args = parser.parse_args()
     print(args.config)
@@ -291,7 +292,7 @@ def main():
         DATASET_NAME = config['dataset']
     print('ok')
     print(DATASET_NAME)
-    dataset = PCBADataset(DATASET_NAME, norm=args.lap_norm)
+    dataset = PCBADataset(DATASET_NAME, pos_enc_dim=int(args.pos_enc_dim), norm=args.lap_norm)
     gc.collect()
     dataset.get_eig_test()
     gc.collect()
@@ -404,6 +405,8 @@ def main():
         net_params['posttrans_layers'] = args.posttrans_layers
     if args.not_pre is not None:
         net_params['not_pre'] = args.not_pre
+    if args.pos_enc_dim is not None:
+        net_params['pos_enc_dim'] = args.pos_enc_dim
     if args.type_net is not None:
         net_params['type_net'] = args.type_net
 

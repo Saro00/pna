@@ -210,8 +210,7 @@ class PCBADGL(torch.utils.data.Dataset):
                 self.graph_labels.append(g[1])
         self.n_samples = len(self.graph_lists)
         del self.data
-        if pos_enc_dim > 0:
-            self._add_positional_encodings(pos_enc_dim)
+
 
 
     def get_eig(self, norm):
@@ -220,6 +219,10 @@ class PCBADGL(torch.utils.data.Dataset):
         with tqdm(range(len(self.graph_lists)), unit='Graph') as t:
             for ii in t:
                 self.graph_lists[ii] = positional_encoding(self.graph_lists[ii], 3, norm=norm)
+
+    def _add_positional_encodings(self, pos_enc_dim):
+        for g in self.graph_lists:
+            g.ndata['pos_enc'] = g.ndata['eig'][:,1:pos_enc_dim+1]
 
 
     def __len__(self):
@@ -254,6 +257,17 @@ class PCBADataset(Dataset):
         self.train = PCBADGL(dataset, split_idx['train'], norm=norm, pos_enc_dim=pos_enc_dim)
         self.val = PCBADGL(dataset, split_idx['valid'], norm=norm, pos_enc_dim=pos_enc_dim)
         self.test = PCBADGL(dataset, split_idx['test'], norm=norm, pos_enc_dim=pos_enc_dim)
+
+        self.train.get_eig(norm=norm)
+        if pos_enc_dim > 0:
+            self.train._add_positional_encodings(pos_enc_dim)
+        self.test.get_eig(norm=norm)
+        if pos_enc_dim > 0:
+            self.test._add_positional_encodings(pos_enc_dim)
+        self.val.get_eig(norm=norm)
+        if pos_enc_dim > 0:
+            self.val._add_positional_encodings(pos_enc_dim)
+
         del dataset
         del split_idx
 
