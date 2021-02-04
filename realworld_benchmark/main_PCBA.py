@@ -258,6 +258,8 @@ def main():
     parser.add_argument('--expid', help='Experiment id.')
     parser.add_argument('--type_net', default='simple', help='Type of net')
     parser.add_argument('--lap_norm', default='none', help='Laplacian normalisation')
+    parser.add_argument('--pretrans_last_activation', default='none', help='Last activation of the pre-transformation')
+    parser.add_argument('--posttrans_last_activation', default='none', help='Last activation of the post-transformation')
 
     # eig params
     parser.add_argument('--aggregators', type=str, help='Aggregators to use.')
@@ -328,6 +330,8 @@ def main():
     net_params['gpu_id'] = config['gpu']['id']
     net_params['batch_size'] = params['batch_size']
     net_params['virtual_node'] = args.virtual_node
+    net_params['pretrans_last_activation'] = args.pretrans_last_activation
+    net_params['posttrans_last_activation'] = args.posttrans_last_activation
 
     if args.L is not None:
         net_params['L'] = int(args.L)
@@ -403,6 +407,7 @@ def main():
         net_params['pos_enc_dim'] = args.pos_enc_dim
     if args.type_net is not None:
         net_params['type_net'] = args.type_net
+    
 
     D = torch.cat([torch.sparse.sum(g.adjacency_matrix(transpose=True), dim=-1).to_dense() for g in
                        dataset.train.graph_lists])

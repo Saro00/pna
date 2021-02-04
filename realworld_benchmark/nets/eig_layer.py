@@ -55,7 +55,8 @@ class VirtualNode(nn.Module):
 
 class EIGLayerComplex(nn.Module):
     def __init__(self, in_dim, out_dim, dropout, graph_norm, batch_norm, aggregators, scalers, avg_d, residual,
-                 edge_features, edge_dim, pretrans_layers=1, posttrans_layers=1):
+                 edge_features, edge_dim, pretrans_layers=1, posttrans_layers=1,
+                 pretrans_last_activation='none', posttrans_last_activation='none'):
         super().__init__()
         # retrieve the aggregators and scalers functions
         aggregators = [AGGREGATORS[aggr] for aggr in aggregators.split()]
@@ -72,9 +73,9 @@ class EIGLayerComplex(nn.Module):
 
         self.batchnorm_h = nn.BatchNorm1d(out_dim)
         self.pretrans = MLP(in_size=2 * in_dim + (edge_dim if edge_features else 0), hidden_size=in_dim,
-                            out_size=in_dim, layers=pretrans_layers, mid_activation='relu', last_activation='relu')
+                            out_size=in_dim, layers=pretrans_layers, mid_activation='relu', last_activation=pretrans_last_activation)
         self.posttrans = MLP(in_size=(len(aggregators) * len(scalers) + 1) * in_dim, hidden_size=out_dim,
-                             out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation='none')
+                             out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation=posttrans_last_activation)
         self.avg_d = avg_d
         if in_dim != out_dim:
             self.residual = False
@@ -149,7 +150,7 @@ class EIGLayerComplex(nn.Module):
 
 class EIGLayerSimple(nn.Module):
     def __init__(self, in_dim, out_dim, dropout, graph_norm, batch_norm, aggregators, scalers, residual, avg_d,
-                 posttrans_layers=1):
+                 posttrans_layers=1, posttrans_last_activation='none'):
         super().__init__()
         # retrieve the aggregators and scalers functions
         aggregators = [AGGREGATORS[aggr] for aggr in aggregators.split()]
@@ -166,7 +167,7 @@ class EIGLayerSimple(nn.Module):
         self.batchnorm_h = nn.BatchNorm1d(out_dim)
 
         self.posttrans = MLP(in_size=(len(aggregators) * len(scalers)) * in_dim, hidden_size=out_dim,
-                             out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation='relu')
+                             out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation=posttrans_last_activation)
         self.avg_d = avg_d
         if in_dim != out_dim:
             self.residual = False
@@ -234,7 +235,8 @@ class EIGLayerSimple(nn.Module):
 
 class EIGTower(nn.Module):
     def __init__(self, in_dim, out_dim, dropout, graph_norm, batch_norm, aggregators, scalers, avg_d,
-                 pretrans_layers, posttrans_layers, edge_features, edge_dim):
+                 pretrans_layers, posttrans_layers, edge_features, edge_dim,
+                 pretrans_last_activation='none', posttrans_last_activation='none'):
         super().__init__()
         self.dropout = dropout
         self.graph_norm = graph_norm
@@ -247,11 +249,11 @@ class EIGTower(nn.Module):
         self.batchnorm_h = nn.BatchNorm1d(out_dim)
 
         self.pretrans = MLP(in_size=2 * in_dim + (edge_dim if edge_features else 0), hidden_size=in_dim,
-                            out_size=in_dim, layers=pretrans_layers, mid_activation='relu', last_activation='relu')
+                            out_size=in_dim, layers=pretrans_layers, mid_activation='relu', last_activation=pretrans_last_activation)
 
         self.posttrans = MLP(in_size=(len(aggregators) * len(scalers) + 1) * in_dim,
                              hidden_size=out_dim,
-                             out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation='none')
+                             out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation=posttrans_last_activation)
         self.avg_d = avg_d
 
 
@@ -327,7 +329,7 @@ class EIGLayerTower(nn.Module):
 
     def __init__(self, in_dim, out_dim, aggregators, scalers, avg_d, dropout, graph_norm, batch_norm, towers=5,
                  pretrans_layers=1, posttrans_layers=1, divide_input=True, residual=False, edge_features=False,
-                 edge_dim=0):
+                 edge_dim=0, pretrans_last_activation='none', posttrans_last_activation='none'):
         super().__init__()
         assert ((
                     not divide_input) or in_dim % towers == 0), f"if divide_input is set the number of towers has to divide in_dim. in_dim={in_dim}, towers={towers}"
@@ -355,7 +357,8 @@ class EIGLayerTower(nn.Module):
             self.towers.append(EIGTower(in_dim=self.input_tower, out_dim=self.output_tower, aggregators=aggregators,
                                         scalers=scalers, avg_d=avg_d, pretrans_layers=pretrans_layers,
                                         posttrans_layers=posttrans_layers, batch_norm=batch_norm, dropout=dropout,
-                                        graph_norm=graph_norm, edge_features=edge_features, edge_dim=edge_dim))
+                                        graph_norm=graph_norm, edge_features=edge_features, edge_dim=edge_dim,
+                                        pretrans_last_activation=pretrans_last_activation, posttrans_last_activation=posttrans_last_activation))
         # mixing network
         self.mixing_network = FCLayer(out_dim, out_dim, activation='LeakyReLU')
 

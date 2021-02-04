@@ -40,6 +40,8 @@ class EIGNet(nn.Module):
         self.gru_enable = net_params['gru']
         self.device = net_params['device']
         self.virtual_node = net_params['virtual_node']
+        pretrans_last_activation = net_params['pretrans_last_activation']
+        posttrans_last_activation = net_params['posttrans_last_activation']
 
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
 
@@ -51,7 +53,9 @@ class EIGNet(nn.Module):
         self.layers = nn.ModuleList([EIGLayer(in_dim=hidden_dim, out_dim=hidden_dim, dropout=dropout, graph_norm=self.graph_norm,
                       batch_norm=self.batch_norm, residual=self.residual, aggregators=self.aggregators,
                       scalers=self.scalers, avg_d=self.avg_d, type_net=self.type_net, edge_features=self.edge_feat,
-                      edge_dim=edge_dim, pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers, towers=self.towers).model for _
+                      edge_dim=edge_dim, pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers, 
+                      towers=self.towers,
+                      pretrans_last_activation=pretrans_last_activation, posttrans_last_activation=posttrans_last_activation).model for _
              in range(n_layers - 1)])
         self.layers.append(EIGLayer(in_dim=hidden_dim, out_dim=out_dim, dropout=dropout,
                                     graph_norm=self.graph_norm, batch_norm=self.batch_norm,
@@ -59,7 +63,8 @@ class EIGNet(nn.Module):
                                     avg_d=self.avg_d, type_net=self.type_net, edge_features=self.edge_feat,
                                     edge_dim=edge_dim,
                                     pretrans_layers=pretrans_layers, posttrans_layers=posttrans_layers, 
-                                    towers=self.towers).model)
+                                    towers=self.towers,
+                                    pretrans_last_activation=pretrans_last_activation, posttrans_last_activation=posttrans_last_activation).model)
         if self.gru_enable:
             self.gru = GRU(hidden_dim, hidden_dim, self.device)
 
