@@ -72,7 +72,7 @@ class EIGLayerComplex(nn.Module):
 
         self.batchnorm_h = nn.BatchNorm1d(out_dim)
         self.pretrans = MLP(in_size=2 * in_dim + (edge_dim if edge_features else 0), hidden_size=in_dim,
-                            out_size=in_dim, layers=pretrans_layers, mid_activation='relu', last_activation='none')
+                            out_size=in_dim, layers=pretrans_layers, mid_activation='relu', last_activation='relu')
         self.posttrans = MLP(in_size=(len(aggregators) * len(scalers) + 1) * in_dim, hidden_size=out_dim,
                              out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation='none')
         self.avg_d = avg_d
@@ -166,7 +166,7 @@ class EIGLayerSimple(nn.Module):
         self.batchnorm_h = nn.BatchNorm1d(out_dim)
 
         self.posttrans = MLP(in_size=(len(aggregators) * len(scalers)) * in_dim, hidden_size=out_dim,
-                             out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation='none')
+                             out_size=out_dim, layers=posttrans_layers, mid_activation='relu', last_activation='relu')
         self.avg_d = avg_d
         if in_dim != out_dim:
             self.residual = False
@@ -247,7 +247,7 @@ class EIGTower(nn.Module):
         self.batchnorm_h = nn.BatchNorm1d(out_dim)
 
         self.pretrans = MLP(in_size=2 * in_dim + (edge_dim if edge_features else 0), hidden_size=in_dim,
-                            out_size=in_dim, layers=pretrans_layers, mid_activation='relu', last_activation='none')
+                            out_size=in_dim, layers=pretrans_layers, mid_activation='relu', last_activation='relu')
 
         self.posttrans = MLP(in_size=(len(aggregators) * len(scalers) + 1) * in_dim,
                              hidden_size=out_dim,
