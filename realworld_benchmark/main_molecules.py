@@ -175,8 +175,8 @@ def train_val_pipeline(dataset, params, net_params, dirs):
         print('Exiting from training early because of KeyboardInterrupt')
 
 
-    best_val_epoch = np.argmax(np.array(epoch_val_MAEs))
-    best_train_epoch = np.argmax(np.array(epoch_train_MAEs))
+    best_val_epoch = np.argmin(np.array(epoch_val_MAEs))
+    best_train_epoch = np.argmin(np.array(epoch_train_MAEs))
     best_val_mae = epoch_val_MAEs[best_val_epoch]
     best_val_test_mae = epoch_test_MAEs[best_val_epoch]
 
