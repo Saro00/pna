@@ -111,7 +111,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                                                      verbose=True)
 
     epoch_train_losses, epoch_val_losses = [], []
-    epoch_train_MAEs, epoch_val_MAEs = [], []
+    epoch_train_MAEs, epoch_val_MAEs, epoch_test_MAEs = [], [], []
 
     train_loader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True, collate_fn=dataset.collate)
     val_loader = DataLoader(valset, batch_size=params['batch_size'], shuffle=False, collate_fn=dataset.collate)
@@ -151,6 +151,8 @@ def train_val_pipeline(dataset, params, net_params, dirs):
                               train_MAE=epoch_train_mae.item(), val_MAE=epoch_val_mae.item(),
                               test_MAE=epoch_test_mae.item(), refresh=False)
 
+                epoch_test_MAEs.append(epoch_test_mae.detach().cpu().item())
+
                 per_epoch_time.append(time.time() - start)
 
                 scheduler.step(epoch_val_loss)
@@ -172,17 +174,20 @@ def train_val_pipeline(dataset, params, net_params, dirs):
         print('-' * 89)
         print('Exiting from training early because of KeyboardInterrupt')
 
-    _, test_mae = evaluate_network(model, device, test_loader, epoch)
-    _, val_mae = evaluate_network(model, device, val_loader, epoch)
-    _, train_mae = evaluate_network(model, device, train_loader, epoch)
 
-    test_mae = test_mae.item()
-    val_mae = val_mae.item()
-    train_mae = train_mae.item()
+    best_val_epoch = np.argmax(np.array(epoch_val_MAEs))
+    best_train_epoch = np.argmax(np.array(epoch_train_MAEs))
+    best_val_mae = epoch_val_MAEs[best_val_epoch]
+    best_val_test_mae = epoch_test_MAEs[best_val_epoch]
 
-    print("Train MAE: {:.4f}".format(train_mae))
-    print("Val MAE: {:.4f}".format(val_mae))
-    print("Test MAE: {:.4f}".format(test_mae))
+    best_val_train_mae = epoch_train_MAEs[best_val_epoch]
+    best_train_mae = epoch_train_MAEs[best_train_epoch]
+
+    print("Best Train MAE: {:.4f}".format(best_train_mae))
+    print("Best Val MAE: {:.4f}".format(best_val_mae))
+    print("Test MAE of Best Val: {:.4f}".format(best_val_test_mae))
+    print("Train MAE of Best Val: {:.4f}".format(best_val_train_mae))
+
     print("TOTAL TIME TAKEN: {:.4f}s".format(time.time() - t0))
     print("AVG TIME PER EPOCH: {:.4f}s".format(np.mean(per_epoch_time)))
 
@@ -196,7 +201,7 @@ def train_val_pipeline(dataset, params, net_params, dirs):
     FINAL RESULTS\nTEST MAE: {:.4f}\nTRAIN MAE: {:.4f}\n\n
     Total Time Taken: {:.4f} hrs\nAverage Time Per Epoch: {:.4f} s\n\n\n""" \
                 .format(DATASET_NAME, MODEL_NAME, params, net_params, model, net_params['total_param'],
-                        np.mean(np.array(test_mae)), np.array(train_mae), (time.time() - t0) / 3600,
+                        np.mean(np.array(best_val_test_mae)), np.array(best_val_train_mae), (time.time() - t0) / 3600,
                         np.mean(per_epoch_time)))
 
 
